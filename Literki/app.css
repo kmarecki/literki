@@ -1,0 +1,47 @@
+﻿body {
+    width: 100%;
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden
+}
+
+span {
+    font-style: italic;
+}
+
+/*#screen {
+    position:relative;
+    width:100%;
+    border: none;
+    margin: 30px 0 0 0;
+    overflow: hidden;
+}*/
+
+#containerTable {
+    width: 100%;
+    height: 100%;
+    min-height:100%;
+    /*border: 1px solid black;*/ 
+    display: table;
+    white-space:nowrap;
+}
+
+#boardDiv {
+    border: 10px inset silver;
+    display: table-cell;
+    white-space:normal;
+}
+
+#infoDiv {
+    border: 10px solid red; 
+    display: table-cell;
+    white-space:normal;
+}
+
+.stretch {
+    width: 100%;
+    display: inline;
+    font-size: 0;
+    line-height: 0
+}
+ 

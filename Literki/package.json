@@ -1,0 +1,14 @@
+{
+  "name": "Server",
+  "version": "0.0.0",
+  "description": "Server",
+  "main": "app.js",
+  "author": {
+    "name": "Krzys",
+    "email": ""
+  },
+  "dependencies": {
+    "connect": "^3.3.3",
+    "serve-static": "^1.7.1"
+  }
+}
