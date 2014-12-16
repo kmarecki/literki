@@ -1,4 +1,4 @@
-﻿/// <reference path="Scripts\typings\kineticjs\kineticjs.d.ts"/>
+﻿/// <reference path="..\Scripts\typings\kineticjs\kineticjs.d.ts"/>
 
 module Game {
 
@@ -271,6 +271,7 @@ window.onload = () => {
     state = new Game.GameState();
 
     board.drawBoardState(state);
+
 }
 
 window.onresize = () => {

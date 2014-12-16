@@ -1,4 +1,4 @@
-﻿/// <reference path="Scripts\typings\kineticjs\kineticjs.d.ts"/>
+﻿/// <reference path="..\Scripts\typings\kineticjs\kineticjs.d.ts"/>
 var Game;
 (function (Game) {
     var FIELD_SIZE = 50;
