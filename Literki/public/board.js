@@ -20,7 +20,6 @@ var Game;
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.fields = new Literki.BoardFields();
             this.bonusColors[1 /* DoubleLetter */] = "lightblue";
             this.bonusColors[3 /* DoubleWord */] = "lightpink";
             this.bonusColors[2 /* TripleLetter */] = "blue";
@@ -34,10 +33,10 @@ var Game;
             //var height = containerElem.clientHeight;
             //this.stage.setWidth(width);
             //this.stage.setHeight(height);
-            this.drawBoard();
+            this.drawBoard(state);
             this.drawLetters(state);
         };
-        Board.prototype.drawBoard = function () {
+        Board.prototype.drawBoard = function (state) {
             var backgroundLayer = new Kinetic.Layer();
             this.stage.add(backgroundLayer);
             var canvas = backgroundLayer.getCanvas()._canvas;
@@ -50,14 +49,17 @@ var Game;
             context.fill();
             for (var x = 0; x < Literki.ROW_SIZE; x++) {
                 for (var y = 0; y < Literki.ROW_SIZE; y++) {
-                    var bonus = this.fields.getFieldBonus(x, y);
-                    var fieldColor = this.bonusColors[bonus];
                     var xpos = BOARD_MARGIN + x * FIELD_SIZE;
                     var ypos = BOARD_MARGIN + y * FIELD_SIZE;
-                    context.beginPath();
-                    context.rect(xpos, ypos, FIELD_SIZE, FIELD_SIZE);
-                    context.fillStyle = fieldColor;
-                    context.fill();
+                    var value = state.board.getFieldValue(x, y);
+                    if (value == null || value.trim() != "") {
+                        var bonus = state.board.getFieldBonus(x, y);
+                        var fieldColor = this.bonusColors[bonus];
+                        context.beginPath();
+                        context.rect(xpos, ypos, FIELD_SIZE, FIELD_SIZE);
+                        context.fillStyle = fieldColor;
+                        context.fill();
+                    }
                 }
             }
             for (var x = BOARD_MARGIN; x <= maxlines; x += FIELD_SIZE) {
@@ -91,16 +93,28 @@ var Game;
                 context.strokeStyle = "black";
                 context.stroke();
             }
+            var letterLayer = new Kinetic.Layer();
+            for (var x = 0; x < Literki.ROW_SIZE; x++) {
+                for (var y = 0; y < Literki.ROW_SIZE; y++) {
+                    var xpos = BOARD_MARGIN + x * FIELD_SIZE;
+                    var ypos = BOARD_MARGIN + y * FIELD_SIZE;
+                    var value = state.board.getFieldValue(x, y);
+                    if (value != null && value.trim() != "") {
+                        letterLayer.add(this.getLetterGroup(xpos, ypos, value.toUpperCase(), false));
+                    }
+                }
+            }
+            this.stage.add(letterLayer);
         };
         Board.prototype.drawLetters = function (state) {
             // add the shape to the layer
             var foregroundLayer = new Kinetic.Layer();
-            foregroundLayer.add(this.getLetterGroup(100, 200, "Ą"));
-            foregroundLayer.add(this.getLetterGroup(300, 300, "Ł"));
-            foregroundLayer.add(this.getLetterGroup(100, 300, "Ń"));
+            foregroundLayer.add(this.getLetterGroup(100, 200, "Ą", true));
+            foregroundLayer.add(this.getLetterGroup(300, 300, "Ł", true));
+            foregroundLayer.add(this.getLetterGroup(100, 300, "Ń", true));
             this.stage.add(foregroundLayer);
         };
-        Board.prototype.getLetterGroup = function (x, y, letter) {
+        Board.prototype.getLetterGroup = function (x, y, letter, foreground) {
             var letterRect = new Kinetic.Rect({
                 width: FIELD_SIZE,
                 height: FIELD_SIZE,
@@ -123,27 +137,29 @@ var Game;
             var letterGroup = new Kinetic.Group({
                 x: x,
                 y: y,
-                draggable: true
+                draggable: foreground
             });
-            letterGroup.on('dragend', function (e) {
-                var x = letterGroup.x() - BOARD_MARGIN;
-                var y = letterGroup.y() - BOARD_MARGIN;
-                var floorX = Math.floor(x / FIELD_SIZE) * FIELD_SIZE;
-                ;
-                var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
-                ;
-                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
-                y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
-                x += BOARD_MARGIN;
-                y += BOARD_MARGIN;
-                var tween = new Kinetic.Tween({
-                    node: letterGroup,
-                    x: x,
-                    y: y,
-                    duration: 0.1
+            if (foreground) {
+                letterGroup.on('dragend', function (e) {
+                    var x = letterGroup.x() - BOARD_MARGIN;
+                    var y = letterGroup.y() - BOARD_MARGIN;
+                    var floorX = Math.floor(x / FIELD_SIZE) * FIELD_SIZE;
+                    ;
+                    var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
+                    ;
+                    x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                    y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
+                    x += BOARD_MARGIN;
+                    y += BOARD_MARGIN;
+                    var tween = new Kinetic.Tween({
+                        node: letterGroup,
+                        x: x,
+                        y: y,
+                        duration: 0.1
+                    });
+                    tween.play();
                 });
-                tween.play();
-            });
+            }
             letterGroup.add(letterRect);
             letterGroup.add(letterText);
             return letterGroup;
@@ -181,7 +197,27 @@ window.onload = function () {
     }, 1000);
     board = new Game.Board("boardDiv");
     info = new Game.Info("infoDiv");
-    state = new Literki.GameState();
+    var player1 = new Literki.GamePlayer();
+    player1.playerName = "Krzyś";
+    var move1 = new Literki.GameMove();
+    move1.x = 5;
+    move1.y = 7;
+    move1.word = "literki";
+    move1.direction = 1 /* Horizontal */;
+    player1.moves.push(move1);
+    var player2 = new Literki.GamePlayer();
+    player2.playerName = "Irenka";
+    var move2 = new Literki.GameMove();
+    move2.x = 6;
+    move2.y = 6;
+    move2.word = "piła";
+    move2.direction = 0 /* Vertical */;
+    player2.moves.push(move2);
+    var players = new Array();
+    players.push(player1);
+    players.push(player2);
+    state = Literki.GameState.newGame(players);
+    state.renderState();
     board.drawBoardState(state);
     info.drawInfoState(state);
 };

@@ -12,8 +12,19 @@
         Start
     }
 
+    export enum GameMoveDirection {
+        Vertical,
+        Horizontal
+    }
+
+    export class BoardField {
+
+        fieldBonus: BoardFieldBonus;
+        value: String;
+    }
+
     export class BoardFields {
-        private fields: Array<Array<BoardFieldBonus>>;
+        private fields: Array<Array<BoardField>>;
 
         constructor() {
             this.fields = new Array(ROW_SIZE);
@@ -54,18 +65,30 @@
 
         private addFieldBonus(fields: Array<{ x: number; y: number; }>, bonus: BoardFieldBonus): void {
             fields.forEach((field, index) => {
-                this.fields[field.x][field.y] = bonus;
+                this.createIfNotExists(field.x, field.y).fieldBonus = bonus;
             });
         }
 
-        getFieldBonus(x: number, y: number): BoardFieldBonus {
-            return this.fields[x][y] != null ? this.fields[x][y] : BoardFieldBonus.None;
+        private createIfNotExists(x: number, y: number): BoardField {
+            return this.fields[x][y] != null ? this.fields[x][y] : (this.fields[x][y] = new BoardField());
         }
-    }
 
-    export enum GameMoveDirection {
-        Vertical,
-        Horizontal
+        getFieldBonus(x: number, y: number): BoardFieldBonus {
+            return this.fields[x][y] != null ? this.fields[x][y].fieldBonus : BoardFieldBonus.None;
+        }
+
+        getFieldValue(x: number, y: number): String {
+            return this.fields[x][y] != null ? this.fields[x][y].value : null;
+        }
+
+        addWord(word: string, x: number, y: number, direction: GameMoveDirection): void {
+            for (var i = 0; i < word.length; i++) {
+                var fieldX = x + (direction == GameMoveDirection.Horizontal ? i : 0);
+                var fieldY = y + (direction == GameMoveDirection.Vertical ? i : 0);
+                var field = this.createIfNotExists(fieldX, fieldY);
+                field.value = word.charAt(i);
+            }
+        }
     }
 
     export class GameMove {
@@ -82,11 +105,16 @@
         freeLetters: Array<string>;
         moves: Array<GameMove>;
 
+        constructor() {
+            this.moves = new Array<GameMove>();
+        }
     }
 
     export class GameState {
 
-        private players: Array<GamePlayer>;
+        players: Array<GamePlayer>;
+        board: BoardFields;
+        private currentPlayerIndex: number = 0;
 
         static newGame(players: Array<GamePlayer>): GameState {
             var game = new GameState();
@@ -94,12 +122,17 @@
             return game;
         }
 
-        private currentPlayerIndex: number = 0;
         getCurrentPlayer(): GamePlayer {
             return this.players[this.currentPlayerIndex];
         }
 
 
+        renderState(): void {
+            this.board = new BoardFields();
+            this.players.forEach(
+                player => player.moves.forEach(
+                    move => this.board.addWord(move.word, move.x, move.y, move.direction)));
+        }
 
     }
 
