@@ -12,12 +12,8 @@
         Start
     }
 
-    export class GameState {
-
-    }
-
     export class BoardFields {
-        private fields: Array<Array<Literki.BoardFieldBonus>>;
+        private fields: Array<Array<BoardFieldBonus>>;
 
         constructor() {
             this.fields = new Array(ROW_SIZE);
@@ -56,7 +52,7 @@
             ], BoardFieldBonus.Start);
         }
 
-        addFieldBonus(fields: Array<{ x: number; y: number; }>, bonus: BoardFieldBonus): void {
+        private addFieldBonus(fields: Array<{ x: number; y: number; }>, bonus: BoardFieldBonus): void {
             fields.forEach((field, index) => {
                 this.fields[field.x][field.y] = bonus;
             });
@@ -65,5 +61,49 @@
         getFieldBonus(x: number, y: number): BoardFieldBonus {
             return this.fields[x][y] != null ? this.fields[x][y] : BoardFieldBonus.None;
         }
+    }
+
+    export enum GameMoveDirection {
+        Vertical,
+        Horizontal
+    }
+
+    export class GameMove {
+        word: string;
+        x: number;
+        y: number;
+        direction: GameMoveDirection;
+        points: number;
+    }
+
+    export class GamePlayer {
+
+        playerName: string;
+        freeLetters: Array<string>;
+        moves: Array<GameMove>;
+
+    }
+
+    export class GameState {
+
+        private players: Array<GamePlayer>;
+
+        static newGame(players: Array<GamePlayer>): GameState {
+            var game = new GameState();
+            game.players = players.slice();
+            return game;
+        }
+
+        private currentPlayerIndex: number = 0;
+        getCurrentPlayer(): GamePlayer {
+            return this.players[this.currentPlayerIndex];
+        }
+
+
+
+    }
+
+    export class GameRun {
+
     }
 }
