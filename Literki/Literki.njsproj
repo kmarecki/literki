@@ -37,7 +37,8 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="public\board.ts" />
-    <TypeScriptCompile Include="Scripts\typings\kineticjs\kineticjs.d.ts" />
+    <TypeScriptCompile Include="public\Scripts\literki.ts" />
+    <TypeScriptCompile Include="public\Scripts\typings\kineticjs\kineticjs.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
     <TypeScriptCompile Include="server.ts" />
     <Content Include="public\app.css" />
@@ -48,9 +49,10 @@
   <ItemGroup>
     <Folder Include="public\" />
     <Folder Include="public\Scripts\" />
+    <Folder Include="public\Scripts\typings\" />
     <Folder Include="Scripts\" />
     <Folder Include="Scripts\typings\" />
-    <Folder Include="Scripts\typings\kineticjs\" />
+    <Folder Include="public\Scripts\typings\kineticjs\" />
     <Folder Include="Scripts\typings\node\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,41 +1,10 @@
-﻿/// <reference path="..\Scripts\typings\kineticjs\kineticjs.d.ts"/>
+﻿/// <reference path="Scripts\typings\kineticjs\kineticjs.d.ts"/>
+/// <reference path="Scripts\literki.ts"/>
 var Game;
 (function (Game) {
     var FIELD_SIZE = 50;
-    var ROW_SIZE = 15;
     var LINE_WIDTH = FIELD_SIZE / 15;
     var BOARD_MARGIN = 10;
-    var MAX_LETTERS = 7;
-
-    var BoardFieldBonus;
-    (function (BoardFieldBonus) {
-        BoardFieldBonus[BoardFieldBonus["None"] = 0] = "None";
-        BoardFieldBonus[BoardFieldBonus["DoubleLetter"] = 1] = "DoubleLetter";
-        BoardFieldBonus[BoardFieldBonus["TripleLetter"] = 2] = "TripleLetter";
-        BoardFieldBonus[BoardFieldBonus["DoubleWord"] = 3] = "DoubleWord";
-        BoardFieldBonus[BoardFieldBonus["TripleWord"] = 4] = "TripleWord";
-        BoardFieldBonus[BoardFieldBonus["Start"] = 5] = "Start";
-    })(BoardFieldBonus || (BoardFieldBonus = {}));
-
-    var BoardFields = (function () {
-        function BoardFields() {
-            this.fields = new Array(ROW_SIZE);
-            for (var i = 0; i < ROW_SIZE; i++) {
-                this.fields[i] = new Array(ROW_SIZE);
-            }
-        }
-        BoardFields.prototype.addFieldBonus = function (fields, bonus) {
-            var _this = this;
-            fields.forEach(function (field, index) {
-                _this.fields[field.x][field.y] = bonus;
-            });
-        };
-
-        BoardFields.prototype.getFieldBonus = function (x, y) {
-            return this.fields[x][y] != null ? this.fields[x][y] : 0 /* None */;
-        };
-        return BoardFields;
-    })();
 
     var Board = (function () {
         function Board(container) {
@@ -54,36 +23,7 @@ var Game;
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.fields = new BoardFields();
-            this.fields.addFieldBonus([
-                { x: 3, y: 0 }, { x: 11, y: 0 }, { x: 6, y: 2 }, { x: 8, y: 2 },
-                { x: 0, y: 3 }, { x: 7, y: 3 }, { x: 14, y: 3 },
-                { x: 2, y: 6 }, { x: 6, y: 6 }, { x: 8, y: 6 }, { x: 12, y: 6 },
-                { x: 3, y: 7 }, { x: 11, y: 7 },
-                { x: 2, y: 8 }, { x: 6, y: 8 }, { x: 8, y: 8 }, { x: 12, y: 8 },
-                { x: 0, y: 11 }, { x: 7, y: 11 }, { x: 14, y: 11 },
-                { x: 3, y: 14 }, { x: 11, y: 14 }, { x: 6, y: 12 }, { x: 8, y: 12 }
-            ], 1 /* DoubleLetter */);
-            this.fields.addFieldBonus([
-                { x: 5, y: 1 }, { x: 9, y: 1 },
-                { x: 1, y: 5 }, { x: 5, y: 5 }, { x: 9, y: 5 }, { x: 13, y: 5 },
-                { x: 1, y: 9 }, { x: 5, y: 9 }, { x: 9, y: 9 }, { x: 13, y: 9 },
-                { x: 5, y: 13 }, { x: 9, y: 13 }
-            ], 2 /* TripleLetter */);
-            this.fields.addFieldBonus([
-                { x: 1, y: 1 }, { x: 13, y: 1 }, { x: 2, y: 2 }, { x: 12, y: 2 },
-                { x: 3, y: 3 }, { x: 11, y: 3 }, { x: 4, y: 4 }, { x: 10, y: 4 },
-                { x: 4, y: 10 }, { x: 10, y: 10 }, { x: 3, y: 11 }, { x: 11, y: 11 },
-                { x: 2, y: 12 }, { x: 12, y: 12 }, { x: 1, y: 13 }, { x: 13, y: 13 }
-            ], 3 /* DoubleWord */);
-            this.fields.addFieldBonus([
-                { x: 0, y: 0 }, { x: 7, y: 0 }, { x: 14, y: 0 },
-                { x: 0, y: 7 }, { x: 14, y: 7 },
-                { x: 0, y: 14 }, { x: 7, y: 14 }, { x: 14, y: 14 }
-            ], 4 /* TripleWord */);
-            this.fields.addFieldBonus([
-                { x: 7, y: 7 }
-            ], 5 /* Start */);
+            this.fields = new Literki.BoardFields();
 
             this.bonusColors[1 /* DoubleLetter */] = "lightblue";
             this.bonusColors[3 /* DoubleWord */] = "lightpink";
@@ -110,7 +50,7 @@ var Game;
             var canvas = backgroundLayer.getCanvas()._canvas;
             var context = canvas.getContext("2d");
 
-            var max = FIELD_SIZE * ROW_SIZE;
+            var max = FIELD_SIZE * Literki.ROW_SIZE;
             var maxlines = BOARD_MARGIN + max;
 
             //background
@@ -118,8 +58,8 @@ var Game;
             context.fillStyle = "#FFFFCC";
             context.fill();
 
-            for (var x = 0; x < ROW_SIZE; x++) {
-                for (var y = 0; y < ROW_SIZE; y++) {
+            for (var x = 0; x < Literki.ROW_SIZE; x++) {
+                for (var y = 0; y < Literki.ROW_SIZE; y++) {
                     var bonus = this.fields.getFieldBonus(x, y);
                     var fieldColor = this.bonusColors[bonus];
                     var xpos = BOARD_MARGIN + x * FIELD_SIZE;
@@ -153,13 +93,13 @@ var Game;
 
             //letters field
             context.beginPath();
-            context.rect(BOARD_MARGIN, lettersTop, FIELD_SIZE * MAX_LETTERS, FIELD_SIZE);
+            context.rect(BOARD_MARGIN, lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
             context.fillStyle = "green";
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
 
-            for (var x = 1; x < MAX_LETTERS; x++) {
+            for (var x = 1; x < Literki.MAX_LETTERS; x++) {
                 context.beginPath();
                 context.moveTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop);
                 context.lineTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop + FIELD_SIZE);
@@ -242,29 +182,43 @@ var Game;
     })();
     Game.Board = Board;
 
-    var GameState = (function () {
-        function GameState() {
+    var Info = (function () {
+        function Info(container) {
+            this.container = container;
         }
-        return GameState;
+        Info.prototype.drawInfoState = function (state) {
+            var infoDiv = document.getElementById(this.container);
+        };
+        return Info;
     })();
-    Game.GameState = GameState;
+    Game.Info = Info;
 })(Game || (Game = {}));
 
 var board;
+var info;
 var state;
 
 window.onload = function () {
-    var boardCanvas = document.getElementById("boardDiv");
-    boardCanvas.style.width = screen.availWidth / 2 + "px";
-    boardCanvas.style.height = screen.availHeight * 0.9 + "px";
+    var boardDiv = document.getElementById("boardDiv");
+    boardDiv.style.width = screen.availWidth / 2 + "px";
+    boardDiv.style.height = screen.availHeight * 0.9 + "px";
 
-    var labelCanvas = document.getElementById("debugLabel");
-    labelCanvas.textContent = screen.availWidth + " X " + screen.availHeight;
+    var infoDiv = document.getElementById("infoDiv");
+    infoDiv.style.width = screen.availWidth / 2 + "px";
+    infoDiv.style.height = screen.availHeight * 0.9 + "px";
+
+    var debugLabel = document.getElementById("debugLabel");
+
+    setInterval(function () {
+        debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
+    }, 1000);
 
     board = new Game.Board("boardDiv");
-    state = new Game.GameState();
+    info = new Game.Info("infoDiv");
+    state = new Literki.GameState();
 
     board.drawBoardState(state);
+    info.drawInfoState(state);
 };
 
 window.onresize = function () {
