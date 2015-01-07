@@ -34,7 +34,6 @@ var Game;
             //this.stage.setWidth(width);
             //this.stage.setHeight(height);
             this.drawBoard(state);
-            this.drawLetters(state);
         };
         Board.prototype.drawBoard = function (state) {
             var backgroundLayer = new Kinetic.Layer();
@@ -100,18 +99,18 @@ var Game;
                     var ypos = BOARD_MARGIN + y * FIELD_SIZE;
                     var value = state.board.getFieldValue(x, y);
                     if (value != null && value.trim() != "") {
-                        letterLayer.add(this.getLetterGroup(xpos, ypos, value.toUpperCase(), false));
+                        letterLayer.add(this.getLetterGroup(xpos, ypos, value, false));
                     }
                 }
             }
             this.stage.add(letterLayer);
-        };
-        Board.prototype.drawLetters = function (state) {
-            // add the shape to the layer
+            // moving letters
             var foregroundLayer = new Kinetic.Layer();
-            foregroundLayer.add(this.getLetterGroup(100, 200, "Ą", true));
-            foregroundLayer.add(this.getLetterGroup(300, 300, "Ł", true));
-            foregroundLayer.add(this.getLetterGroup(100, 300, "Ń", true));
+            for (var x = 0; x < Literki.MAX_LETTERS; x++) {
+                var letter = state.getCurrentPlayer().freeLetters[x];
+                var xpos = BOARD_MARGIN + x * FIELD_SIZE;
+                foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, true));
+            }
             this.stage.add(foregroundLayer);
         };
         Board.prototype.getLetterGroup = function (x, y, letter, foreground) {
@@ -128,7 +127,7 @@ var Game;
                 height: FIELD_SIZE,
                 align: "center",
                 verticalAlign: "middle",
-                text: letter,
+                text: letter.toUpperCase(),
                 fontFamily: "Calibri",
                 fontSize: 30,
                 fontStyle: "bold",
@@ -199,6 +198,7 @@ window.onload = function () {
     info = new Game.Info("infoDiv");
     var player1 = new Literki.GamePlayer();
     player1.playerName = "Krzyś";
+    player1.freeLetters = ["h", "a", "j", "k", "b", "e", "z"];
     var move1 = new Literki.GameMove();
     move1.x = 5;
     move1.y = 7;

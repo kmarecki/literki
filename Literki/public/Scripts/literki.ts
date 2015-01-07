@@ -20,7 +20,7 @@
     export class BoardField {
 
         fieldBonus: BoardFieldBonus;
-        value: String;
+        value: string;
     }
 
     export class BoardFields {
@@ -77,7 +77,7 @@
             return this.fields[x][y] != null ? this.fields[x][y].fieldBonus : BoardFieldBonus.None;
         }
 
-        getFieldValue(x: number, y: number): String {
+        getFieldValue(x: number, y: number): string {
             return this.fields[x][y] != null ? this.fields[x][y].value : null;
         }
 
