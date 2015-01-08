@@ -41,6 +41,7 @@
     <TypeScriptCompile Include="public\Scripts\typings\kineticjs\kineticjs.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
     <TypeScriptCompile Include="server.ts" />
+    <Content Include="public\board.css" />
     <Content Include="public\app.css" />
     <Content Include="public\board.html" />
     <Content Include="package.json" />
