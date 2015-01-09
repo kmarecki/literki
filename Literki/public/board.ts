@@ -3,9 +3,15 @@
 
 module Game {
 
-    var FIELD_SIZE = 50;
-    var LINE_WIDTH = FIELD_SIZE / 15;
-    var BOARD_MARGIN = 10;
+    var FIELD_SIZE: number;
+    var LINE_WIDTH: number;
+    var BOARD_MARGIN: number;
+
+    export function setupDisplay(fieldSize: number): void {
+        FIELD_SIZE = fieldSize;
+        LINE_WIDTH = fieldSize / 15;
+        BOARD_MARGIN = fieldSize / 4;
+    }
 
     export class Board {
         private stage: Kinetic.IStage;
@@ -241,6 +247,8 @@ window.onload = () => {
     setInterval(() => {
         debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
     }, 1000);
+
+    Game.setupDisplay(screen.availHeight / 20);
 
     board = new Game.Board("boardDiv");
     info = new Game.Info("infoDiv");

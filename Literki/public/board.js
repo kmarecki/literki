@@ -1,14 +1,23 @@
-/// <reference path="Scripts\typings\kineticjs\kineticjs.d.ts"/>
+﻿/// <reference path="Scripts\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path="Scripts\literki.ts"/>
 var Game;
 (function (Game) {
-    var FIELD_SIZE = 50;
-    var LINE_WIDTH = FIELD_SIZE / 15;
-    var BOARD_MARGIN = 10;
+    var FIELD_SIZE;
+    var LINE_WIDTH;
+    var BOARD_MARGIN;
+
+    function setupDisplay(fieldSize) {
+        FIELD_SIZE = fieldSize;
+        LINE_WIDTH = fieldSize / 15;
+        BOARD_MARGIN = fieldSize / 4;
+    }
+    Game.setupDisplay = setupDisplay;
+
     var Board = (function () {
         function Board(container) {
             this.bonusColors = {};
             this.container = container;
+
             //var width = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE;
             //var height = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE + BOARD_MARGIN * 2 + FIELD_SIZE;
             var containerElem = document.getElementById(container);
@@ -17,6 +26,7 @@ var Game;
                 width: containerElem.clientWidth,
                 height: containerElem.clientHeight
             });
+
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
@@ -27,6 +37,7 @@ var Game;
             this.bonusColors[5 /* Start */] = "lightpink";
             this.bonusColors[0 /* None */] = "darkgreen";
         };
+
         Board.prototype.drawBoardState = function (state) {
             //var containerElem = document.getElementById(this.container);
             //var width = containerElem.clientWidth;
@@ -35,17 +46,22 @@ var Game;
             //this.stage.setHeight(height);
             this.drawBoard(state);
         };
+
         Board.prototype.drawBoard = function (state) {
             var backgroundLayer = new Kinetic.Layer();
             this.stage.add(backgroundLayer);
+
             var canvas = backgroundLayer.getCanvas()._canvas;
             var context = canvas.getContext("2d");
+
             var max = FIELD_SIZE * Literki.ROW_SIZE;
             var maxlines = BOARD_MARGIN + max;
+
             //background
             context.beginPath(), context.rect(0, 0, canvas.width, canvas.height);
             context.fillStyle = "#FFFFCC";
             context.fill();
+
             for (var x = 0; x < Literki.ROW_SIZE; x++) {
                 for (var y = 0; y < Literki.ROW_SIZE; y++) {
                     var xpos = BOARD_MARGIN + x * FIELD_SIZE;
@@ -61,6 +77,7 @@ var Game;
                     }
                 }
             }
+
             for (var x = BOARD_MARGIN; x <= maxlines; x += FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(x, BOARD_MARGIN);
@@ -69,6 +86,7 @@ var Game;
                 context.strokeStyle = "black";
                 context.stroke();
             }
+
             for (var y = BOARD_MARGIN; y <= maxlines; y += FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(BOARD_MARGIN, y);
@@ -77,7 +95,9 @@ var Game;
                 context.strokeStyle = "black";
                 context.stroke();
             }
+
             var lettersTop = BOARD_MARGIN + maxlines + BOARD_MARGIN;
+
             //letters field
             context.beginPath();
             context.rect(BOARD_MARGIN, lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
@@ -85,6 +105,7 @@ var Game;
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
+
             for (var x = 1; x < Literki.MAX_LETTERS; x++) {
                 context.beginPath();
                 context.moveTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop);
@@ -92,7 +113,9 @@ var Game;
                 context.strokeStyle = "black";
                 context.stroke();
             }
+
             var letterLayer = new Kinetic.Layer();
+
             for (var x = 0; x < Literki.ROW_SIZE; x++) {
                 for (var y = 0; y < Literki.ROW_SIZE; y++) {
                     var xpos = BOARD_MARGIN + x * FIELD_SIZE;
@@ -103,16 +126,22 @@ var Game;
                     }
                 }
             }
+
             this.stage.add(letterLayer);
+
             // moving letters
             var foregroundLayer = new Kinetic.Layer();
+
             for (var x = 0; x < Literki.MAX_LETTERS; x++) {
                 var letter = state.getCurrentPlayer().freeLetters[x];
                 var xpos = BOARD_MARGIN + x * FIELD_SIZE;
+
                 foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, true));
             }
+
             this.stage.add(foregroundLayer);
         };
+
         Board.prototype.getLetterGroup = function (x, y, letter, foreground) {
             var letterRect = new Kinetic.Rect({
                 width: FIELD_SIZE,
@@ -122,6 +151,7 @@ var Game;
                 strokeWidth: LINE_WIDTH,
                 cornerRadius: 5
             });
+
             var letterText = new Kinetic.Text({
                 width: FIELD_SIZE,
                 height: FIELD_SIZE,
@@ -131,13 +161,15 @@ var Game;
                 fontFamily: "Calibri",
                 fontSize: 30,
                 fontStyle: "bold",
-                fill: "black",
+                fill: "black"
             });
+
             var letterGroup = new Kinetic.Group({
                 x: x,
                 y: y,
                 draggable: foreground
             });
+
             if (foreground) {
                 letterGroup.on('dragend', function (e) {
                     var x = letterGroup.x() - BOARD_MARGIN;
@@ -146,10 +178,13 @@ var Game;
                     ;
                     var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
                     ;
+
                     x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
                     y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
+
                     x += BOARD_MARGIN;
                     y += BOARD_MARGIN;
+
                     var tween = new Kinetic.Tween({
                         node: letterGroup,
                         x: x,
@@ -159,16 +194,19 @@ var Game;
                     tween.play();
                 });
             }
+
             letterGroup.add(letterRect);
             letterGroup.add(letterText);
             return letterGroup;
         };
+
         Board.prototype.clearBoard = function () {
             this.stage.clear();
         };
         return Board;
     })();
     Game.Board = Board;
+
     var Info = (function () {
         function Info(container) {
             this.container = container;
@@ -180,47 +218,62 @@ var Game;
     })();
     Game.Info = Info;
 })(Game || (Game = {}));
+
 var board;
 var info;
 var state;
+
 window.onload = function () {
     var boardDiv = document.getElementById("boardDiv");
     boardDiv.style.width = screen.availWidth / 2 + "px";
     boardDiv.style.height = screen.availHeight * 0.9 + "px";
+
     var infoDiv = document.getElementById("infoDiv");
     infoDiv.style.width = screen.availWidth / 2 + "px";
     infoDiv.style.height = screen.availHeight * 0.9 + "px";
+
     var debugLabel = document.getElementById("debugLabel");
+
     setInterval(function () {
         debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
     }, 1000);
+
+    Game.setupDisplay(screen.availHeight / 20);
+
     board = new Game.Board("boardDiv");
     info = new Game.Info("infoDiv");
+
     var player1 = new Literki.GamePlayer();
     player1.playerName = "Krzyś";
     player1.freeLetters = ["h", "a", "j", "k", "b", "e", "z"];
+
     var move1 = new Literki.GameMove();
     move1.x = 5;
     move1.y = 7;
     move1.word = "literki";
     move1.direction = 1 /* Horizontal */;
     player1.moves.push(move1);
+
     var player2 = new Literki.GamePlayer();
     player2.playerName = "Irenka";
+
     var move2 = new Literki.GameMove();
     move2.x = 6;
     move2.y = 6;
     move2.word = "piła";
     move2.direction = 0 /* Vertical */;
     player2.moves.push(move2);
+
     var players = new Array();
     players.push(player1);
     players.push(player2);
     state = Literki.GameState.newGame(players);
     state.renderState();
+
     board.drawBoardState(state);
     info.drawInfoState(state);
 };
+
 window.onresize = function () {
     board.clearBoard();
     board.drawBoardState(state);
