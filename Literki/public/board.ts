@@ -2,235 +2,249 @@
 /// <reference path="Scripts\typings\knockout\knockout.d.ts"/>
 /// <reference path="Scripts\literki.ts"/>
 
-module Game {
+var FIELD_SIZE: number;
+var LINE_WIDTH: number;
+var BOARD_MARGIN: number;
 
-    var FIELD_SIZE: number;
-    var LINE_WIDTH: number;
-    var BOARD_MARGIN: number;
+function setupDisplay(fieldSize: number): void {
+    FIELD_SIZE = fieldSize;
+    LINE_WIDTH = fieldSize / 15;
+    BOARD_MARGIN = fieldSize / 4;
+}
 
-    export function setupDisplay(fieldSize: number): void {
-        FIELD_SIZE = fieldSize;
-        LINE_WIDTH = fieldSize / 15;
-        BOARD_MARGIN = fieldSize / 4;
+class Board {
+    private stage: Kinetic.IStage;
+    private bonusColors: { [id: number]: string; } = {};
+    private container: string;
+
+    constructor(container: string) {
+        this.container = container;
+        //var width = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE;
+        //var height = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE + BOARD_MARGIN * 2 + FIELD_SIZE;
+        var containerElem = document.getElementById(container);
+        this.stage = new Kinetic.Stage({
+            container: container,
+            width: containerElem.clientWidth,
+            height: containerElem.clientHeight
+        });
+            
+        this.initalizeFields();
     }
 
-    export class Board {
-        private stage: Kinetic.IStage;
-        private bonusColors: { [id: number]: string; } = {};
-        private container: string;
+    private initalizeFields(): void {
 
-        constructor(container: string) {
-            this.container = container;
-            //var width = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE;
-            //var height = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE + BOARD_MARGIN * 2 + FIELD_SIZE;
-            var containerElem = document.getElementById(container);
-            this.stage = new Kinetic.Stage({
-                container: container,
-                width: containerElem.clientWidth,
-                height: containerElem.clientHeight
-            });
-            
-            this.initalizeFields();
-        }
+        this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+        this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
+        this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue"
+        this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
+        this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
+        this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
+    }
 
-        private initalizeFields(): void {
+    drawBoardState(state: Literki.GameState) {
+        //var containerElem = document.getElementById(this.container);
+        //var width = containerElem.clientWidth;
+        //var height = containerElem.clientHeight;
+        //this.stage.setWidth(width);
+        //this.stage.setHeight(height);
 
-            this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
-            this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
-            this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue"
-            this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
-            this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
-            this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
-        }
+        this.drawBoard(state);
+    }
 
-        drawBoardState(state: Literki.GameState) {
-            //var containerElem = document.getElementById(this.container);
-            //var width = containerElem.clientWidth;
-            //var height = containerElem.clientHeight;
-            //this.stage.setWidth(width);
-            //this.stage.setHeight(height);
+    private drawBoard(state: Literki.GameState): void {
 
-            this.drawBoard(state);
-        }
+        var backgroundLayer = new Kinetic.Layer();
+        this.stage.add(backgroundLayer);
 
-        private drawBoard(state: Literki.GameState): void {
+        var canvas = backgroundLayer.getCanvas()._canvas;
+        var context = canvas.getContext("2d");
 
-            var backgroundLayer = new Kinetic.Layer();
-            this.stage.add(backgroundLayer);
+        var max = FIELD_SIZE * Literki.ROW_SIZE;
+        var maxlines = BOARD_MARGIN + max;
 
-            var canvas = backgroundLayer.getCanvas()._canvas;
-            var context = canvas.getContext("2d");
+        //background
+        context.beginPath(),
+        context.rect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "#FFFFCC";
+        context.fill();
 
-            var max = FIELD_SIZE * Literki.ROW_SIZE;
-            var maxlines = BOARD_MARGIN + max;
-
-            //background
-            context.beginPath(),
-            context.rect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = "#FFFFCC";
-            context.fill();
-
-            //board fields
-            for (var x = 0; x < Literki.ROW_SIZE; x++) {
-                for (var y = 0; y < Literki.ROW_SIZE; y++) {
-                    var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-                    var ypos = BOARD_MARGIN + y * FIELD_SIZE;
-                    var value = state.board.getFieldValue(x, y);
-                    if (value == null || value.trim() != "") {
-                        var bonus = state.board.getFieldBonus(x, y);
-                        var fieldColor = this.bonusColors[bonus];
-                        context.beginPath();
-                        context.rect(xpos, ypos, FIELD_SIZE, FIELD_SIZE);
-                        context.fillStyle = fieldColor;
-                        context.fill();
-                    }
+        //board fields
+        for (var x = 0; x < Literki.ROW_SIZE; x++) {
+            for (var y = 0; y < Literki.ROW_SIZE; y++) {
+                var xpos = BOARD_MARGIN + x * FIELD_SIZE;
+                var ypos = BOARD_MARGIN + y * FIELD_SIZE;
+                var value = state.board.getFieldValue(x, y);
+                if (value == null || value.trim() != "") {
+                    var bonus = state.board.getFieldBonus(x, y);
+                    var fieldColor = this.bonusColors[bonus];
+                    context.beginPath();
+                    context.rect(xpos, ypos, FIELD_SIZE, FIELD_SIZE);
+                    context.fillStyle = fieldColor;
+                    context.fill();
                 }
             }
+        }
 
-            //vertical lines
-            for (var x = BOARD_MARGIN; x <= maxlines; x += FIELD_SIZE) {
-                context.beginPath();
-                context.moveTo(x, BOARD_MARGIN);
-                context.lineTo(x, maxlines);
-                context.lineWidth = LINE_WIDTH;
-                context.strokeStyle = "black";
-                context.stroke();
-            }
-
-            //horizontal lines
-            for (var y = BOARD_MARGIN; y <= maxlines; y += FIELD_SIZE) {
-                context.beginPath();
-                context.moveTo(BOARD_MARGIN, y);
-                context.lineTo(maxlines, y);
-                context.lineWidth = LINE_WIDTH;
-                context.strokeStyle = "black";
-                context.stroke();
-            }
-
-            var lettersTop = BOARD_MARGIN + maxlines + BOARD_MARGIN;
-            //letters field
+        //vertical lines
+        for (var x = BOARD_MARGIN; x <= maxlines; x += FIELD_SIZE) {
             context.beginPath();
-            context.rect(BOARD_MARGIN, lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
-            context.fillStyle = "green";
-            context.fill();
+            context.moveTo(x, BOARD_MARGIN);
+            context.lineTo(x, maxlines);
+            context.lineWidth = LINE_WIDTH;
             context.strokeStyle = "black";
             context.stroke();
+        }
 
-            //letters field lines
-            for (var x = 1; x < Literki.MAX_LETTERS; x++) {
-                context.beginPath();
-                context.moveTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop);
-                context.lineTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop + FIELD_SIZE);
-                context.strokeStyle = "black";
-                context.stroke();
-            }
+        //horizontal lines
+        for (var y = BOARD_MARGIN; y <= maxlines; y += FIELD_SIZE) {
+            context.beginPath();
+            context.moveTo(BOARD_MARGIN, y);
+            context.lineTo(maxlines, y);
+            context.lineWidth = LINE_WIDTH;
+            context.strokeStyle = "black";
+            context.stroke();
+        }
 
-            var letterLayer = new Kinetic.Layer();
+        var lettersTop = BOARD_MARGIN + maxlines + BOARD_MARGIN;
+        //letters field
+        context.beginPath();
+        context.rect(BOARD_MARGIN, lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
+        context.fillStyle = "green";
+        context.fill();
+        context.strokeStyle = "black";
+        context.stroke();
 
-            //letter fields
-            for (var x = 0; x < Literki.ROW_SIZE; x++) {
-                for (var y = 0; y < Literki.ROW_SIZE; y++) {
-                    var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-                    var ypos = BOARD_MARGIN + y * FIELD_SIZE;
-                    var value = state.board.getFieldValue(x, y);
-                    if (value != null && value.trim() != "") {
-                        letterLayer.add(this.getLetterGroup(xpos, ypos, value, false));
-                    } 
-                }
-            }
+        //letters field lines
+        for (var x = 1; x < Literki.MAX_LETTERS; x++) {
+            context.beginPath();
+            context.moveTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop);
+            context.lineTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop + FIELD_SIZE);
+            context.strokeStyle = "black";
+            context.stroke();
+        }
 
-            this.stage.add(letterLayer);
+        var letterLayer = new Kinetic.Layer();
 
-            // moving letters
-            var foregroundLayer = new Kinetic.Layer();
-
-            for (var x = 0; x < Literki.MAX_LETTERS; x++) {
-                var letter = state.getCurrentPlayer().freeLetters[x];
+        //letter fields
+        for (var x = 0; x < Literki.ROW_SIZE; x++) {
+            for (var y = 0; y < Literki.ROW_SIZE; y++) {
                 var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-
-                foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, true));
+                var ypos = BOARD_MARGIN + y * FIELD_SIZE;
+                var value = state.board.getFieldValue(x, y);
+                if (value != null && value.trim() != "") {
+                    letterLayer.add(this.getLetterGroup(xpos, ypos, value, false));
+                } 
             }
-
-            this.stage.add(foregroundLayer);
         }
 
-        private getLetterGroup(x: number, y: number, letter: string, foreground: boolean): Kinetic.IGroup {
-            var letterRect = new Kinetic.Rect({
-                width: FIELD_SIZE,
-                height: FIELD_SIZE,
-                fill: "#FFFFCC",
-                stroke: "black",
-                strokeWidth: LINE_WIDTH,
-                cornerRadius: 5
-            });
+        this.stage.add(letterLayer);
 
-            var letterText = new Kinetic.Text({
-                width: FIELD_SIZE,
-                height: FIELD_SIZE,
-                align: "center",
-                verticalAlign: "middle",
-                text: letter.toUpperCase(),
-                fontFamily: "Calibri",
-                fontSize: 30,
-                fontStyle: "bold",
-                fill: "black",
-            });
+        // moving letters
+        var foregroundLayer = new Kinetic.Layer();
 
-            var letterGroup = new Kinetic.Group({
-                x: x,
-                y: y,
-                draggable: foreground
-            });
+        for (var x = 0; x < Literki.MAX_LETTERS; x++) {
+            var letter = state.getCurrentPlayer().freeLetters[x];
+            var xpos = BOARD_MARGIN + x * FIELD_SIZE;
 
-            if (foreground) {
-                letterGroup.on('dragend', (e) => {
-                    var x = letterGroup.x() - BOARD_MARGIN;
-                    var y = letterGroup.y() - BOARD_MARGIN;
-                    var floorX = Math.floor(x / FIELD_SIZE) * FIELD_SIZE;;
-                    var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;;
-
-                    x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
-                    y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
-
-                    x += BOARD_MARGIN;
-                    y += BOARD_MARGIN;
-
-                    var tween = new Kinetic.Tween({
-                        node: letterGroup,
-                        x: x,
-                        y: y,
-                        duration: 0.1
-                    });
-                    tween.play();
-                });
-            }
-
-            letterGroup.add(letterRect);
-            letterGroup.add(letterText);
-            return letterGroup;
+            foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, true));
         }
 
-        clearBoard(): void {
-            this.stage.clear();
-        }
+        this.stage.add(foregroundLayer);
     }
 
-    export class Info {
-        private container: string;
+    private getLetterGroup(x: number, y: number, letter: string, foreground: boolean): Kinetic.IGroup {
+        var letterRect = new Kinetic.Rect({
+            width: FIELD_SIZE,
+            height: FIELD_SIZE,
+            fill: "#FFFFCC",
+            stroke: "black",
+            strokeWidth: LINE_WIDTH,
+            cornerRadius: 5
+        });
 
-        constructor(container: string) {
-            this.container = container;
+        var letterText = new Kinetic.Text({
+            width: FIELD_SIZE,
+            height: FIELD_SIZE,
+            align: "center",
+            verticalAlign: "middle",
+            text: letter.toUpperCase(),
+            fontFamily: "Calibri",
+            fontSize: 30,
+            fontStyle: "bold",
+            fill: "black",
+        });
+
+        var letterGroup = new Kinetic.Group({
+            x: x,
+            y: y,
+            draggable: foreground
+        });
+
+        if (foreground) {
+            letterGroup.on('dragend', (e) => {
+                var x = letterGroup.x() - BOARD_MARGIN;
+                var y = letterGroup.y() - BOARD_MARGIN;
+                var floorX = Math.floor(x / FIELD_SIZE) * FIELD_SIZE;;
+                var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;;
+
+                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
+
+                x += BOARD_MARGIN;
+                y += BOARD_MARGIN;
+
+                var tween = new Kinetic.Tween({
+                    node: letterGroup,
+                    x: x,
+                    y: y,
+                    duration: 0.1
+                });
+                tween.play();
+            });
         }
 
-        drawInfoState(state: Literki.GameState) {
-            var infoDiv = <HTMLDivElement>document.getElementById(this.container);
-          
-        }
+        letterGroup.add(letterRect);
+        letterGroup.add(letterText);
+        return letterGroup;
+    }
+
+    clearBoard(): void {
+        this.stage.clear();
     }
 }
 
-var board: Game.Board;
-var info: Game.Info;
+class Info {
+    private container: string;
+
+    constructor(container: string) {
+        this.container = container;
+    }
+
+    drawInfoState(state: Literki.GameState) {
+        var infoDiv = <HTMLDivElement>document.getElementById(this.container);
+          
+    }
+}
+
+class BoardViewModelWord {
+    word: string;
+    points: number;
+}
+
+class BoardViewModel {
+    
+    getNewWords(): Array<BoardViewModelWord> {
+        var word1 = new BoardViewModelWord();
+        return [
+           { word: 'Jako', points: 10 },
+           { word: 'Dam', points: 6 }
+        ];
+    }
+}
+
+
+var board: Board;
+var info: Info;
 var state: Literki.GameState;
 
 window.onload = () => {
@@ -249,10 +263,10 @@ window.onload = () => {
         debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
     }, 1000);
 
-    Game.setupDisplay(screen.availHeight / 20);
+    setupDisplay(screen.availHeight / 20);
 
-    board = new Game.Board("boardDiv");
-    info = new Game.Info("infoDiv");
+    board = new Board("boardDiv");
+    info = new Info("infoDiv");
 
     var player1 = new Literki.GamePlayer();
     player1.playerName = "Krzyś";
@@ -283,6 +297,10 @@ window.onload = () => {
 
     board.drawBoardState(state);
     info.drawInfoState(state);
+
+    var viewModel = new BoardViewModel();
+
+    ko.applyBindings(viewModel);
 }
 
 window.onresize = () => {
