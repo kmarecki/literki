@@ -31,15 +31,7 @@ var Board = (function () {
         this.bonusColors[5 /* Start */] = "lightpink";
         this.bonusColors[0 /* None */] = "darkgreen";
     };
-    Board.prototype.drawBoardState = function (state) {
-        //var containerElem = document.getElementById(this.container);
-        //var width = containerElem.clientWidth;
-        //var height = containerElem.clientHeight;
-        //this.stage.setWidth(width);
-        //this.stage.setHeight(height);
-        this.drawBoard(state);
-    };
-    Board.prototype.drawBoard = function (state) {
+    Board.prototype.drawGameState = function (game) {
         var backgroundLayer = new Kinetic.Layer();
         this.stage.add(backgroundLayer);
         var canvas = backgroundLayer.getCanvas()._canvas;
@@ -54,9 +46,9 @@ var Board = (function () {
             for (var y = 0; y < Literki.ROW_SIZE; y++) {
                 var xpos = BOARD_MARGIN + x * FIELD_SIZE;
                 var ypos = BOARD_MARGIN + y * FIELD_SIZE;
-                var value = state.board.getFieldValue(x, y);
+                var value = game.board.getFieldValue(x, y);
                 if (value == null || value.trim() != "") {
-                    var bonus = state.board.getFieldBonus(x, y);
+                    var bonus = game.board.getFieldBonus(x, y);
                     var fieldColor = this.bonusColors[bonus];
                     context.beginPath();
                     context.rect(xpos, ypos, FIELD_SIZE, FIELD_SIZE);
@@ -101,7 +93,7 @@ var Board = (function () {
             for (var y = 0; y < Literki.ROW_SIZE; y++) {
                 var xpos = BOARD_MARGIN + x * FIELD_SIZE;
                 var ypos = BOARD_MARGIN + y * FIELD_SIZE;
-                var value = state.board.getFieldValue(x, y);
+                var value = game.board.getFieldValue(x, y);
                 if (value != null && value.trim() != "") {
                     letterLayer.add(this.getLetterGroup(xpos, ypos, value, false));
                 }
@@ -111,7 +103,7 @@ var Board = (function () {
         // moving letters
         var foregroundLayer = new Kinetic.Layer();
         for (var x = 0; x < Literki.MAX_LETTERS; x++) {
-            var letter = state.getCurrentPlayer().freeLetters[x];
+            var letter = game.getCurrentPlayer().freeLetters[x];
             var xpos = BOARD_MARGIN + x * FIELD_SIZE;
             foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, true));
         }
@@ -146,10 +138,10 @@ var Board = (function () {
             letterGroup.on('dragend', function (e) {
                 var x = letterGroup.x() - BOARD_MARGIN;
                 var y = letterGroup.y() - BOARD_MARGIN;
-                var floorX = Math.floor(x / FIELD_SIZE) * FIELD_SIZE;
-                ;
+                var fieldX = Math.floor(x / FIELD_SIZE);
+                var fieldY = Math.floor(y / FIELD_SIZE);
+                var floorX = fieldX * FIELD_SIZE;
                 var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
-                ;
                 x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
                 y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
                 x += BOARD_MARGIN;
@@ -161,6 +153,9 @@ var Board = (function () {
                     duration: 0.1
                 });
                 tween.play();
+                game.putFreeLetter(letter, fieldX, fieldY);
+                var newWords = game.getNewWords();
+                viewModel.setNewWords(newWords);
             });
         }
         letterGroup.add(letterRect);
@@ -172,15 +167,6 @@ var Board = (function () {
     };
     return Board;
 })();
-var Info = (function () {
-    function Info(container) {
-        this.container = container;
-    }
-    Info.prototype.drawInfoState = function (state) {
-        var infoDiv = document.getElementById(this.container);
-    };
-    return Info;
-})();
 var BoardViewModelWord = (function () {
     function BoardViewModelWord() {
     }
@@ -188,19 +174,22 @@ var BoardViewModelWord = (function () {
 })();
 var BoardViewModel = (function () {
     function BoardViewModel() {
+        this.self = this;
+        this.newWords = ko.observableArray();
     }
     BoardViewModel.prototype.getNewWords = function () {
-        var word1 = new BoardViewModelWord();
-        return [
-            { word: 'Jako', points: 10 },
-            { word: 'Dam', points: 6 }
-        ];
+        return this.newWords;
+    };
+    BoardViewModel.prototype.setNewWords = function (newWords) {
+        var _this = this;
+        this.newWords.removeAll();
+        newWords.forEach(function (word) { return _this.newWords.push(word); });
     };
     return BoardViewModel;
 })();
 var board;
-var info;
-var state;
+var game;
+var viewModel;
 window.onload = function () {
     var boardDiv = document.getElementById("boardDiv");
     boardDiv.style.width = screen.availWidth / 2 + "px";
@@ -214,36 +203,43 @@ window.onload = function () {
     }, 1000);
     setupDisplay(screen.availHeight / 20);
     board = new Board("boardDiv");
-    info = new Info("infoDiv");
     var player1 = new Literki.GamePlayer();
     player1.playerName = "Krzyś";
     player1.freeLetters = ["h", "a", "j", "k", "b", "e", "z"];
+    var word1 = new Literki.GameMoveWord();
+    word1.x = 5;
+    word1.y = 7;
+    word1.word = "literki";
+    word1.direction = 1 /* Horizontal */;
     var move1 = new Literki.GameMove();
-    move1.x = 5;
-    move1.y = 7;
-    move1.word = "literki";
-    move1.direction = 1 /* Horizontal */;
+    move1.words.push(word1);
     player1.moves.push(move1);
     var player2 = new Literki.GamePlayer();
     player2.playerName = "Irenka";
+    var word2 = new Literki.GameMoveWord();
+    word2.x = 6;
+    word2.y = 6;
+    word2.word = "piła";
+    word2.direction = 0 /* Vertical */;
     var move2 = new Literki.GameMove();
-    move2.x = 6;
-    move2.y = 6;
-    move2.word = "piła";
-    move2.direction = 0 /* Vertical */;
+    move2.words.push(word2);
     player2.moves.push(move2);
     var players = new Array();
     players.push(player1);
     players.push(player2);
-    state = Literki.GameState.newGame(players);
-    state.renderState();
-    board.drawBoardState(state);
-    info.drawInfoState(state);
-    var viewModel = new BoardViewModel();
+    var state = Literki.GameRun.newGame(players);
+    game = new Literki.GameRun();
+    game.runState(state);
+    board.drawGameState(game);
+    viewModel = new BoardViewModel();
+    viewModel.setNewWords([
+        { word: "Jako", points: 10 },
+        { word: "Dam", points: 6 }
+    ]);
     ko.applyBindings(viewModel);
 };
 window.onresize = function () {
     board.clearBoard();
-    board.drawBoardState(state);
+    board.drawGameState(game);
 };
 //# sourceMappingURL=board.js.map

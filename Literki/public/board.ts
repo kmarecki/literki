@@ -41,17 +41,7 @@ class Board {
         this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
     }
 
-    drawBoardState(state: Literki.GameState) {
-        //var containerElem = document.getElementById(this.container);
-        //var width = containerElem.clientWidth;
-        //var height = containerElem.clientHeight;
-        //this.stage.setWidth(width);
-        //this.stage.setHeight(height);
-
-        this.drawBoard(state);
-    }
-
-    private drawBoard(state: Literki.GameState): void {
+    drawGameState(game: Literki.GameRun): void {
 
         var backgroundLayer = new Kinetic.Layer();
         this.stage.add(backgroundLayer);
@@ -73,9 +63,9 @@ class Board {
             for (var y = 0; y < Literki.ROW_SIZE; y++) {
                 var xpos = BOARD_MARGIN + x * FIELD_SIZE;
                 var ypos = BOARD_MARGIN + y * FIELD_SIZE;
-                var value = state.board.getFieldValue(x, y);
+                var value = game.board.getFieldValue(x, y);
                 if (value == null || value.trim() != "") {
-                    var bonus = state.board.getFieldBonus(x, y);
+                    var bonus = game.board.getFieldBonus(x, y);
                     var fieldColor = this.bonusColors[bonus];
                     context.beginPath();
                     context.rect(xpos, ypos, FIELD_SIZE, FIELD_SIZE);
@@ -130,7 +120,7 @@ class Board {
             for (var y = 0; y < Literki.ROW_SIZE; y++) {
                 var xpos = BOARD_MARGIN + x * FIELD_SIZE;
                 var ypos = BOARD_MARGIN + y * FIELD_SIZE;
-                var value = state.board.getFieldValue(x, y);
+                var value = game.board.getFieldValue(x, y);
                 if (value != null && value.trim() != "") {
                     letterLayer.add(this.getLetterGroup(xpos, ypos, value, false));
                 } 
@@ -143,7 +133,7 @@ class Board {
         var foregroundLayer = new Kinetic.Layer();
 
         for (var x = 0; x < Literki.MAX_LETTERS; x++) {
-            var letter = state.getCurrentPlayer().freeLetters[x];
+            var letter = game.getCurrentPlayer().freeLetters[x];
             var xpos = BOARD_MARGIN + x * FIELD_SIZE;
 
             foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, true));
@@ -184,8 +174,10 @@ class Board {
             letterGroup.on('dragend', (e) => {
                 var x = letterGroup.x() - BOARD_MARGIN;
                 var y = letterGroup.y() - BOARD_MARGIN;
-                var floorX = Math.floor(x / FIELD_SIZE) * FIELD_SIZE;;
-                var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;;
+                var fieldX = Math.floor(x / FIELD_SIZE);
+                var fieldY = Math.floor(y / FIELD_SIZE);
+                var floorX = fieldX * FIELD_SIZE;
+                var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
 
                 x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
                 y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
@@ -200,6 +192,10 @@ class Board {
                     duration: 0.1
                 });
                 tween.play();
+
+                game.putFreeLetter(letter, fieldX, fieldY);
+                var newWords = game.getNewWords();
+                viewModel.setNewWords(newWords);
             });
         }
 
@@ -213,39 +209,35 @@ class Board {
     }
 }
 
-class Info {
-    private container: string;
-
-    constructor(container: string) {
-        this.container = container;
-    }
-
-    drawInfoState(state: Literki.GameState) {
-        var infoDiv = <HTMLDivElement>document.getElementById(this.container);
-          
-    }
-}
-
 class BoardViewModelWord {
     word: string;
     points: number;
 }
 
 class BoardViewModel {
-    
-    getNewWords(): Array<BoardViewModelWord> {
-        var word1 = new BoardViewModelWord();
-        return [
-           { word: 'Jako', points: 10 },
-           { word: 'Dam', points: 6 }
-        ];
+
+    private self = this;
+    private newWords: KnockoutObservableArray<BoardViewModelWord>;
+
+    constructor() {
+        this.newWords = ko.observableArray<BoardViewModelWord>();
+    }
+
+    getNewWords() {
+        return this.newWords;
+    }
+
+    setNewWords(newWords: BoardViewModelWord[]) {
+        this.newWords.removeAll();
+        newWords.forEach(word => this.newWords.push(word));
     }
 }
 
 
 var board: Board;
-var info: Info;
-var state: Literki.GameState;
+var game: Literki.GameRun;
+var viewModel: BoardViewModel;
+
 
 window.onload = () => {
 
@@ -266,46 +258,54 @@ window.onload = () => {
     setupDisplay(screen.availHeight / 20);
 
     board = new Board("boardDiv");
-    info = new Info("infoDiv");
 
     var player1 = new Literki.GamePlayer();
     player1.playerName = "Krzyś";
     player1.freeLetters = ["h", "a", "j", "k", "b", "e", "z"]; 
 
+    var word1 = new Literki.GameMoveWord();
+    word1.x = 5;
+    word1.y = 7;
+    word1.word = "literki";
+    word1.direction = Literki.GameMoveDirection.Horizontal;
     var move1 = new Literki.GameMove();
-    move1.x = 5;
-    move1.y = 7;
-    move1.word = "literki";
-    move1.direction = Literki.GameMoveDirection.Horizontal;
+    move1.words.push(word1);
     player1.moves.push(move1);
 
     var player2 = new Literki.GamePlayer();
     player2.playerName = "Irenka";
 
+    var word2 = new Literki.GameMoveWord();
+    word2.x = 6;
+    word2.y = 6;
+    word2.word = "piła";
+    word2.direction = Literki.GameMoveDirection.Vertical;
     var move2 = new Literki.GameMove();
-    move2.x = 6;
-    move2.y = 6;
-    move2.word = "piła";
-    move2.direction = Literki.GameMoveDirection.Vertical;
+    move2.words.push(word2);
     player2.moves.push(move2);
 
     var players = new Array<Literki.GamePlayer>();
     players.push(player1);
     players.push(player2);
-    state = Literki.GameState.newGame(players);
-    state.renderState();
 
-    board.drawBoardState(state);
-    info.drawInfoState(state);
+    var state = Literki.GameRun.newGame(players);
+    game = new Literki.GameRun();
+    game.runState(state);
 
-    var viewModel = new BoardViewModel();
+    board.drawGameState(game);
+
+    viewModel = new BoardViewModel();
+    viewModel.setNewWords([
+        { word: "Jako", points: 10 },
+        { word: "Dam", points: 6 }
+    ]);
 
     ko.applyBindings(viewModel);
 }
 
 window.onresize = () => {
     board.clearBoard();
-    board.drawBoardState(state);
+    board.drawGameState(game);
 }
 
 

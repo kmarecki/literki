@@ -23,6 +23,11 @@
         value: string;
     }
 
+    interface BoardFieldPosition {
+        x: number;
+        y: number;
+    }
+
     export class BoardFields {
         private fields: Array<Array<BoardField>>;
 
@@ -81,17 +86,21 @@
             return this.fields[x][y] != null ? this.fields[x][y].value : null;
         }
 
+        setFieldValue(x: number, y: number, value: string): void {
+            var field = this.createIfNotExists(x, y);
+            field.value = value;
+        }
+
         addWord(word: string, x: number, y: number, direction: GameMoveDirection): void {
             for (var i = 0; i < word.length; i++) {
                 var fieldX = x + (direction == GameMoveDirection.Horizontal ? i : 0);
                 var fieldY = y + (direction == GameMoveDirection.Vertical ? i : 0);
-                var field = this.createIfNotExists(fieldX, fieldY);
-                field.value = word.charAt(i);
+                this.setFieldValue(fieldX, fieldY, word.charAt(i));
             }
         }
     }
 
-    export class GameMove {
+    export class GameMoveWord {
         word: string;
         x: number;
         y: number;
@@ -99,22 +108,28 @@
         points: number;
     }
 
+    export class GameMove {
+        words: Array<GameMoveWord> = [];
+    }
+
     export class GamePlayer {
 
         playerName: string;
         freeLetters: Array<string>;
-        moves: Array<GameMove>;
-
-        constructor() {
-            this.moves = new Array<GameMove>();
-        }
+        moves: Array<GameMove> = [];
     }
 
     export class GameState {
-
         players: Array<GamePlayer>;
+        currentPlayerIndex: number = 0;
+    }
+
+    export class GameRun {
+
         board: BoardFields;
-        private currentPlayerIndex: number = 0;
+
+        private state: GameState;
+        private freeLetters: { [letter: string]: BoardFieldPosition; } = {};
 
         static newGame(players: Array<GamePlayer>): GameState {
             var game = new GameState();
@@ -123,20 +138,102 @@
         }
 
         getCurrentPlayer(): GamePlayer {
-            return this.players[this.currentPlayerIndex];
+            return this.state.players[this.state.currentPlayerIndex];
         }
 
+        runState(state: GameState) {
+            this.state = state;
+            this.renderState();
+        }
 
-        renderState(): void {
+        private renderState(): void {
             this.board = new BoardFields();
-            this.players.forEach(
+            this.state.players.forEach(
                 player => player.moves.forEach(
-                    move => this.board.addWord(move.word, move.x, move.y, move.direction)));
+                    move => move.words.forEach(
+                    word => this.board.addWord(word.word, word.x, word.y, word.direction))));
         }
 
-    }
 
-    export class GameRun {
+        putFreeLetter(letter: string, x: number, y: number): void {
+            if (this.freeLetters[letter] != null) {
+                var oldPosition = this.freeLetters[letter];
+                this.board.setFieldValue(oldPosition.x, oldPosition.y, null);
+            }
+            this.board.setFieldValue(x, y, letter);
+            this.freeLetters[letter] = { x: x, y: y };
+        }
 
+        getNewWords(): GameMoveWord[] {
+            var words: GameMoveWord[] = [];
+            this.getCurrentPlayer().freeLetters.forEach(letter => {
+                if (this.freeLetters[letter] != null) {
+
+                    //check horizontal
+                    var word = letter;
+                    var searchLetter;
+                    var x = this.freeLetters[letter].x;
+                    var y = this.freeLetters[letter].y;
+                    //search left
+                    do {
+                        x--;
+                        searchLetter = this.board.getFieldValue(x, y);
+                        if (searchLetter != null) {
+                            word = searchLetter.concat(word);
+                        }
+                    } while (x > 0 && searchLetter != null);
+                    //search right
+                    var x = this.freeLetters[letter].x;
+                    do {
+                        x++;
+                        searchLetter = this.board.getFieldValue(x, y);
+                        if (searchLetter != null) {
+                            word = word.concat(searchLetter);
+                        }
+                    } while (x < FIELD_SIZE && searchLetter != null);
+                    if (word.length > 1) {
+                        var gameWord = new GameMoveWord();
+                        gameWord.word = word;
+                        gameWord.points = 10;
+                        gameWord.x = x;
+                        gameWord.y = y;
+                        gameWord.direction = GameMoveDirection.Horizontal;
+                        words.push(gameWord);
+                    }
+
+                    //check vertical
+                    word = letter;
+                    var x = this.freeLetters[letter].x;
+                    var y = this.freeLetters[letter].y;
+                    //search up
+                    do {
+                        y--;
+                        searchLetter = this.board.getFieldValue(x, y);
+                        if (searchLetter != null) {
+                            word = searchLetter.concat(word);
+                        }
+                    } while (y > 0 && searchLetter != null);
+                    //search down
+                    var y = this.freeLetters[letter].y;
+                    do {
+                        y++;
+                        searchLetter = this.board.getFieldValue(x, y);
+                        if (searchLetter != null) {
+                            word = word.concat(searchLetter);
+                        }
+                    } while (y < FIELD_SIZE && searchLetter != null);
+                    if (word.length > 1) {
+                        var gameWord = new GameMoveWord();
+                        gameWord.word = word;
+                        gameWord.points = 7;
+                        gameWord.x = x;
+                        gameWord.y = y;
+                        gameWord.direction = GameMoveDirection.Vertical;
+                        words.push(gameWord);
+                    }
+                }
+            });
+            return words;
+        }
     }
 }
