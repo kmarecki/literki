@@ -1,4 +1,5 @@
 ﻿/// <reference path="Scripts\typings\kineticjs\kineticjs.d.ts"/>
+/// <reference path="Scripts\typings\knockout\knockout.d.ts"/>
 /// <reference path="Scripts\literki.ts"/>
 
 module Game {
