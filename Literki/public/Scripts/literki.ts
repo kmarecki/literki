@@ -3,6 +3,46 @@
     export var ROW_SIZE = 15;
     export var MAX_LETTERS = 7;
 
+    export class LetterDefinition {
+        points: number;
+        count: number;
+    }
+
+    export var LETTERS: { [letter: string]: LetterDefinition } = {
+        "a": { points: 1, count: 9 },
+        "e": { points: 1, count: 7 },
+        "i": { points: 1, count: 8 },
+        "n": { points: 1, count: 5 },
+        "o": { points: 1, count: 6 },
+        "r": { points: 1, count: 4 },
+        "s": { points: 1, count: 4 },
+        "w": { points: 1, count: 4 },
+        "z": { points: 1, count: 5 },
+        "c": { points: 2, count: 3 },
+        "d": { points: 2, count: 3 },
+        "k": { points: 2, count: 3 },
+        "l": { points: 2, count: 3 },
+        "m": { points: 2, count: 3 },
+        "p": { points: 2, count: 3 },
+        "t": { points: 2, count: 3 },
+        "y": { points: 2, count: 4 },
+        "b": { points: 3, count: 2 },
+        "g": { points: 3, count: 2 },
+        "h": { points: 3, count: 2 },
+        "j": { points: 3, count: 2 },
+        "ł": { points: 3, count: 2 },
+        "u": { points: 3, count: 2 },
+        "ą": { points: 5, count: 1 },
+        "ę": { points: 5, count: 1 },
+        "f": { points: 5, count: 1 },
+        "ó": { points: 5, count: 1 },
+        "ś": { points: 5, count: 1 },
+        "ż": { points: 5, count: 1 },
+        "ć": { points: 6, count: 1 },
+        "ń": { points: 7, count: 1 },
+        "ź": { points: 9, count: 1 },
+    };
+
     export enum BoardFieldBonus {
         None,
         DoubleLetter,
@@ -21,11 +61,6 @@
 
         fieldBonus: BoardFieldBonus;
         value: string;
-    }
-
-    interface BoardFieldPosition {
-        x: number;
-        y: number;
     }
 
     export class BoardFields {
@@ -106,6 +141,14 @@
         y: number;
         direction: GameMoveDirection;
         points: number;
+
+        constructor(word: string, x: number, y: number, direction: GameMoveDirection, points: number) {
+            this.word = word;
+            this.x = x;
+            this.y = y;
+            this.points = points;
+            this.direction = direction;
+        }
     }
 
     export class GameMove {
@@ -124,12 +167,47 @@
         currentPlayerIndex: number = 0;
     }
 
+   class LetterPosition {
+        letter: string
+        index: number
+        x: number;
+        y: number;
+
+       constructor(letter: string, index: number) {
+           this.letter = letter;
+           this.index = index;
+       }
+    }
+
+    class FreeLetters {
+        private freeLetters: Array<LetterPosition> = [];
+
+        getLetter(letter: string, index: number): LetterPosition {
+            var letters = this.freeLetters.filter(pos => pos.letter == letter && pos.index == index);
+            return letters.length > 0 ? letters[0] : null;
+        }
+
+        setLetter(letter: string, index: number, x: number, y: number): void {
+            var position = this.getLetter(letter, index);
+            if (position == null) {
+                position = new LetterPosition(letter, index);
+                this.freeLetters.push(position);
+            }
+            position.x = x;
+            position.y = y;
+        }
+
+        exists(x: number, y: number): boolean {
+            return this.freeLetters.filter(pos => pos.x == x && pos.y == y).length > 0;
+        }
+    }
+
     export class GameRun {
 
         board: BoardFields;
 
         private state: GameState;
-        private freeLetters: { [letter: string]: BoardFieldPosition; } = {};
+        private freeLetters = new FreeLetters();
 
         static newGame(players: Array<GamePlayer>): GameState {
             var game = new GameState();
@@ -155,13 +233,13 @@
         }
 
 
-        putFreeLetter(letter: string, x: number, y: number): void {
-            if (this.freeLetters[letter] != null) {
-                var oldPosition = this.freeLetters[letter];
+        putFreeLetter(letter: string, index: number, x: number, y: number): void {
+            var oldPosition = this.freeLetters.getLetter(letter, index);
+            if (oldPosition != null) {
                 this.board.setFieldValue(oldPosition.x, oldPosition.y, null);
             }
             this.board.setFieldValue(x, y, letter);
-            this.freeLetters[letter] = { x: x, y: y };
+            this.freeLetters.setLetter(letter, index, x, y);
         }
 
         getNewWords(): GameMoveWord[] {
@@ -192,12 +270,7 @@
                         }
                     } while (x < FIELD_SIZE && searchLetter != null);
                     if (word.length > 1) {
-                        var gameWord = new GameMoveWord();
-                        gameWord.word = word;
-                        gameWord.points = 10;
-                        gameWord.x = x;
-                        gameWord.y = y;
-                        gameWord.direction = GameMoveDirection.Horizontal;
+                        gameWord = this.createGameMoveWord(word, x, y, GameMoveDirection.Horizontal);
                         words.push(gameWord);
                     }
 
@@ -223,17 +296,31 @@
                         }
                     } while (y < FIELD_SIZE && searchLetter != null);
                     if (word.length > 1) {
-                        var gameWord = new GameMoveWord();
-                        gameWord.word = word;
-                        gameWord.points = 7;
-                        gameWord.x = x;
-                        gameWord.y = y;
-                        gameWord.direction = GameMoveDirection.Vertical;
+                        var gameWord = this.createGameMoveWord(word, x, y, GameMoveDirection.Vertical);
                         words.push(gameWord);
                     }
                 }
             });
             return words;
+        }
+
+        private createGameMoveWord(word: string, x: number, y: number, direction: GameMoveDirection): GameMoveWord {
+            var points = this.countPoints(x, y, word.length, direction);
+            var gameWord = new GameMoveWord(word, x, y, direction, points);
+            return gameWord;
+        }
+
+        private countPoints(x: number, y: number, length: number, direction: GameMoveDirection): number {
+            var points = 0;
+            for (var i = 0; i < length; i++) {
+                var fieldx = x + direction == GameMoveDirection.Horizontal ? i : 0;
+                var fieldy = x + direction == GameMoveDirection.Vertical ? i : 0;
+                if (this.freeLetters.exists(fieldx, fieldy)) {
+                    var letter = this.board.getFieldValue(fieldx, fieldy);
+                    points += LETTERS[letter].points;
+                }
+            }
+            return points;
         }
     }
 }

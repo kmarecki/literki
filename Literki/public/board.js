@@ -95,7 +95,7 @@ var Board = (function () {
                 var ypos = BOARD_MARGIN + y * FIELD_SIZE;
                 var value = game.board.getFieldValue(x, y);
                 if (value != null && value.trim() != "") {
-                    letterLayer.add(this.getLetterGroup(xpos, ypos, value, false));
+                    letterLayer.add(this.getLetterGroup(xpos, ypos, value, -1, false));
                 }
             }
         }
@@ -105,11 +105,11 @@ var Board = (function () {
         for (var x = 0; x < Literki.MAX_LETTERS; x++) {
             var letter = game.getCurrentPlayer().freeLetters[x];
             var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-            foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, true));
+            foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
         }
         this.stage.add(foregroundLayer);
     };
-    Board.prototype.getLetterGroup = function (x, y, letter, foreground) {
+    Board.prototype.getLetterGroup = function (x, y, letter, index, foreground) {
         var letterRect = new Kinetic.Rect({
             width: FIELD_SIZE,
             height: FIELD_SIZE,
@@ -153,7 +153,7 @@ var Board = (function () {
                     duration: 0.1
                 });
                 tween.play();
-                game.putFreeLetter(letter, fieldX, fieldY);
+                game.putFreeLetter(letter, index, fieldX, fieldY);
                 var newWords = game.getNewWords();
                 viewModel.setNewWords(newWords);
             });
@@ -206,21 +206,13 @@ window.onload = function () {
     var player1 = new Literki.GamePlayer();
     player1.playerName = "Krzyś";
     player1.freeLetters = ["h", "a", "j", "k", "b", "e", "z"];
-    var word1 = new Literki.GameMoveWord();
-    word1.x = 5;
-    word1.y = 7;
-    word1.word = "literki";
-    word1.direction = 1 /* Horizontal */;
+    var word1 = new Literki.GameMoveWord("literki", 5, 7, 1 /* Horizontal */, 10);
     var move1 = new Literki.GameMove();
     move1.words.push(word1);
     player1.moves.push(move1);
     var player2 = new Literki.GamePlayer();
     player2.playerName = "Irenka";
-    var word2 = new Literki.GameMoveWord();
-    word2.x = 6;
-    word2.y = 6;
-    word2.word = "piła";
-    word2.direction = 0 /* Vertical */;
+    var word2 = new Literki.GameMoveWord("piła", 6, 6, 0 /* Vertical */, 6);
     var move2 = new Literki.GameMove();
     move2.words.push(word2);
     player2.moves.push(move2);
