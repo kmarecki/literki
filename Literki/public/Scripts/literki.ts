@@ -197,6 +197,10 @@
             position.y = y;
         }
 
+        getAllLetters(): Array<LetterPosition> {
+            return this.freeLetters;
+        }
+
         exists(x: number, y: number): boolean {
             return this.freeLetters.filter(pos => pos.x == x && pos.y == y).length > 0;
         }
@@ -244,61 +248,64 @@
 
         getNewWords(): GameMoveWord[] {
             var words: GameMoveWord[] = [];
-            this.getCurrentPlayer().freeLetters.forEach(letter => {
-                if (this.freeLetters[letter] != null) {
+            this.freeLetters.getAllLetters().forEach(letter => {
 
-                    //check horizontal
-                    var word = letter;
-                    var searchLetter;
-                    var x = this.freeLetters[letter].x;
-                    var y = this.freeLetters[letter].y;
-                    //search left
-                    do {
-                        x--;
-                        searchLetter = this.board.getFieldValue(x, y);
-                        if (searchLetter != null) {
-                            word = searchLetter.concat(word);
-                        }
-                    } while (x > 0 && searchLetter != null);
-                    //search right
-                    var x = this.freeLetters[letter].x;
-                    do {
-                        x++;
-                        searchLetter = this.board.getFieldValue(x, y);
-                        if (searchLetter != null) {
-                            word = word.concat(searchLetter);
-                        }
-                    } while (x < FIELD_SIZE && searchLetter != null);
-                    if (word.length > 1) {
-                        gameWord = this.createGameMoveWord(word, x, y, GameMoveDirection.Horizontal);
-                        words.push(gameWord);
+                //check horizontal
+                var word = letter.letter;
+                var searchLetter;
+                var x = letter.x;
+                var y = letter.y;
+                var xWord = letter.x;
+                var yWord = letter.y;
+                //search left
+                do {
+                    x--;
+                    searchLetter = this.board.getFieldValue(x, y);
+                    if (searchLetter != null) {
+                        word = searchLetter.concat(word);
+                        xWord = x;
                     }
+                } while (x > 0 && searchLetter != null);
+                
+                //search right
+                var x = letter.x;
+                do {
+                    x++;
+                    searchLetter = this.board.getFieldValue(x, y);
+                    if (searchLetter != null) {
+                        word = word.concat(searchLetter);
+                    }
+                } while (x < FIELD_SIZE && searchLetter != null);
+                if (word.length > 1) {
+                    gameWord = this.createGameMoveWord(word, xWord, y, GameMoveDirection.Horizontal);
+                    words.push(gameWord);
+                }
 
-                    //check vertical
-                    word = letter;
-                    var x = this.freeLetters[letter].x;
-                    var y = this.freeLetters[letter].y;
-                    //search up
-                    do {
-                        y--;
-                        searchLetter = this.board.getFieldValue(x, y);
-                        if (searchLetter != null) {
-                            word = searchLetter.concat(word);
-                        }
-                    } while (y > 0 && searchLetter != null);
-                    //search down
-                    var y = this.freeLetters[letter].y;
-                    do {
-                        y++;
-                        searchLetter = this.board.getFieldValue(x, y);
-                        if (searchLetter != null) {
-                            word = word.concat(searchLetter);
-                        }
-                    } while (y < FIELD_SIZE && searchLetter != null);
-                    if (word.length > 1) {
-                        var gameWord = this.createGameMoveWord(word, x, y, GameMoveDirection.Vertical);
-                        words.push(gameWord);
+                //check vertical
+                word = letter.letter;
+                var x = letter.x;
+                var y = letter.y;
+                //search up
+                do {
+                    y--;
+                    searchLetter = this.board.getFieldValue(x, y);
+                    if (searchLetter != null) {
+                        word = searchLetter.concat(word);
+                        yWord = y;
                     }
+                } while (y > 0 && searchLetter != null);
+                //search down
+                var y = letter.y;
+                do {
+                    y++;
+                    searchLetter = this.board.getFieldValue(x, y);
+                    if (searchLetter != null) {
+                        word = word.concat(searchLetter);
+                    }
+                } while (y < FIELD_SIZE && searchLetter != null);
+                if (word.length > 1) {
+                    var gameWord = this.createGameMoveWord(word, x, yWord, GameMoveDirection.Vertical);
+                    words.push(gameWord);
                 }
             });
             return words;
@@ -313,11 +320,12 @@
         private countPoints(x: number, y: number, length: number, direction: GameMoveDirection): number {
             var points = 0;
             for (var i = 0; i < length; i++) {
-                var fieldx = x + direction == GameMoveDirection.Horizontal ? i : 0;
-                var fieldy = x + direction == GameMoveDirection.Vertical ? i : 0;
+                var fieldx = x + (direction == GameMoveDirection.Horizontal ? i : 0);
+                var fieldy = y + (direction == GameMoveDirection.Vertical ? i : 0);
+                var letter = this.board.getFieldValue(fieldx, fieldy);
+                points += LETTERS[letter].points;
                 if (this.freeLetters.exists(fieldx, fieldy)) {
-                    var letter = this.board.getFieldValue(fieldx, fieldy);
-                    points += LETTERS[letter].points;
+                   
                 }
             }
             return points;
