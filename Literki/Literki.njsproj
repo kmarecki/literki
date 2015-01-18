@@ -38,25 +38,25 @@
   <ItemGroup>
     <TypeScriptCompile Include="public\board.ts" />
     <TypeScriptCompile Include="public\Scripts\literki.ts" />
-    <TypeScriptCompile Include="public\Scripts\typings\kineticjs\kineticjs.d.ts" />
-    <TypeScriptCompile Include="public\Scripts\typings\knockout\knockout.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
+    <TypeScriptCompile Include="typings\kineticjs\kineticjs.d.ts" />
+    <TypeScriptCompile Include="typings\knockout\knockout.d.ts" />
+    <TypeScriptCompile Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="server.ts" />
     <Content Include="public\board.css" />
     <Content Include="public\app.css" />
     <Content Include="public\board.html" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="typings\express\express.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\" />
     <Folder Include="public\Scripts\" />
-    <Folder Include="public\Scripts\typings\" />
-    <Folder Include="public\Scripts\typings\knockout\" />
-    <Folder Include="Scripts\" />
-    <Folder Include="Scripts\typings\" />
-    <Folder Include="public\Scripts\typings\kineticjs\" />
-    <Folder Include="Scripts\typings\node\" />
+    <Folder Include="typings\knockout\" />
+    <Folder Include="typings\kineticjs\" />
+    <Folder Include="typings\node\" />
+    <Folder Include="typings\" />
+    <Folder Include="typings\express\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="public\Scripts\kinetic-v5.1.0.js" />

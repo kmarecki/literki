@@ -8,8 +8,6 @@
     "email": ""
   },
   "dependencies": {
-    "connect": "^3.3.3",
-    "express": "^4.11.0",
-    "serve-static": "^1.7.1"
+    "express": "^4.11.0"
   }
 }
