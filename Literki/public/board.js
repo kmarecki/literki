@@ -206,13 +206,13 @@ window.onload = function () {
     var player1 = new Literki.GamePlayer();
     player1.playerName = "Krzyś";
     player1.freeLetters = ["h", "a", "j", "k", "b", "e", "z"];
-    var word1 = new Literki.GameMoveWord("literki", 5, 7, 1 /* Horizontal */, 10);
+    var word1 = new Literki.GameWord("literki", 5, 7, 1 /* Horizontal */, 10);
     var move1 = new Literki.GameMove();
     move1.words.push(word1);
     player1.moves.push(move1);
     var player2 = new Literki.GamePlayer();
     player2.playerName = "Irenka";
-    var word2 = new Literki.GameMoveWord("piła", 6, 6, 0 /* Vertical */, 6);
+    var word2 = new Literki.GameWord("piła", 6, 6, 0 /* Vertical */, 6);
     var move2 = new Literki.GameMove();
     move2.words.push(word2);
     player2.moves.push(move2);
