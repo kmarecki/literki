@@ -1,6 +1,7 @@
 ﻿/// <reference path="..\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path="..\typings\knockout\knockout.d.ts"/>
-/// <reference path="Scripts\literki.ts"/>
+/// <reference path="..\typings\jquery\jquery.d.ts"/>
+/// <reference path="scripts\literki.ts"/>
 
 var FIELD_SIZE: number;
 var LINE_WIDTH: number;
@@ -259,40 +260,28 @@ window.onload = () => {
 
     board = new Board("boardDiv");
 
-    var player1 = new Literki.GamePlayer();
-    player1.playerName = "Krzyś";
-    player1.freeLetters = ["h", "a", "j", "k", "b", "e", "z"]; 
+    //$(document).ready(() => {
+    $.ajax({
+        type: "POST",
+        url: "/games/new",
+        dataType: "json",
+        success: (result) => {
+            var state = <Literki.GameState>result;
+            game = new Literki.GameRun();
+            game.runState(state);
 
-    var word1 = new Literki.GameWord("literki", 5, 7, Literki.GameMoveDirection.Horizontal, 10);
-    var move1 = new Literki.GameMove();
-    move1.words.push(word1);
-    player1.moves.push(move1);
+            board.drawGameState(game);
 
-    var player2 = new Literki.GamePlayer();
-    player2.playerName = "Irenka";
+            viewModel = new BoardViewModel();
+            viewModel.setNewWords([
+                { word: "Jako", points: 10 },
+                { word: "Dam", points: 6 }
+            ]);
 
-    var word2 = new Literki.GameWord("piła", 6, 6, Literki.GameMoveDirection.Vertical, 6);
-    var move2 = new Literki.GameMove();
-    move2.words.push(word2);
-    player2.moves.push(move2);
-
-    var players = new Array<Literki.GamePlayer>();
-    players.push(player1);
-    players.push(player2);
-
-    var state = Literki.GameRun.newGame(players);
-    game = new Literki.GameRun();
-    game.runState(state);
-
-    board.drawGameState(game);
-
-    viewModel = new BoardViewModel();
-    viewModel.setNewWords([
-        { word: "Jako", points: 10 },
-        { word: "Dam", points: 6 }
-    ]);
-
-    ko.applyBindings(viewModel);
+            ko.applyBindings(viewModel);
+        }
+    });
+    //});
 }
 
 window.onresize = () => {

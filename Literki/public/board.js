@@ -1,6 +1,7 @@
 /// <reference path="..\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path="..\typings\knockout\knockout.d.ts"/>
-/// <reference path="Scripts\literki.ts"/>
+/// <reference path="..\typings\jquery\jquery.d.ts"/>
+/// <reference path="scripts\literki.ts"/>
 var FIELD_SIZE;
 var LINE_WIDTH;
 var BOARD_MARGIN;
@@ -203,32 +204,25 @@ window.onload = function () {
     }, 1000);
     setupDisplay(screen.availHeight / 20);
     board = new Board("boardDiv");
-    var player1 = new Literki.GamePlayer();
-    player1.playerName = "Krzyś";
-    player1.freeLetters = ["h", "a", "j", "k", "b", "e", "z"];
-    var word1 = new Literki.GameWord("literki", 5, 7, 1 /* Horizontal */, 10);
-    var move1 = new Literki.GameMove();
-    move1.words.push(word1);
-    player1.moves.push(move1);
-    var player2 = new Literki.GamePlayer();
-    player2.playerName = "Irenka";
-    var word2 = new Literki.GameWord("piła", 6, 6, 0 /* Vertical */, 6);
-    var move2 = new Literki.GameMove();
-    move2.words.push(word2);
-    player2.moves.push(move2);
-    var players = new Array();
-    players.push(player1);
-    players.push(player2);
-    var state = Literki.GameRun.newGame(players);
-    game = new Literki.GameRun();
-    game.runState(state);
-    board.drawGameState(game);
-    viewModel = new BoardViewModel();
-    viewModel.setNewWords([
-        { word: "Jako", points: 10 },
-        { word: "Dam", points: 6 }
-    ]);
-    ko.applyBindings(viewModel);
+    //$(document).ready(() => {
+    $.ajax({
+        type: "POST",
+        url: "/games/new",
+        dataType: "json",
+        success: function (result) {
+            var state = result;
+            game = new Literki.GameRun();
+            game.runState(state);
+            board.drawGameState(game);
+            viewModel = new BoardViewModel();
+            viewModel.setNewWords([
+                { word: "Jako", points: 10 },
+                { word: "Dam", points: 6 }
+            ]);
+            ko.applyBindings(viewModel);
+        }
+    });
+    //});
 };
 window.onresize = function () {
     board.clearBoard();
