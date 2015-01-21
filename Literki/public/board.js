@@ -25,12 +25,12 @@ var Board = (function () {
         this.initalizeFields();
     }
     Board.prototype.initalizeFields = function () {
-        this.bonusColors[1 /* DoubleLetter */] = "lightblue";
-        this.bonusColors[3 /* DoubleWord */] = "lightpink";
-        this.bonusColors[2 /* TripleLetter */] = "blue";
-        this.bonusColors[4 /* TripleWord */] = "red";
-        this.bonusColors[5 /* Start */] = "lightpink";
-        this.bonusColors[0 /* None */] = "darkgreen";
+        this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+        this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
+        this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue";
+        this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
+        this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
+        this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
     };
     Board.prototype.drawGameState = function (game) {
         var backgroundLayer = new Kinetic.Layer();
@@ -154,8 +154,8 @@ var Board = (function () {
                     duration: 0.1
                 });
                 tween.play();
-                game.putFreeLetter(letter, index, fieldX, fieldY);
-                var newWords = game.getNewWords();
+                viewModel.game.putFreeLetter(letter, index, fieldX, fieldY);
+                var newWords = viewModel.game.getNewWords();
                 viewModel.setNewWords(newWords);
             });
         }
@@ -178,6 +178,9 @@ var BoardViewModel = (function () {
         this.self = this;
         this.newWords = ko.observableArray();
     }
+    BoardViewModel.prototype.init = function () {
+        this.refreshState();
+    };
     BoardViewModel.prototype.getNewWords = function () {
         return this.newWords;
     };
@@ -186,10 +189,33 @@ var BoardViewModel = (function () {
         this.newWords.removeAll();
         newWords.forEach(function (word) { return _this.newWords.push(word); });
     };
+    BoardViewModel.prototype.refreshClick = function () {
+        this.refreshState();
+    };
+    BoardViewModel.prototype.refreshBoard = function () {
+        this.board.clearBoard();
+        this.board.drawGameState(this.game);
+    };
+    BoardViewModel.prototype.runState = function (state) {
+        viewModel.game.runState(state);
+        viewModel.board.drawGameState(viewModel.game);
+    };
+    BoardViewModel.prototype.refreshState = function () {
+        var _this = this;
+        $.ajax({
+            type: "POST",
+            url: "/games/new",
+            dataType: "json",
+            success: function (result) {
+                var state = result;
+                _this.game = new Literki.GameRun();
+                _this.game.runState(state);
+                _this.refreshBoard();
+            }
+        });
+    };
     return BoardViewModel;
 })();
-var board;
-var game;
 var viewModel;
 window.onload = function () {
     var boardDiv = document.getElementById("boardDiv");
@@ -203,29 +229,16 @@ window.onload = function () {
         debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
     }, 1000);
     setupDisplay(screen.availHeight / 20);
-    board = new Board("boardDiv");
-    //$(document).ready(() => {
-    $.ajax({
-        type: "POST",
-        url: "/games/new",
-        dataType: "json",
-        success: function (result) {
-            var state = result;
-            game = new Literki.GameRun();
-            game.runState(state);
-            board.drawGameState(game);
-            viewModel = new BoardViewModel();
-            viewModel.setNewWords([
-                { word: "Jako", points: 10 },
-                { word: "Dam", points: 6 }
-            ]);
-            ko.applyBindings(viewModel);
-        }
-    });
-    //});
+    viewModel = new BoardViewModel();
+    viewModel.setNewWords([
+        { word: "Jako", points: 10 },
+        { word: "Dam", points: 6 }
+    ]);
+    viewModel.board = new Board("boardDiv");
+    viewModel.init();
+    ko.applyBindings(viewModel);
 };
 window.onresize = function () {
-    board.clearBoard();
-    board.drawGameState(game);
+    viewModel.refreshBoard();
 };
 //# sourceMappingURL=board.js.map

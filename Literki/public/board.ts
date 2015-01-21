@@ -194,8 +194,8 @@ class Board {
                 });
                 tween.play();
 
-                game.putFreeLetter(letter, index, fieldX, fieldY);
-                var newWords = game.getNewWords();
+                viewModel.game.putFreeLetter(letter, index, fieldX, fieldY);
+                var newWords = viewModel.game.getNewWords();
                 viewModel.setNewWords(newWords);
             });
         }
@@ -220,8 +220,15 @@ class BoardViewModel {
     private self = this;
     private newWords: KnockoutObservableArray<BoardViewModelWord>;
 
+    board: Board;
+    game: Literki.GameRun;
+
     constructor() {
         this.newWords = ko.observableArray<BoardViewModelWord>();
+    }
+
+    init() {
+        this.refreshState();
     }
 
     getNewWords() {
@@ -232,18 +239,43 @@ class BoardViewModel {
         this.newWords.removeAll();
         newWords.forEach(word => this.newWords.push(word));
     }
+
+    refreshClick() {
+        this.refreshState();
+    }
+
+    refreshBoard() {
+        this.board.clearBoard();
+        this.board.drawGameState(this.game);
+    }
+
+    runState(state: Literki.GameState) {
+        viewModel.game.runState(state);
+
+        viewModel.board.drawGameState(viewModel.game);
+    }
+
+    private refreshState() {
+        $.ajax({
+            type: "POST",
+            url: "/games/new",
+            dataType: "json",
+            success: (result) => {
+                var state = <Literki.GameState>result;
+                this.game = new Literki.GameRun();
+                this.game.runState(state);
+                this.refreshBoard();
+            }
+        });
+    }
 }
 
-
-var board: Board;
-var game: Literki.GameRun;
 var viewModel: BoardViewModel;
-
 
 window.onload = () => {
 
     var boardDiv = <HTMLElement>document.getElementById("boardDiv");
-    boardDiv.style.width =  screen.availWidth / 2 + "px";
+    boardDiv.style.width = screen.availWidth / 2 + "px";
     boardDiv.style.height = screen.availHeight * 0.9 + "px";
 
     var infoDiv = <HTMLElement>document.getElementById("infoDiv");
@@ -251,42 +283,26 @@ window.onload = () => {
     infoDiv.style.height = screen.availHeight * 0.9 + "px";
 
     var debugLabel = <HTMLLabelElement>document.getElementById("debugLabel");
-    
+
     setInterval(() => {
         debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
     }, 1000);
 
     setupDisplay(screen.availHeight / 20);
 
-    board = new Board("boardDiv");
-
-    //$(document).ready(() => {
-    $.ajax({
-        type: "POST",
-        url: "/games/new",
-        dataType: "json",
-        success: (result) => {
-            var state = <Literki.GameState>result;
-            game = new Literki.GameRun();
-            game.runState(state);
-
-            board.drawGameState(game);
-
-            viewModel = new BoardViewModel();
-            viewModel.setNewWords([
-                { word: "Jako", points: 10 },
-                { word: "Dam", points: 6 }
-            ]);
-
-            ko.applyBindings(viewModel);
-        }
-    });
-    //});
+    viewModel = new BoardViewModel();
+    viewModel.setNewWords([
+        { word: "Jako", points: 10 },
+        { word: "Dam", points: 6 }
+    ]);
+    viewModel.board = new Board("boardDiv");
+    viewModel.init();
+   
+    ko.applyBindings(viewModel);
 }
 
 window.onresize = () => {
-    board.clearBoard();
-    board.drawGameState(game);
+    viewModel.refreshBoard();
 }
 
 
