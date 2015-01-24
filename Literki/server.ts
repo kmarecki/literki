@@ -1,12 +1,12 @@
 ﻿/// <reference path="typings\express\express.d.ts"/>
-/// <reference path="public\scripts\literki.ts"/>
 
 import express = require('express');
+import Literki = require('./scripts/literki');
 
 var port = process.env.port || 1337;
 
 var app = express();
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/../public'));
 app.listen(port);
 
 app.get('/games/new', (req, res) => {
