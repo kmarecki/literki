@@ -1,6 +1,6 @@
-﻿/// <reference path="..\Literki\typings\kineticjs\kineticjs.d.ts"/>
-/// <reference path="..\Literki\typings\knockout\knockout.d.ts"/>
-/// <reference path="..\Literki\typings\jquery\jquery.d.ts"/>
+﻿/// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
+/// <reference path=".\typings\knockout\knockout.d.ts"/>
+/// <reference path=".\typings\jquery\jquery.d.ts"/>
 /// <reference path=".\scripts\literki.ts"/>
 
 var FIELD_SIZE: number;

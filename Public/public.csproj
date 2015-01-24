@@ -63,6 +63,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="board.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
+    <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="typings\kineticjs\kineticjs.d.ts" />
+    <TypeScriptCompile Include="typings\knockout\knockout.d.ts" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>

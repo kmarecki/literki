@@ -40,10 +40,14 @@
     <TypeScriptCompile Include="server.ts" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="typings\express\express.d.ts" />
+    <TypeScriptCompile Include="typings\node\node.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="scripts\" />
     <Folder Include="typings\" />
+    <Folder Include="typings\express\" />
+    <Folder Include="typings\node\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
