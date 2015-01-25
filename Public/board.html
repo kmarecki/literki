@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles/board.css" type="text/css" />
     <script src="scripts/require.js"></script>
     <script src="scripts/kinetic-v5.1.0.js"></script>
-    <script src="scripts/knockout-3.2.0.js"></script>
+    <script src="scripts/knockout-3.2.0.debug.js"></script>
     <script src="scripts/jquery-1.11.2.js"></script>
     <script src="scripts/literki.js"></script>
     <script src="board.js"></script>
@@ -32,92 +32,29 @@
                         </thead>
                         <tbody data-bind="foreach: getNewWords()">
                             <tr>
-                                <td><label data-bind="text: word"></label></td>
-                                <td><label data-bind="text: points"></label></td>
+                                <td><label data-bind="text: word"/></td>
+                                <td><label data-bind="text: points"/></td>
                             </tr>
                         </tbody>
                     </table>
                     <table>
-                        <tr>
-                            <td>
-                                <div id="player1Div" class="playerDiv">
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <label class="left">Hari</label>
-                                            </td>
-                                            <td>
-                                                <label class="right">0:34</label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">
-                                                <label class="center">134</label>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="player2Div" class="playerDiv">
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <label class="left">Hari</label>
-                                            </td>
-                                            <td>
-                                                <label class="right">0:34</label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">
-                                                <label class="center">134</label>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div id="player3Div" class="playerDiv">
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <label class="left">Hari</label>
-                                            </td>
-                                            <td>
-                                                <label class="right">0:34</label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">
-                                                <label class="center">134</label>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="player4Div" class="playerDiv">
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <label class="left">Hari</label>
-                                            </td>
-                                            <td>
-                                                <label class="right">0:34</label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">
-                                                <label class="center">134</label>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
+                        <tbody data-bind="foreach: getPlayers()">
+                            <tr>
+                                <td>
+                                    <div class="playerDiv">
+                                        <table>
+                                            <tr>
+                                                <td><label class="left" data-bind="text: playerName"/></td>
+                                                <td><label class="right" data-bind="text: remainingTime"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2"><label class="center" data-bind="text: getPoints()"/></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                     <div id="buttonsDiv">
                         <button class="commandButton">Połóż literki</button>

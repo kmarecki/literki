@@ -240,6 +240,10 @@ class BoardViewModel {
         newWords.forEach(word => this.newWords.push(word));
     }
 
+    getPlayers() {
+        return this.game.getPlayers();
+    }
+
     refreshClick() {
         this.refreshState();
     }
@@ -247,6 +251,7 @@ class BoardViewModel {
     refreshBoard() {
         this.board.clearBoard();
         this.board.drawGameState(this.game);
+        ko.applyBindings(this);
     }
 
     runState(state: Literki.GameState) {
@@ -261,7 +266,7 @@ class BoardViewModel {
             url: "/games/new",
             dataType: "json",
             success: (result) => {
-                var state = <Literki.GameState>result;
+                var state = Literki.GameState.fromJSON(<Literki.IGameStateJSON>result);
                 this.game = new Literki.GameRun();
                 this.game.runState(state);
                 this.refreshBoard();
@@ -298,7 +303,7 @@ window.onload = () => {
     viewModel.board = new Board("boardDiv");
     viewModel.init();
    
-    ko.applyBindings(viewModel);
+   
 }
 
 window.onresize = () => {

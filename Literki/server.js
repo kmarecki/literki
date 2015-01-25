@@ -8,6 +8,7 @@ app.listen(port);
 app.get('/games/new', function (req, res) {
     var player1 = new Literki.GamePlayer();
     player1.playerName = "Krzyś";
+    player1.remainingTime = 1345;
     player1.freeLetters = ["h", "a", "j", "k", "b", "e", "ź"];
     var word1 = new Literki.GameWord("literki", 5, 7, 1 /* Horizontal */, 10);
     var move1 = new Literki.GameMove();
@@ -15,7 +16,8 @@ app.get('/games/new', function (req, res) {
     player1.moves.push(move1);
     var player2 = new Literki.GamePlayer();
     player2.playerName = "Irenka";
-    var word2 = new Literki.GameWord("piliśmy", 6, 6, 0 /* Vertical */, 6);
+    player2.remainingTime = 1560;
+    var word2 = new Literki.GameWord("piliśmy", 6, 6, 0 /* Vertical */, 12);
     var move2 = new Literki.GameMove();
     move2.words.push(word2);
     player2.moves.push(move2);

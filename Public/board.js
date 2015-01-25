@@ -189,12 +189,16 @@ var BoardViewModel = (function () {
         this.newWords.removeAll();
         newWords.forEach(function (word) { return _this.newWords.push(word); });
     };
+    BoardViewModel.prototype.getPlayers = function () {
+        return this.game.getPlayers();
+    };
     BoardViewModel.prototype.refreshClick = function () {
         this.refreshState();
     };
     BoardViewModel.prototype.refreshBoard = function () {
         this.board.clearBoard();
         this.board.drawGameState(this.game);
+        ko.applyBindings(this);
     };
     BoardViewModel.prototype.runState = function (state) {
         viewModel.game.runState(state);
@@ -207,7 +211,7 @@ var BoardViewModel = (function () {
             url: "/games/new",
             dataType: "json",
             success: function (result) {
-                var state = result;
+                var state = Literki.GameState.fromJSON(result);
                 _this.game = new Literki.GameRun();
                 _this.game.runState(state);
                 _this.refreshBoard();
@@ -236,7 +240,6 @@ window.onload = function () {
     ]);
     viewModel.board = new Board("boardDiv");
     viewModel.init();
-    ko.applyBindings(viewModel);
 };
 window.onresize = function () {
     viewModel.refreshBoard();

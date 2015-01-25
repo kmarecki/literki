@@ -198,6 +198,19 @@ var Literki;
         function GamePlayer() {
             this.moves = [];
         }
+        GamePlayer.prototype.getPoints = function () {
+            var points = 0;
+            this.moves.forEach(function (gm) { return gm.words.forEach(function (w) { return points += w.points; }); });
+            return points;
+        };
+        GamePlayer.fromJSON = function (json) {
+            var player = new GamePlayer();
+            player.freeLetters = json.freeLetters;
+            player.moves = json.moves;
+            player.playerName = json.playerName;
+            player.remainingTime = json.remainingTime;
+            return player;
+        };
         return GamePlayer;
     })();
     Literki.GamePlayer = GamePlayer;
@@ -205,6 +218,16 @@ var Literki;
         function GameState() {
             this.currentPlayerIndex = 0;
         }
+        GameState.fromJSON = function (json) {
+            var state = new GameState();
+            state.currentPlayerIndex = json.currentPlayerIndex;
+            state.players = new Array();
+            json.players.forEach(function (p) {
+                var player = GamePlayer.fromJSON(p);
+                state.players.push(player);
+            });
+            return state;
+        };
         return GameState;
     })();
     Literki.GameState = GameState;
@@ -248,6 +271,9 @@ var Literki;
             var game = new GameState();
             game.players = players.slice();
             return game;
+        };
+        GameRun.prototype.getPlayers = function () {
+            return this.state.players;
         };
         GameRun.prototype.getCurrentPlayer = function () {
             return this.state.players[this.state.currentPlayerIndex];

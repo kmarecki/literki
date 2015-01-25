@@ -1,4 +1,5 @@
 ﻿module Literki {
+
     export var ROW_SIZE = 15;
     export var MAX_LETTERS = 7;
 
@@ -166,16 +167,56 @@
         words: Array<GameWord> = [];
     }
 
+    export interface IGamePlayerJSON {
+        playerName: string;
+        freeLetters: Array<string>;
+        remainingTime: number;
+        moves: Array<GameMove>;
+    }
+
     export class GamePlayer {
 
         playerName: string;
         freeLetters: Array<string>;
+        remainingTime: number;
         moves: Array<GameMove> = [];
+
+        getPoints(): number {
+            var points = 0;
+            this.moves.forEach(gm => gm.words.forEach(w => points += w.points));
+            return points;
+        }
+
+        static fromJSON(json: IGamePlayerJSON): GamePlayer {
+            var player = new GamePlayer();
+            player.freeLetters = json.freeLetters;
+            player.moves = json.moves;
+            player.playerName = json.playerName;
+            player.remainingTime = json.remainingTime;
+            return player;
+        }
+    }
+
+    export interface IGameStateJSON {
+        players: Array<IGamePlayerJSON>;
+        currentPlayerIndex: number;
     }
 
     export class GameState {
         players: Array<GamePlayer>;
         currentPlayerIndex: number = 0;
+
+        static fromJSON(json:IGameStateJSON): GameState {
+            var state = new GameState();
+            state.currentPlayerIndex = json.currentPlayerIndex;
+            state.players = new Array<GamePlayer>();
+            json.players.forEach(p => {
+                var player = GamePlayer.fromJSON(p);
+                state.players.push(player);
+            });
+            
+            return state; 
+        }
     }
 
     class LetterPosition {
@@ -228,6 +269,10 @@
             var game = new GameState();
             game.players = players.slice();
             return game;
+        }
+
+        getPlayers(): Array<GamePlayer> {
+            return this.state.players;
         }
 
         getCurrentPlayer(): GamePlayer {

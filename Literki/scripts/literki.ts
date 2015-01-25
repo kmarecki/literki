@@ -149,7 +149,7 @@ export class GameWord {
         this.direction = direction;
     }
 
-    equals(word:GameWord): boolean {
+    equals(word: GameWord): boolean {
         if (word == null) {
             return false;
         }
@@ -166,16 +166,56 @@ export class GameMove {
     words: Array<GameWord> = [];
 }
 
+export interface IGamePlayerJSON {
+    playerName: string;
+    freeLetters: Array<string>;
+    remainingTime: number;
+    moves: Array<GameMove>;
+}
+
 export class GamePlayer {
 
     playerName: string;
     freeLetters: Array<string>;
+    remainingTime: number;
     moves: Array<GameMove> = [];
+
+    getPoints(): number {
+        var points = 0;
+        this.moves.forEach(gm => gm.words.forEach(w => points += w.points));
+        return points;
+    }
+
+    static fromJSON(json: IGamePlayerJSON): GamePlayer {
+        var player = new GamePlayer();
+        player.freeLetters = json.freeLetters;
+        player.moves = json.moves;
+        player.playerName = json.playerName;
+        player.remainingTime = json.remainingTime;
+        return player;
+    }
+}
+
+export interface IGameStateJSON {
+    players: Array<IGamePlayerJSON>;
+    currentPlayerIndex: number;
 }
 
 export class GameState {
     players: Array<GamePlayer>;
     currentPlayerIndex: number = 0;
+
+    static fromJSON(json: IGameStateJSON): GameState {
+        var state = new GameState();
+        state.currentPlayerIndex = json.currentPlayerIndex;
+        state.players = new Array<GamePlayer>();
+        json.players.forEach(p => {
+            var player = GamePlayer.fromJSON(p);
+            state.players.push(player);
+        });
+
+        return state;
+    }
 }
 
 class LetterPosition {
@@ -230,6 +270,10 @@ export class GameRun {
         return game;
     }
 
+    getPlayers(): Array<GamePlayer> {
+        return this.state.players;
+    }
+
     getCurrentPlayer(): GamePlayer {
         return this.state.players[this.state.currentPlayerIndex];
     }
@@ -244,7 +288,7 @@ export class GameRun {
         this.state.players.forEach(
             player => player.moves.forEach(
                 move => move.words.forEach(
-                word => this.board.addWord(word.word, word.x, word.y, word.direction))));
+                    word => this.board.addWord(word.word, word.x, word.y, word.direction))));
     }
 
 
@@ -269,7 +313,7 @@ export class GameRun {
             var xWord = letter.x - 1;
             var yWord = letter.y;
             //search left
-            while(x > 0) {
+            while (x > 0) {
                 searchLetter = this.board.getFieldValue(x, y);
                 if (searchLetter != null) {
                     word = searchLetter.concat(word);
@@ -286,7 +330,7 @@ export class GameRun {
                     word = word.concat(searchLetter);
                     x++;
                 } else break;
-            } 
+            }
             if (word.length > 1) {
                 gameWord = this.createGameWord(word, xWord, y, GameMoveDirection.Horizontal);
                 this.addGameWord(words, gameWord);
@@ -313,7 +357,7 @@ export class GameRun {
                     word = word.concat(searchLetter);
                     y++;
                 } else break;
-            } 
+            }
             if (word.length > 1) {
                 var gameWord = this.createGameWord(word, x, yWord, GameMoveDirection.Vertical);
                 this.addGameWord(words, gameWord);
@@ -333,7 +377,7 @@ export class GameRun {
         if (words.filter(w => w.equals(word)).length == 0) {
             words.push(word);
         }
-    } 
+    }
 
     private countPoints(x: number, y: number, length: number, direction: GameMoveDirection): number {
         var points = 0;
