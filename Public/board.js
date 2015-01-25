@@ -203,7 +203,7 @@ var BoardViewModel = (function () {
     BoardViewModel.prototype.refreshState = function () {
         var _this = this;
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: "/games/new",
             dataType: "json",
             success: function (result) {

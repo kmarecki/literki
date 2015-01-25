@@ -2,6 +2,7 @@
 
 import express = require('express');
 import Literki = require('./scripts/literki');
+import db = require('./scripts/db');
 
 var port = process.env.port || 1337;
 
@@ -34,4 +35,6 @@ app.get('/games/new', (req, res) => {
     var state = Literki.GameRun.newGame(players);
     return res.json(state);
 });
+
+
 

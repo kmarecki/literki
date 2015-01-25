@@ -257,7 +257,7 @@ class BoardViewModel {
 
     private refreshState() {
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: "/games/new",
             dataType: "json",
             success: (result) => {
