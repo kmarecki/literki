@@ -7,7 +7,7 @@ app.use(express.static(__dirname + '/../public'));
 app.listen(port);
 app.get('/games/new', function (req, res) {
     var player1 = new Literki.GamePlayer();
-    player1.playerName = "Krzyś";
+    player1.playerName = "Mama";
     player1.remainingTime = 1345;
     player1.freeLetters = ["h", "a", "j", "k", "b", "e", "ź"];
     var word1 = new Literki.GameWord("literki", 5, 7, 1 /* Horizontal */, 10);
@@ -21,9 +21,13 @@ app.get('/games/new', function (req, res) {
     var move2 = new Literki.GameMove();
     move2.words.push(word2);
     player2.moves.push(move2);
+    var player3 = new Literki.GamePlayer();
+    player3.playerName = "Krzyś";
+    player3.remainingTime = 1800;
     var players = new Array();
     players.push(player1);
     players.push(player2);
+    players.push(player3);
     var state = Literki.GameRun.newGame(players);
     return res.json(state);
 });

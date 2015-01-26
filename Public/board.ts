@@ -240,8 +240,12 @@ class BoardViewModel {
         newWords.forEach(word => this.newWords.push(word));
     }
 
-    getPlayers() {
-        return this.game.getPlayers();
+    getPlayers(start:number, end:number) {
+        return this.game.getPlayers().slice(start, end);
+    }
+
+    getPlayersRow() {
+        return this.game.getPlayers().length > 2 ? [0, 1] : [0];
     }
 
     refreshClick() {

@@ -12,7 +12,7 @@ app.listen(port);
 
 app.get('/games/new', (req, res) => {
     var player1 = new Literki.GamePlayer();
-    player1.playerName = "Krzyś";
+    player1.playerName = "Mama";
     player1.remainingTime = 1345;
     player1.freeLetters = ["h", "a", "j", "k", "b", "e", "ź"];
 
@@ -30,9 +30,14 @@ app.get('/games/new', (req, res) => {
     move2.words.push(word2);
     player2.moves.push(move2);
 
+    var player3 = new Literki.GamePlayer();
+    player3.playerName = "Krzyś";
+    player3.remainingTime = 1800;
+
     var players = new Array<Literki.GamePlayer>();
     players.push(player1);
     players.push(player2);
+    players.push(player3);
 
     var state = Literki.GameRun.newGame(players);
     return res.json(state);

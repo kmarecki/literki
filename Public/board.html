@@ -38,8 +38,9 @@
                         </tbody>
                     </table>
                     <table>
-                        <tbody data-bind="foreach: getPlayers()">
+                        <tbody data-bind="foreach: getPlayersRow()">
                             <tr>
+                                <!-- ko foreach: $parent.getPlayers($data * 2, ($data + 1) * 2) -->
                                 <td>
                                     <div class="playerDiv">
                                         <table>
@@ -53,6 +54,7 @@
                                         </table>
                                     </div>
                                 </td>
+                                <!-- /ko -->
                             </tr>
                         </tbody>
                     </table>

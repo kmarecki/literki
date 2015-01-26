@@ -189,8 +189,11 @@ var BoardViewModel = (function () {
         this.newWords.removeAll();
         newWords.forEach(function (word) { return _this.newWords.push(word); });
     };
-    BoardViewModel.prototype.getPlayers = function () {
-        return this.game.getPlayers();
+    BoardViewModel.prototype.getPlayers = function (start, end) {
+        return this.game.getPlayers().slice(start, end);
+    };
+    BoardViewModel.prototype.getPlayersRow = function () {
+        return this.game.getPlayers().length > 2 ? [0, 1] : [0];
     };
     BoardViewModel.prototype.refreshClick = function () {
         this.refreshState();
