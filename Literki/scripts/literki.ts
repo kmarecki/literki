@@ -1,5 +1,4 @@
-﻿
-export var ROW_SIZE = 15;
+﻿export var ROW_SIZE = 15;
 export var MAX_LETTERS = 7;
 
 export class LetterDefinition {
@@ -202,6 +201,7 @@ export interface IGameStateJSON {
 }
 
 export class GameState {
+    gameId: number;
     players: Array<GamePlayer>;
     currentPlayerIndex: number = 0;
 

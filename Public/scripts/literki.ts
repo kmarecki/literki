@@ -203,6 +203,7 @@
     }
 
     export class GameState {
+        gameId: number;
         players: Array<GamePlayer>;
         currentPlayerIndex: number = 0;
 

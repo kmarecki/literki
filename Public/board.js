@@ -211,7 +211,7 @@ var BoardViewModel = (function () {
         var _this = this;
         $.ajax({
             type: "GET",
-            url: "/games/new",
+            url: "/game/new",
             dataType: "json",
             success: function (result) {
                 var state = Literki.GameState.fromJSON(result);

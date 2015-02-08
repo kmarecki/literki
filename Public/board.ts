@@ -267,7 +267,7 @@ class BoardViewModel {
     private refreshState() {
         $.ajax({
             type: "GET",
-            url: "/games/new",
+            url: "/game/new",
             dataType: "json",
             success: (result) => {
                 var state = Literki.GameState.fromJSON(<Literki.IGameStateJSON>result);
