@@ -53,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="board.html" />
+    <Content Include="main.html" />
     <Content Include="scripts\jquery-1.11.2.js" />
     <Content Include="scripts\kinetic-v5.1.0.js" />
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
@@ -63,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="board.ts" />
+    <TypeScriptCompile Include="main.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\kineticjs\kineticjs.d.ts" />

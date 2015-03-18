@@ -194,6 +194,12 @@ var Literki;
         return GameMove;
     })();
     Literki.GameMove = GameMove;
+    var GamePlayerJSON = (function () {
+        function GamePlayerJSON() {
+        }
+        return GamePlayerJSON;
+    })();
+    Literki.GamePlayerJSON = GamePlayerJSON;
     var GamePlayer = (function () {
         function GamePlayer() {
             this.moves = [];
@@ -211,9 +217,23 @@ var Literki;
             player.remainingTime = json.remainingTime;
             return player;
         };
+        GamePlayer.toJSON = function (player) {
+            var json = new GamePlayer();
+            json.freeLetters = player.freeLetters;
+            json.moves = player.moves;
+            json.playerName = player.playerName;
+            json.remainingTime = player.remainingTime;
+            return json;
+        };
         return GamePlayer;
     })();
     Literki.GamePlayer = GamePlayer;
+    var GameStateJSON = (function () {
+        function GameStateJSON() {
+        }
+        return GameStateJSON;
+    })();
+    Literki.GameStateJSON = GameStateJSON;
     var GameState = (function () {
         function GameState() {
             this.currentPlayerIndex = 0;
@@ -226,7 +246,21 @@ var Literki;
                 var player = GamePlayer.fromJSON(p);
                 state.players.push(player);
             });
+            state.remainingLetters = new Array();
+            state.remainingLetters.concat(json.remainingLetters);
             return state;
+        };
+        GameState.toJSON = function (state) {
+            var json = new GameStateJSON();
+            json.currentPlayerIndex = state.currentPlayerIndex;
+            json.players = new Array();
+            state.players.forEach(function (p) {
+                var player = GamePlayer.toJSON(p);
+                json.players.push(player);
+            });
+            json.remainingLetters = new Array();
+            json.remainingLetters.concat(state.remainingLetters);
+            return json;
         };
         return GameState;
     })();
@@ -267,11 +301,6 @@ var Literki;
         function GameRun() {
             this.freeLetters = new FreeLetters();
         }
-        GameRun.newGame = function (players) {
-            var game = new GameState();
-            game.players = players.slice();
-            return game;
-        };
         GameRun.prototype.getPlayers = function () {
             return this.state.players;
         };

@@ -167,7 +167,7 @@
         words: Array<GameWord> = [];
     }
 
-    export interface IGamePlayerJSON {
+    export class GamePlayerJSON {
         playerName: string;
         freeLetters: Array<string>;
         remainingTime: number;
@@ -187,7 +187,7 @@
             return points;
         }
 
-        static fromJSON(json: IGamePlayerJSON): GamePlayer {
+        static fromJSON(json: GamePlayerJSON): GamePlayer {
             var player = new GamePlayer();
             player.freeLetters = json.freeLetters;
             player.moves = json.moves;
@@ -195,19 +195,30 @@
             player.remainingTime = json.remainingTime;
             return player;
         }
+
+        static toJSON(player: GamePlayer): GamePlayerJSON {
+            var json = new GamePlayer();
+            json.freeLetters = player.freeLetters;
+            json.moves = player.moves;
+            json.playerName = player.playerName;
+            json.remainingTime = player.remainingTime;
+            return json;
+        }
     }
 
-    export interface IGameStateJSON {
-        players: Array<IGamePlayerJSON>;
+    export class GameStateJSON {
+        players: Array<GamePlayerJSON>;
         currentPlayerIndex: number;
+        remainingLetters: Array<string>;
     }
 
     export class GameState {
         gameId: number;
         players: Array<GamePlayer>;
         currentPlayerIndex: number = 0;
+        remainingLetters: Array<string>;
 
-        static fromJSON(json:IGameStateJSON): GameState {
+        static fromJSON(json: GameStateJSON): GameState {
             var state = new GameState();
             state.currentPlayerIndex = json.currentPlayerIndex;
             state.players = new Array<GamePlayer>();
@@ -215,8 +226,24 @@
                 var player = GamePlayer.fromJSON(p);
                 state.players.push(player);
             });
-            
-            return state; 
+            state.remainingLetters = new Array<string>();
+            state.remainingLetters.concat(json.remainingLetters);
+
+            return state;
+        }
+
+        static toJSON(state: GameState): GameStateJSON {
+            var json = new GameStateJSON();
+            json.currentPlayerIndex = state.currentPlayerIndex;
+            json.players = new Array<GamePlayerJSON>();
+            state.players.forEach(p => {
+                var player = GamePlayer.toJSON(p);
+                json.players.push(player);
+            });
+            json.remainingLetters = new Array<string>();
+            json.remainingLetters.concat(state.remainingLetters);
+
+            return json;
         }
     }
 
@@ -263,14 +290,8 @@
 
         board: BoardFields;
 
-        private state: GameState;
-        private freeLetters = new FreeLetters();
-
-        static newGame(players: Array<GamePlayer>): GameState {
-            var game = new GameState();
-            game.players = players.slice();
-            return game;
-        }
+        protected state: GameState;
+        protected freeLetters = new FreeLetters();
 
         getPlayers(): Array<GamePlayer> {
             return this.state.players;
@@ -406,4 +427,6 @@
             return points;
         }
     }
+
+
 }

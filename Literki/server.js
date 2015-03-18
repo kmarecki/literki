@@ -1,17 +1,17 @@
 /// <reference path="typings\express\express.d.ts"/>
 var express = require('express');
 var literki = require('./scripts/literki');
+var literki_server = require('./scripts/literki_server');
 var db = require('./scripts/db');
 var port = process.env.port || 1337;
 var app = express();
 app.use(express.static(__dirname + '/../public'));
 app.listen(port);
-app.get('/game/new', function (req, res) {
+app.get('/games/new', function (req, res) {
     var repo = new db.GameRepository();
     var player1 = new literki.GamePlayer();
     player1.playerName = "Mama";
     player1.remainingTime = 1345;
-    player1.freeLetters = ["h", "a", "j", "k", "b", "e", "ź"];
     var word1 = new literki.GameWord("literko", 5, 7, 1 /* Horizontal */, 10);
     var move1 = new literki.GameMove();
     move1.words.push(word1);
@@ -30,10 +30,14 @@ app.get('/game/new', function (req, res) {
     players.push(player1);
     players.push(player2);
     players.push(player3);
-    var state = literki.GameRun.newGame(players);
+    var game = new literki_server.GameRun_Server();
+    game.newGame(players);
+    var state = game.getState();
     var gameId = repo.newState(state);
     state = repo.loadState(gameId);
     return res.json(state);
+});
+app.get('/games/list', function (req, res) {
 });
 app.get('/game/get', function (req, res) {
     var repo = new db.GameRepository();
