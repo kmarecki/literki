@@ -194,12 +194,12 @@ export class GamePlayer {
         return player;
     }
 
-    static toJSON(player: GamePlayer): GamePlayerJSON {
-        var json = new GamePlayer();
-        json.freeLetters = player.freeLetters;
-        json.moves = player.moves;
-        json.playerName = player.playerName;
-        json.remainingTime = player.remainingTime;
+    toJSON(): GamePlayerJSON {
+        var json = new GamePlayerJSON();
+        json.freeLetters = this.freeLetters;
+        json.moves = this.moves;
+        json.playerName = this.playerName;
+        json.remainingTime = this.remainingTime;
         return json;
     }
 }
@@ -230,16 +230,16 @@ export class GameState {
         return state;
     }
 
-    static toJSON(state: GameState): GameStateJSON {
+    toJSON(): GameStateJSON {
         var json = new GameStateJSON();
-        json.currentPlayerIndex = state.currentPlayerIndex;
+        json.currentPlayerIndex = this.currentPlayerIndex;
         json.players = new Array<GamePlayerJSON>();
-        state.players.forEach(p => {
-            var player = GamePlayer.toJSON(p);
+        this.players.forEach(p => {
+            var player = p.toJSON();
             json.players.push(player);
         });
         json.remainingLetters = new Array<string>();
-        json.remainingLetters.concat(state.remainingLetters);
+        json.remainingLetters.concat(this.remainingLetters);
 
         return json;
     }

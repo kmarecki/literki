@@ -1,11 +1,13 @@
-/// <reference path="typings\express\express.d.ts"/>
+/// <reference path="typings\body-parser\body-parser.d.ts"/>
 var express = require('express');
+var bodyParser = require('body-parser');
 var literki = require('./scripts/literki');
 var literki_server = require('./scripts/literki_server');
 var db = require('./scripts/db');
 var port = process.env.port || 1337;
 var app = express();
 app.use(express.static(__dirname + '/../public'));
+app.use(bodyParser.json());
 app.listen(port);
 app.get('/games/new', function (req, res) {
     var repo = new db.GameRepository();
@@ -45,6 +47,9 @@ app.get('/game/get', function (req, res) {
     var state = repo.loadState(gameId);
     return res.json(state);
 });
-app.get('/game/move', function (req, res) {
+app.post('/game/move', function (req, res) {
+    var repo = new db.GameRepository();
+    var state = literki.GameState.fromJSON(req.body);
+    repo.saveState(state);
 });
 //# sourceMappingURL=server.js.map

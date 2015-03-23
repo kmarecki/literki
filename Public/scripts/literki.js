@@ -202,6 +202,7 @@ var Literki;
     Literki.GamePlayerJSON = GamePlayerJSON;
     var GamePlayer = (function () {
         function GamePlayer() {
+            this.freeLetters = [];
             this.moves = [];
         }
         GamePlayer.prototype.getPoints = function () {
@@ -217,12 +218,12 @@ var Literki;
             player.remainingTime = json.remainingTime;
             return player;
         };
-        GamePlayer.toJSON = function (player) {
-            var json = new GamePlayer();
-            json.freeLetters = player.freeLetters;
-            json.moves = player.moves;
-            json.playerName = player.playerName;
-            json.remainingTime = player.remainingTime;
+        GamePlayer.prototype.toJSON = function () {
+            var json = new GamePlayerJSON();
+            json.freeLetters = this.freeLetters;
+            json.moves = this.moves;
+            json.playerName = this.playerName;
+            json.remainingTime = this.remainingTime;
             return json;
         };
         return GamePlayer;
@@ -250,16 +251,16 @@ var Literki;
             state.remainingLetters.concat(json.remainingLetters);
             return state;
         };
-        GameState.toJSON = function (state) {
+        GameState.prototype.toJSON = function () {
             var json = new GameStateJSON();
-            json.currentPlayerIndex = state.currentPlayerIndex;
+            json.currentPlayerIndex = this.currentPlayerIndex;
             json.players = new Array();
-            state.players.forEach(function (p) {
-                var player = GamePlayer.toJSON(p);
+            this.players.forEach(function (p) {
+                var player = p.toJSON();
                 json.players.push(player);
             });
             json.remainingLetters = new Array();
-            json.remainingLetters.concat(state.remainingLetters);
+            json.remainingLetters.concat(this.remainingLetters);
             return json;
         };
         return GameState;
@@ -306,6 +307,9 @@ var Literki;
         };
         GameRun.prototype.getCurrentPlayer = function () {
             return this.state.players[this.state.currentPlayerIndex];
+        };
+        GameRun.prototype.getState = function () {
+            return this.state;
         };
         GameRun.prototype.runState = function (state) {
             this.state = state;

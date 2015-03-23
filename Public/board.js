@@ -198,6 +198,19 @@ var BoardViewModel = (function () {
     BoardViewModel.prototype.refreshClick = function () {
         this.refreshState();
     };
+    BoardViewModel.prototype.moveClick = function () {
+        var state = JSON.stringify(this.game.getState());
+        $.ajax({
+            type: "POST",
+            url: "/game/move",
+            contentType: 'application/json',
+            data: state,
+            dataType: "json",
+            success: function (result) {
+                //this.refreshState();
+            }
+        });
+    };
     BoardViewModel.prototype.refreshBoard = function () {
         this.board.clearBoard();
         this.board.drawGameState(this.game);

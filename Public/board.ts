@@ -252,6 +252,20 @@ class BoardViewModel {
         this.refreshState();
     }
 
+    moveClick() {
+        var state = JSON.stringify(this.game.getState());
+        $.ajax({
+            type: "POST",
+            url: "/game/move",
+            contentType: 'application/json',
+            data: state,
+            dataType: "json",
+            success: (result) => {
+                //this.refreshState();
+            }
+        });
+    }
+
     refreshBoard() {
         this.board.clearBoard();
         this.board.drawGameState(this.game);

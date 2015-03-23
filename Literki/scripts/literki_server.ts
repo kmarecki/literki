@@ -2,7 +2,7 @@
 
 export class GameRun_Server extends literki.GameRun {
     
-    public newGame(players: Array<literki.GamePlayer>): void {
+    newGame(players: Array<literki.GamePlayer>): void {
         this.state = new literki.GameState();
         this.state.players = players.slice();
         this.state.remainingLetters = this.allLetters();

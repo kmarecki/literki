@@ -1,6 +1,7 @@
-﻿/// <reference path="typings\express\express.d.ts"/>
+﻿/// <reference path="typings\body-parser\body-parser.d.ts"/>
 
 import express = require('express');
+import bodyParser = require('body-parser');
 import literki = require('./scripts/literki');
 import literki_server = require('./scripts/literki_server');
 import db = require('./scripts/db');
@@ -9,6 +10,7 @@ var port = process.env.port || 1337;
 
 var app = express();
 app.use(express.static(__dirname + '/../public'));
+app.use(bodyParser.json());
 app.listen(port);
 
 app.get('/games/new',(req, res) => {
@@ -59,7 +61,10 @@ app.get('/game/get',(req, res) => {
     return res.json(state);
 });
 
-app.get('/game/move',(req, res) => {
+app.post('/game/move',(req, res) => {
+    var repo = new db.GameRepository();
+    var state = literki.GameState.fromJSON(req.body);
+    repo.saveState(state);
 });
 
 
