@@ -253,12 +253,12 @@ class BoardViewModel {
     }
 
     moveClick() {
-        var state = JSON.stringify(this.game.getState());
+        var move = this.game.getActualMove();
         $.ajax({
             type: "POST",
             url: "/game/move",
             contentType: 'application/json',
-            data: state,
+            data: JSON.stringify(move),
             dataType: "json",
             success: (result) => {
                 //this.refreshState();

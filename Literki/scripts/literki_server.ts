@@ -4,6 +4,7 @@ export class GameRun_Server extends literki.GameRun {
     
     newGame(players: Array<literki.GamePlayer>): void {
         this.state = new literki.GameState();
+        this.state.gameId = 1;
         this.state.players = players.slice();
         this.state.remainingLetters = this.allLetters();
         this.state.players.forEach(p => this.pickLetters(this.state.players.indexOf(p)));

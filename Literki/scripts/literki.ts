@@ -161,7 +161,7 @@ export class GameWord {
     }
 }
 
-export class GameMove {
+export class GameMoveHistory {
     words: Array<GameWord> = [];
 }
 
@@ -169,7 +169,7 @@ export class GamePlayerJSON {
     playerName: string;
     freeLetters: Array<string>;
     remainingTime: number;
-    moves: Array<GameMove>;
+    moves: Array<GameMoveHistory>;
 }
 
 export class GamePlayer {
@@ -177,7 +177,7 @@ export class GamePlayer {
     playerName: string;
     freeLetters: Array<string> = [];
     remainingTime: number;
-    moves: Array<GameMove> = [];
+    moves: Array<GameMoveHistory> = [];
 
     getPoints(): number {
         var points = 0;
@@ -205,6 +205,7 @@ export class GamePlayer {
 }
 
 export class GameStateJSON {
+    gameId: number;
     players: Array<GamePlayerJSON>;
     currentPlayerIndex: number;
     remainingLetters: Array<string>;
@@ -218,6 +219,7 @@ export class GameState {
 
     static fromJSON(json: GameStateJSON): GameState {
         var state = new GameState();
+        state.gameId = json.gameId;
         state.currentPlayerIndex = json.currentPlayerIndex;
         state.players = new Array<GamePlayer>();
         json.players.forEach(p => {
@@ -232,6 +234,7 @@ export class GameState {
 
     toJSON(): GameStateJSON {
         var json = new GameStateJSON();
+        json.gameId = this.gameId;
         json.currentPlayerIndex = this.currentPlayerIndex;
         json.players = new Array<GamePlayerJSON>();
         this.players.forEach(p => {
@@ -303,7 +306,7 @@ export class GameRun {
         return this.state;
     }
 
-    runState(state: GameState) {
+    runState(state: GameState): void {
         this.state = state;
         this.renderState();
     }
@@ -391,6 +394,10 @@ export class GameRun {
         return words;
     }
 
+    public getActualMove(): GameMove {
+        return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters() }
+    }
+
     private createGameWord(word: string, x: number, y: number, direction: GameMoveDirection): GameWord {
         var points = this.countPoints(x, y, word.length, direction);
         var gameWord = new GameWord(word, x, y, direction, points);
@@ -428,4 +435,9 @@ export class GameRun {
         points *= wordBonus;
         return points;
     }
+}
+
+export class GameMove {
+    gameId: number;
+    freeLetters: Array<LetterPosition>;
 }

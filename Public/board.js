@@ -199,12 +199,12 @@ var BoardViewModel = (function () {
         this.refreshState();
     };
     BoardViewModel.prototype.moveClick = function () {
-        var state = JSON.stringify(this.game.getState());
+        var move = this.game.getActualMove();
         $.ajax({
             type: "POST",
             url: "/game/move",
             contentType: 'application/json',
-            data: state,
+            data: JSON.stringify(move),
             dataType: "json",
             success: function (result) {
                 //this.refreshState();

@@ -187,13 +187,13 @@ var Literki;
         return GameWord;
     })();
     Literki.GameWord = GameWord;
-    var GameMove = (function () {
-        function GameMove() {
+    var GameMoveHistory = (function () {
+        function GameMoveHistory() {
             this.words = [];
         }
-        return GameMove;
+        return GameMoveHistory;
     })();
-    Literki.GameMove = GameMove;
+    Literki.GameMoveHistory = GameMoveHistory;
     var GamePlayerJSON = (function () {
         function GamePlayerJSON() {
         }
@@ -241,6 +241,7 @@ var Literki;
         }
         GameState.fromJSON = function (json) {
             var state = new GameState();
+            state.gameId = json.gameId;
             state.currentPlayerIndex = json.currentPlayerIndex;
             state.players = new Array();
             json.players.forEach(function (p) {
@@ -253,6 +254,7 @@ var Literki;
         };
         GameState.prototype.toJSON = function () {
             var json = new GameStateJSON();
+            json.gameId = this.gameId;
             json.currentPlayerIndex = this.currentPlayerIndex;
             json.players = new Array();
             this.players.forEach(function (p) {
@@ -396,6 +398,9 @@ var Literki;
             });
             return words;
         };
+        GameRun.prototype.getActualMove = function () {
+            return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters() };
+        };
         GameRun.prototype.createGameWord = function (word, x, y, direction) {
             var points = this.countPoints(x, y, word.length, direction);
             var gameWord = new GameWord(word, x, y, direction, points);
@@ -441,5 +446,11 @@ var Literki;
         return GameRun;
     })();
     Literki.GameRun = GameRun;
+    var GameMove = (function () {
+        function GameMove() {
+        }
+        return GameMove;
+    })();
+    Literki.GameMove = GameMove;
 })(Literki || (Literki = {}));
 //# sourceMappingURL=literki.js.map

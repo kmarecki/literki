@@ -20,7 +20,7 @@ app.get('/games/new',(req, res) => {
     player1.remainingTime = 1345;
 
     var word1 = new literki.GameWord("literko", 5, 7, literki.GameMoveDirection.Horizontal, 10);
-    var move1 = new literki.GameMove();
+    var move1 = new literki.GameMoveHistory();
     move1.words.push(word1);
     player1.moves.push(move1);
 
@@ -29,7 +29,7 @@ app.get('/games/new',(req, res) => {
     player2.remainingTime = 1560;
 
     var word2 = new literki.GameWord("piliśmy", 6, 6, literki.GameMoveDirection.Vertical, 12);
-    var move2 = new literki.GameMove();
+    var move2 = new literki.GameMoveHistory();
     move2.words.push(word2);
     player2.moves.push(move2);
 
@@ -63,7 +63,9 @@ app.get('/game/get',(req, res) => {
 
 app.post('/game/move',(req, res) => {
     var repo = new db.GameRepository();
-    var state = literki.GameState.fromJSON(req.body);
+    var move: literki.GameMove = req.body;
+    var state = repo.loadState(move.gameId);
+
     repo.saveState(state);
 });
 

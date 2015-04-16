@@ -15,14 +15,14 @@ app.get('/games/new', function (req, res) {
     player1.playerName = "Mama";
     player1.remainingTime = 1345;
     var word1 = new literki.GameWord("literko", 5, 7, 1 /* Horizontal */, 10);
-    var move1 = new literki.GameMove();
+    var move1 = new literki.GameMoveHistory();
     move1.words.push(word1);
     player1.moves.push(move1);
     var player2 = new literki.GamePlayer();
     player2.playerName = "Irenka";
     player2.remainingTime = 1560;
     var word2 = new literki.GameWord("piliśmy", 6, 6, 0 /* Vertical */, 12);
-    var move2 = new literki.GameMove();
+    var move2 = new literki.GameMoveHistory();
     move2.words.push(word2);
     player2.moves.push(move2);
     var player3 = new literki.GamePlayer();
@@ -49,7 +49,8 @@ app.get('/game/get', function (req, res) {
 });
 app.post('/game/move', function (req, res) {
     var repo = new db.GameRepository();
-    var state = literki.GameState.fromJSON(req.body);
+    var move = req.body;
+    var state = repo.loadState(move.gameId);
     repo.saveState(state);
 });
 //# sourceMappingURL=server.js.map
