@@ -284,7 +284,7 @@ class BoardViewModel {
             url: "/games/new",
             dataType: "json",
             success: (result) => {
-                var state = Literki.GameState.fromJSON(<Literki.GameStateJSON>result);
+                var state = Literki.GameState.fromJSON(<Literki.IGameState>result);
                 this.game = new Literki.GameRun();
                 this.game.runState(state);
                 this.refreshBoard();

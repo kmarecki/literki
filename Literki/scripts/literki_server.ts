@@ -10,6 +10,12 @@ export class GameRun_Server extends literki.GameRun {
         this.state.players.forEach(p => this.pickLetters(this.state.players.indexOf(p)));
     }
 
+    makeMove(move: literki.GameMove): void {
+        for (var freeLetter in move.freeLetters) {
+            this.putFreeLetter(freeLetter.letter, freeLetter.index, freeLetter.x, freeLetter.y);
+        }
+    }
+
     private allLetters(): Array<string> {
         var letters = new Array<string>();
         for (var key in literki.LETTERS) {

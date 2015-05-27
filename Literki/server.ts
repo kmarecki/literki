@@ -65,7 +65,10 @@ app.post('/game/move',(req, res) => {
     var repo = new db.GameRepository();
     var move: literki.GameMove = req.body;
     var state = repo.loadState(move.gameId);
-
+    var game = new literki_server.GameRun_Server();
+    game.runState(state);
+    game.makeMove(move);
+    state = game.getState();
     repo.saveState(state);
 });
 

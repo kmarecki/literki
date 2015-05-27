@@ -194,12 +194,6 @@ var Literki;
         return GameMoveHistory;
     })();
     Literki.GameMoveHistory = GameMoveHistory;
-    var GamePlayerJSON = (function () {
-        function GamePlayerJSON() {
-        }
-        return GamePlayerJSON;
-    })();
-    Literki.GamePlayerJSON = GamePlayerJSON;
     var GamePlayer = (function () {
         function GamePlayer() {
             this.freeLetters = [];
@@ -219,22 +213,17 @@ var Literki;
             return player;
         };
         GamePlayer.prototype.toJSON = function () {
-            var json = new GamePlayerJSON();
-            json.freeLetters = this.freeLetters;
-            json.moves = this.moves;
-            json.playerName = this.playerName;
-            json.remainingTime = this.remainingTime;
+            var json = {
+                freeLetters: this.freeLetters,
+                moves: this.moves,
+                playerName: this.playerName,
+                remainingTime: this.remainingTime
+            };
             return json;
         };
         return GamePlayer;
     })();
     Literki.GamePlayer = GamePlayer;
-    var GameStateJSON = (function () {
-        function GameStateJSON() {
-        }
-        return GameStateJSON;
-    })();
-    Literki.GameStateJSON = GameStateJSON;
     var GameState = (function () {
         function GameState() {
             this.currentPlayerIndex = 0;
@@ -253,15 +242,16 @@ var Literki;
             return state;
         };
         GameState.prototype.toJSON = function () {
-            var json = new GameStateJSON();
-            json.gameId = this.gameId;
-            json.currentPlayerIndex = this.currentPlayerIndex;
-            json.players = new Array();
+            var json = {
+                gameId: this.gameId,
+                currentPlayerIndex: this.currentPlayerIndex,
+                players: new Array(),
+                remainingLetters: new Array(),
+            };
             this.players.forEach(function (p) {
                 var player = p.toJSON();
                 json.players.push(player);
             });
-            json.remainingLetters = new Array();
             json.remainingLetters.concat(this.remainingLetters);
             return json;
         };
@@ -275,6 +265,7 @@ var Literki;
         }
         return LetterPosition;
     })();
+    Literki.LetterPosition = LetterPosition;
     var FreeLetters = (function () {
         function FreeLetters() {
             this.freeLetters = [];
@@ -300,6 +291,7 @@ var Literki;
         };
         return FreeLetters;
     })();
+    Literki.FreeLetters = FreeLetters;
     var GameRun = (function () {
         function GameRun() {
             this.freeLetters = new FreeLetters();

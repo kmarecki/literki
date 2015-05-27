@@ -134,7 +134,15 @@
         }
     }
 
-    export class GameWord {
+    export interface IGameWord {
+        word: string;
+        x: number;
+        y: number;
+        direction: GameMoveDirection;
+        points: number;
+    }
+
+    export class GameWord implements IGameWord {
         word: string;
         x: number;
         y: number;
@@ -162,23 +170,27 @@
         }
     }
 
-    export class GameMoveHistory {
-        words: Array<GameWord> = [];
+    export interface IGameMoveHistory {
+        words: Array<IGameWord>;
     }
 
-    export class GamePlayerJSON {
+    export class GameMoveHistory implements IGameMoveHistory {
+        words: Array<IGameWord> = [];
+    }
+
+    export interface IGamePlayer {
         playerName: string;
         freeLetters: Array<string>;
         remainingTime: number;
-        moves: Array<GameMoveHistory>;
+        moves: Array<IGameMoveHistory>;
     }
 
-    export class GamePlayer {
+    export class GamePlayer implements IGamePlayer {
 
         playerName: string;
         freeLetters: Array<string> = [];
         remainingTime: number;
-        moves: Array<GameMoveHistory> = [];
+        moves: Array<IGameMoveHistory> = [];
 
         getPoints(): number {
             var points = 0;
@@ -186,7 +198,7 @@
             return points;
         }
 
-        static fromJSON(json: GamePlayerJSON): GamePlayer {
+        static fromJSON(json: IGamePlayer): GamePlayer {
             var player = new GamePlayer();
             player.freeLetters = json.freeLetters;
             player.moves = json.moves;
@@ -195,30 +207,31 @@
             return player;
         }
 
-        toJSON(): GamePlayerJSON {
-            var json = new GamePlayerJSON();
-            json.freeLetters = this.freeLetters;
-            json.moves = this.moves;
-            json.playerName = this.playerName;
-            json.remainingTime = this.remainingTime;
+        toJSON(): IGamePlayer {
+            var json: IGamePlayer = {
+                freeLetters: this.freeLetters,
+                moves: this.moves,
+                playerName: this.playerName,
+                remainingTime: this.remainingTime
+            }
             return json;
         }
     }
 
-    export class GameStateJSON {
+    export interface IGameState {
         gameId: number;
-        players: Array<GamePlayerJSON>;
+        players: Array<IGamePlayer>;
         currentPlayerIndex: number;
         remainingLetters: Array<string>;
     }
 
-    export class GameState {
+    export class GameState implements IGameState {
         gameId: number;
         players: Array<GamePlayer>;
         currentPlayerIndex: number = 0;
         remainingLetters: Array<string>;
 
-        static fromJSON(json: GameStateJSON): GameState {
+        static fromJSON(json: IGameState): GameState {
             var state = new GameState();
             state.gameId = json.gameId;
             state.currentPlayerIndex = json.currentPlayerIndex;
@@ -233,23 +246,25 @@
             return state;
         }
 
-        toJSON(): GameStateJSON {
-            var json = new GameStateJSON();
-            json.gameId = this.gameId;
-            json.currentPlayerIndex = this.currentPlayerIndex;
-            json.players = new Array<GamePlayerJSON>();
+        toJSON(): IGameState {
+            var json: IGameState = {
+                gameId: this.gameId,
+                currentPlayerIndex: this.currentPlayerIndex,
+                players: new Array<IGamePlayer>(),
+                remainingLetters: new Array<string>(),
+            }
+
             this.players.forEach(p => {
                 var player = p.toJSON();
                 json.players.push(player);
             });
-            json.remainingLetters = new Array<string>();
-            json.remainingLetters.concat(this.remainingLetters);
+            json.remainingLetters.concat(this.remainingLetters)
 
             return json;
         }
     }
 
-    class LetterPosition {
+    export class LetterPosition {
         letter: string
         index: number
         x: number;
@@ -261,7 +276,7 @@
         }
     }
 
-    class FreeLetters {
+    export class FreeLetters {
         private freeLetters: Array<LetterPosition> = [];
 
         getLetter(letter: string, index: number): LetterPosition {
