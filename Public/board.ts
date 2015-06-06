@@ -227,10 +227,6 @@ class BoardViewModel {
         this.newWords = ko.observableArray<BoardViewModelWord>();
     }
 
-    init() {
-        this.refreshState();
-    }
-
     getNewWords() {
         return this.newWords;
     }
@@ -240,7 +236,7 @@ class BoardViewModel {
         newWords.forEach(word => this.newWords.push(word));
     }
 
-    getPlayers(start:number, end:number) {
+    getPlayers(start: number, end: number) {
         return this.game.getPlayers().slice(start, end);
     }
 
@@ -248,8 +244,45 @@ class BoardViewModel {
         return this.game.getPlayers().length > 2 ? [0, 1] : [0];
     }
 
+    refreshBoard() {
+        this.board.clearBoard();
+        this.board.drawGameState(this.game);
+    }
+
+    runState(state: Literki.GameState) {
+        viewModel.game.runState(state);
+
+        viewModel.board.drawGameState(viewModel.game);
+    }
+
+    init() {
+        $.ajax({
+            type: "GET",
+            url: "/games/new",
+            dataType: "json",
+            success: (result) => {
+                var state = Literki.GameState.fromJSON(<Literki.IGameState>result);
+                this.game = new Literki.GameRun();
+                this.game.runState(state);
+                this.refreshBoard();
+                ko.applyBindings(this);
+            }
+        });
+    }
+
     refreshClick() {
-        this.refreshState();
+        $.ajax({
+            type: "GET",
+            url: "/game/get",
+            data: { gameId: this.game.getState().gameId },
+            dataType: "json",
+            success: (result) => {
+                var state = Literki.GameState.fromJSON(<Literki.IGameState>result);
+                this.game = new Literki.GameRun();
+                this.game.runState(state);
+                this.refreshBoard();
+            }
+        });
     }
 
     moveClick() {
@@ -261,33 +294,7 @@ class BoardViewModel {
             data: JSON.stringify(move),
             dataType: "json",
             success: (result) => {
-                //this.refreshState();
-            }
-        });
-    }
-
-    refreshBoard() {
-        this.board.clearBoard();
-        this.board.drawGameState(this.game);
-        ko.applyBindings(this);
-    }
-
-    runState(state: Literki.GameState) {
-        viewModel.game.runState(state);
-
-        viewModel.board.drawGameState(viewModel.game);
-    }
-
-    private refreshState() {
-        $.ajax({
-            type: "GET",
-            url: "/games/new",
-            dataType: "json",
-            success: (result) => {
-                var state = Literki.GameState.fromJSON(<Literki.IGameState>result);
-                this.game = new Literki.GameRun();
-                this.game.runState(state);
-                this.refreshBoard();
+                this.refreshClick();
             }
         });
     }

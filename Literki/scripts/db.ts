@@ -12,9 +12,12 @@ export class GameRepository {
     private schema: mongoose.Schema;
     private GameState: mongoose.Model<IGameStateModel>;
 
-    newState(state: literki.IGameState): number {
+    open(): void {
         this.connect();
+    }
 
+
+    newState(state: literki.IGameState): number {
         var gameId = 1;
         state.gameId = gameId;
         this.saveState(state);
@@ -22,38 +25,14 @@ export class GameRepository {
 
     }
 
-    loadState(gameId: number): literki.IGameState {
-        var state: literki.IGameState;
-
-        var calls = [];
-
-        calls.push((callback) => {
-            this.GameState.findOne({ gameId: gameId }).exec((err, result) => {
-                if (!err) {
-                    state = result;
-                } else {
-                    console.log(err);
-                }
-            })
-        });
-
-        async.parallel(calls, (err, result) => {
-            if (err) return console.log(err);
-        });
-
-        //async.parallel({
-        //    query: () => this.GameState.findOne({ gameId: gameId }).exec((err, result) => {
-        //        if (!err) {
-        //            state = result;
-        //        } else {
-        //            console.log(err);
-        //        }
-        //    })
-        //},(err, result) => {
-        //        if (err) return console.log(err);
-        //    });
-
-        return state;
+    loadState(gameId: number, callback: (state: literki.IGameState) => any): void {
+        this.GameState.findOne({ gameId: gameId }).exec((err, result) => {
+            if (!err) {
+                callback(result);
+            } else {
+                console.log(err);
+            }
+        })
     }
 
     saveState(state: literki.IGameState) {

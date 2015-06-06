@@ -13,8 +13,10 @@ app.use(express.static(__dirname + '/../public'));
 app.use(bodyParser.json());
 app.listen(port);
 
+var repo = new db.GameRepository();
+repo.open();
+
 app.get('/games/new',(req, res) => {
-    var repo = new db.GameRepository();
     var player1 = new literki.GamePlayer();
     player1.playerName = "Mama";
     player1.remainingTime = 1345;
@@ -46,8 +48,11 @@ app.get('/games/new',(req, res) => {
     game.newGame(players);
     var state:literki.IGameState = game.getState();
     var gameId = repo.newState(state);
-    state = repo.loadState(gameId);
-    return res.json(state);
+    
+    repo.loadState(gameId, state => {
+        res.json(state);
+    });
+
 });
 
 app.get('/games/list',(req, res) => {
@@ -55,21 +60,21 @@ app.get('/games/list',(req, res) => {
 
 
 app.get('/game/get',(req, res) => {
-    var repo = new db.GameRepository();
     var gameId: number = req.query.gameId;
-    var state = repo.loadState(gameId);
-    return res.json(state);
+   
+    repo.loadState(gameId,(state: literki.IGameState) => {
+        res.json(state);
+    });
 });
 
 app.post('/game/move',(req, res) => {
-    var repo = new db.GameRepository();
     var move: literki.GameMove = req.body;
-    var state: literki.IGameState = repo.loadState(move.gameId);
-    var game = new literki_server.GameRun_Server();
-    game.runState(state);
-    game.makeMove(move);
-    state = game.getState();
-    repo.saveState(state);
+    //var state: literki.IGameState = repo.loadState(move.gameId);
+    //var game = new literki_server.GameRun_Server();
+    //game.runState(state);
+    //game.makeMove(move);
+    //state = game.getState();
+    //repo.saveState(state);
 });
 
 

@@ -178,9 +178,6 @@ var BoardViewModel = (function () {
         this.self = this;
         this.newWords = ko.observableArray();
     }
-    BoardViewModel.prototype.init = function () {
-        this.refreshState();
-    };
     BoardViewModel.prototype.getNewWords = function () {
         return this.newWords;
     };
@@ -195,32 +192,15 @@ var BoardViewModel = (function () {
     BoardViewModel.prototype.getPlayersRow = function () {
         return this.game.getPlayers().length > 2 ? [0, 1] : [0];
     };
-    BoardViewModel.prototype.refreshClick = function () {
-        this.refreshState();
-    };
-    BoardViewModel.prototype.moveClick = function () {
-        var move = this.game.getActualMove();
-        $.ajax({
-            type: "POST",
-            url: "/game/move",
-            contentType: 'application/json',
-            data: JSON.stringify(move),
-            dataType: "json",
-            success: function (result) {
-                //this.refreshState();
-            }
-        });
-    };
     BoardViewModel.prototype.refreshBoard = function () {
         this.board.clearBoard();
         this.board.drawGameState(this.game);
-        ko.applyBindings(this);
     };
     BoardViewModel.prototype.runState = function (state) {
         viewModel.game.runState(state);
         viewModel.board.drawGameState(viewModel.game);
     };
-    BoardViewModel.prototype.refreshState = function () {
+    BoardViewModel.prototype.init = function () {
         var _this = this;
         $.ajax({
             type: "GET",
@@ -231,6 +211,36 @@ var BoardViewModel = (function () {
                 _this.game = new Literki.GameRun();
                 _this.game.runState(state);
                 _this.refreshBoard();
+                ko.applyBindings(_this);
+            }
+        });
+    };
+    BoardViewModel.prototype.refreshClick = function () {
+        var _this = this;
+        $.ajax({
+            type: "GET",
+            url: "/game/get",
+            data: { gameId: this.game.getState().gameId },
+            dataType: "json",
+            success: function (result) {
+                var state = Literki.GameState.fromJSON(result);
+                _this.game = new Literki.GameRun();
+                _this.game.runState(state);
+                _this.refreshBoard();
+            }
+        });
+    };
+    BoardViewModel.prototype.moveClick = function () {
+        var _this = this;
+        var move = this.game.getActualMove();
+        $.ajax({
+            type: "POST",
+            url: "/game/move",
+            contentType: 'application/json',
+            data: JSON.stringify(move),
+            dataType: "json",
+            success: function (result) {
+                _this.refreshClick();
             }
         });
     };
