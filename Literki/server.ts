@@ -44,7 +44,7 @@ app.get('/games/new',(req, res) => {
 
     var game = new literki_server.GameRun_Server();
     game.newGame(players);
-    var state = game.getState();
+    var state:literki.IGameState = game.getState();
     var gameId = repo.newState(state);
     state = repo.loadState(gameId);
     return res.json(state);
@@ -64,7 +64,7 @@ app.get('/game/get',(req, res) => {
 app.post('/game/move',(req, res) => {
     var repo = new db.GameRepository();
     var move: literki.GameMove = req.body;
-    var state = repo.loadState(move.gameId);
+    var state: literki.IGameState = repo.loadState(move.gameId);
     var game = new literki_server.GameRun_Server();
     game.runState(state);
     game.makeMove(move);

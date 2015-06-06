@@ -306,22 +306,22 @@ export class GameRun {
 
     board: BoardFields;
 
-    protected state: GameState;
+    protected state: IGameState;
     protected freeLetters = new FreeLetters();
 
-    getPlayers(): Array<GamePlayer> {
+    getPlayers(): Array<IGamePlayer> {
         return this.state.players;
     }
 
-    getCurrentPlayer(): GamePlayer {
+    getCurrentPlayer(): IGamePlayer {
         return this.state.players[this.state.currentPlayerIndex];
     }
 
-    getState(): GameState {
+    getState(): IGameState {
         return this.state;
     }
 
-    runState(state: GameState): void {
+    runState(state: IGameState): void {
         this.state = state;
         this.renderState();
     }

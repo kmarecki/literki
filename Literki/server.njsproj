@@ -42,6 +42,7 @@
     <TypeScriptCompile Include="server.ts" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="typings\async\async.d.ts" />
     <TypeScriptCompile Include="typings\body-parser\body-parser.d.ts" />
     <TypeScriptCompile Include="typings\express\express.d.ts" />
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
@@ -51,6 +52,7 @@
   <ItemGroup>
     <Folder Include="scripts\" />
     <Folder Include="typings\" />
+    <Folder Include="typings\async\" />
     <Folder Include="typings\body-parser\" />
     <Folder Include="typings\express\" />
     <Folder Include="typings\mongoose\" />
