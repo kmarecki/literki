@@ -5,6 +5,7 @@ import bodyParser = require('body-parser');
 import literki = require('./scripts/literki');
 import literki_server = require('./scripts/literki_server');
 import db = require('./scripts/db');
+import util = require('./scripts/util');
 
 var port = process.env.port || 1337;
 
@@ -46,11 +47,19 @@ app.get('/games/new',(req, res) => {
 
     var game = new literki_server.GameRun_Server();
     game.newGame(players);
-    var state:literki.IGameState = game.getState();
-    var gameId = repo.newState(state);
-    
-    repo.loadState(gameId, state => {
-        res.json(state);
+    var state: literki.IGameState = game.getState();
+
+    repo.newState(state,(err, gameId) => {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+        }
+        repo.loadState(gameId,(err, state) => {
+            if (err != null) {
+                errorMessages = errorMessages.concat(util.formatError(err));
+            }
+            res.json({ state: state, errorMessage: errorMessages });
+        });
     });
 
 });
@@ -62,8 +71,12 @@ app.get('/games/list',(req, res) => {
 app.get('/game/get',(req, res) => {
     var gameId: number = req.query.gameId;
    
-    repo.loadState(gameId,(state: literki.IGameState) => {
-        res.json(state);
+    repo.loadState(gameId,(err, state) => {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+        }
+        res.json({ state: state, errorMessage: errorMessages });
     });
 });
 

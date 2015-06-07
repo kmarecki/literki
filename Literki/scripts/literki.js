@@ -226,6 +226,13 @@ var GameState = (function () {
     function GameState() {
         this.currentPlayerIndex = 0;
     }
+    GameState.invalidState = function () {
+        var state = new GameState();
+        state.gameId = -1;
+        state.players = new Array();
+        state.remainingLetters = new Array();
+        return state;
+    };
     GameState.fromJSON = function (json) {
         var state = new GameState();
         state.gameId = json.gameId;

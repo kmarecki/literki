@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var literki = require('./scripts/literki');
 var literki_server = require('./scripts/literki_server');
 var db = require('./scripts/db');
+var util = require('./scripts/util');
 var port = process.env.port || 1337;
 var app = express();
 app.use(express.static(__dirname + '/../public'));
@@ -36,17 +37,29 @@ app.get('/games/new', function (req, res) {
     var game = new literki_server.GameRun_Server();
     game.newGame(players);
     var state = game.getState();
-    var gameId = repo.newState(state);
-    repo.loadState(gameId, function (state) {
-        res.json(state);
+    repo.newState(state, function (err, gameId) {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+        }
+        repo.loadState(gameId, function (err, state) {
+            if (err != null) {
+                errorMessages = errorMessages.concat(util.formatError(err));
+            }
+            res.json({ state: state, errorMessage: errorMessages });
+        });
     });
 });
 app.get('/games/list', function (req, res) {
 });
 app.get('/game/get', function (req, res) {
     var gameId = req.query.gameId;
-    repo.loadState(gameId, function (state) {
-        res.json(state);
+    repo.loadState(gameId, function (err, state) {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+        }
+        res.json({ state: state, errorMessage: errorMessages });
     });
 });
 app.post('/game/move', function (req, res) {

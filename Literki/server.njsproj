@@ -39,6 +39,7 @@
     <TypeScriptCompile Include="scripts\literki.ts" />
     <TypeScriptCompile Include="scripts\db.ts" />
     <TypeScriptCompile Include="scripts\literki_server.ts" />
+    <TypeScriptCompile Include="scripts\util.ts" />
     <TypeScriptCompile Include="server.ts" />
     <Content Include="package.json" />
     <Content Include="README.md" />

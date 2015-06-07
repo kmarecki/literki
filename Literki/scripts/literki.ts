@@ -230,6 +230,14 @@ export class GameState implements IGameState {
     currentPlayerIndex: number = 0;
     remainingLetters: Array<string>;
 
+    static invalidState(): GameState {
+        var state = new GameState();
+        state.gameId = -1;
+        state.players = new Array<GamePlayer>();
+        state.remainingLetters = new Array<string>();
+        return state;
+    }
+
     static fromJSON(json: IGameState): GameState {
         var state = new GameState();
         state.gameId = json.gameId;

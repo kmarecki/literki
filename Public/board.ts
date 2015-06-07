@@ -222,9 +222,10 @@ class BoardViewModel {
 
     board: Board;
     game: Literki.GameRun;
+    errorMessage = ko.observable('');
 
     constructor() {
-        this.newWords = ko.observableArray<BoardViewModelWord>();
+        this.newWords = ko.observableArray<BoardViewModelWord>();ko.observable
     }
 
     getNewWords() {
@@ -261,10 +262,8 @@ class BoardViewModel {
             url: "/games/new",
             dataType: "json",
             success: (result) => {
-                var state = Literki.GameState.fromJSON(<Literki.IGameState>result);
                 this.game = new Literki.GameRun();
-                this.game.runState(state);
-                this.refreshBoard();
+                this.refreshModel(result);
                 ko.applyBindings(this);
             }
         });
@@ -277,9 +276,7 @@ class BoardViewModel {
             data: { gameId: this.game.getState().gameId },
             dataType: "json",
             success: (result) => {
-                var state = Literki.GameState.fromJSON(<Literki.IGameState>result);
-                this.game = new Literki.GameRun();
-                this.game.runState(state);
+                this.refreshModel(result);
                 this.refreshBoard();
             }
         });
@@ -297,6 +294,14 @@ class BoardViewModel {
                 this.refreshClick();
             }
         });
+    }
+
+    private refreshModel(result: any): void {
+        if (result.state != null) {
+            var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
+            this.game.runState(state);
+        }
+        this.errorMessage = result.errorMessage;
     }
 }
 

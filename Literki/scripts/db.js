@@ -1,59 +1,46 @@
-﻿/// <reference path="..\typings\mongoose\mongoose.d.ts"/>
+/// <reference path="..\typings\mongoose\mongoose.d.ts"/>
 /// <reference path=".\literki.ts"/>
-
-import mongoose = require('mongoose');
-import async = require('async');
-import literki = require('./literki');
-
-interface IGameStateModel extends literki.IGameState, mongoose.Document { }
-
-export class GameRepository {
-    
-    private schema: mongoose.Schema;
-    private GameState: mongoose.Model<IGameStateModel>;
-
-    open(): void {
-        this.connect();
+var mongoose = require('mongoose');
+var GameRepository = (function () {
+    function GameRepository() {
     }
-
-
-    newState(state: literki.IGameState, callback: (err: Error, gameId:number) => any): void {
+    GameRepository.prototype.open = function () {
+        this.connect();
+    };
+    GameRepository.prototype.newState = function (state, callback) {
         var gameId = 1;
         state.gameId = gameId;
-        this.saveState(state, err => {
+        this.saveState(state, function (err) {
             if (err == null) {
                 callback(null, gameId);
-            } else {
+            }
+            else {
                 console.log(err);
                 callback(err, -1);
             }
-
         });
-    }
-
-    loadState(gameId: number, callback: (err: Error, state: literki.IGameState) => any): void {
-        this.GameState.findOne({ gameId: gameId }).exec((err, result) => {
+    };
+    GameRepository.prototype.loadState = function (gameId, callback) {
+        this.GameState.findOne({ gameId: gameId }).exec(function (err, result) {
             if (err == null && result != null) {
                 callback(null, result);
-            } else {
+            }
+            else {
                 console.log(err);
                 callback(err, null);
             }
-        })
-    }
-
-    saveState(state: literki.IGameState, callback: (err: Error) => any): void {
+        });
+    };
+    GameRepository.prototype.saveState = function (state, callback) {
         var modelState = new this.GameState(state);
         modelState.save(callback);
-    }
-
-    private connect(): void {
+    };
+    GameRepository.prototype.connect = function () {
         var uri = 'mongodb://localhost/literki';
         mongoose.connect(uri);
         this.addGameSchema();
-    }
-
-    private addGameSchema(): void {
+    };
+    GameRepository.prototype.addGameSchema = function () {
         this.schema = new mongoose.Schema({
             gameId: {
                 type: Number,
@@ -77,7 +64,9 @@ export class GameRepository {
                 }]
             }]
         });
-        this.GameState = mongoose.model<IGameStateModel>("GameState", this.schema);
-    }
-}
- 
+        this.GameState = mongoose.model("GameState", this.schema);
+    };
+    return GameRepository;
+})();
+exports.GameRepository = GameRepository;
+//# sourceMappingURL=db.js.map
