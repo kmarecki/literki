@@ -1,6 +1,7 @@
 /// <reference path="..\typings\mongoose\mongoose.d.ts"/>
 /// <reference path=".\literki.ts"/>
 var mongoose = require('mongoose');
+var literki = require('./literki');
 var GameRepository = (function () {
     function GameRepository() {
     }
@@ -27,7 +28,7 @@ var GameRepository = (function () {
             }
             else {
                 console.log(err);
-                callback(err, null);
+                callback(err, literki.GameState.invalidState());
             }
         });
     };

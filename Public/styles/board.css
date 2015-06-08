@@ -27,7 +27,11 @@
     width:200px;
 }
 
+.messageDiv {
+    height: 100%;
+    vertical-align: bottom;
+}
+
 #buttonsDiv {
     display:table-row;
-    height: 100%;
 }

@@ -17,7 +17,7 @@ export class GameRepository {
     }
 
 
-    newState(state: literki.IGameState, callback: (err: Error, gameId:number) => any): void {
+    newState(state: literki.IGameState, callback: (err: Error, gameId: number) => any): void {
         var gameId = 1;
         state.gameId = gameId;
         this.saveState(state, err => {
@@ -37,7 +37,7 @@ export class GameRepository {
                 callback(null, result);
             } else {
                 console.log(err);
-                callback(err, null);
+                callback(err, literki.GameState.invalidState());
             }
         })
     }
