@@ -33,6 +33,9 @@ var Board = (function () {
         this.bonusColors[0 /* None */] = "darkgreen";
     };
     Board.prototype.drawGameState = function (game) {
+        if (game == null || game.getState()) {
+            return;
+        }
         var backgroundLayer = new Kinetic.Layer();
         this.stage.add(backgroundLayer);
         var canvas = backgroundLayer.getCanvas()._canvas;

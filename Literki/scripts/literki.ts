@@ -334,6 +334,10 @@ export class GameRun {
         this.renderState();
     }
 
+    isUndefinedGame(): boolean {
+        return this.state.gameId == -1;
+    }
+
     private renderState(): void {
         this.board = new BoardFields();
         this.state.players.forEach(

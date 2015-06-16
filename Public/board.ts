@@ -44,6 +44,10 @@ class Board {
 
     drawGameState(game: Literki.GameRun): void {
 
+        if (game == null || game.getState()) {
+            return;
+        }
+
         var backgroundLayer = new Kinetic.Layer();
         this.stage.add(backgroundLayer);
 

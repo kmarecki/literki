@@ -309,6 +309,9 @@ var Literki;
             this.state = state;
             this.renderState();
         };
+        GameRun.prototype.isUndefinedGame = function () {
+            return this.state.gameId == -1;
+        };
         GameRun.prototype.renderState = function () {
             var _this = this;
             this.board = new BoardFields();
