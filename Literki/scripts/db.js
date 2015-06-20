@@ -9,14 +9,22 @@ var GameRepository = (function () {
         this.connect();
     };
     GameRepository.prototype.newState = function (state, callback) {
-        var gameId = 1;
-        state.gameId = gameId;
-        this.saveState(state, function (err) {
-            if (err == null) {
-                callback(null, gameId);
+        var _this = this;
+        var gameId = this.getMaxGameId(function (err, result) {
+            if (result != null) {
+                var newGameId = result + 1;
+                state.gameId = newGameId;
+                _this.saveState(state, function (err) {
+                    if (err == null) {
+                        callback(null, newGameId);
+                    }
+                    else {
+                        console.log(err);
+                        callback(err, -1);
+                    }
+                });
             }
             else {
-                console.log(err);
                 callback(err, -1);
             }
         });
@@ -66,6 +74,17 @@ var GameRepository = (function () {
             }]
         });
         this.GameState = mongoose.model("GameState", this.schema);
+    };
+    GameRepository.prototype.getMaxGameId = function (callback) {
+        this.GameState.findOne({}).sort({ gameId: -1 }).exec(function (err, result) {
+            if (err == null && result != null) {
+                callback(null, result.gameId);
+            }
+            else {
+                console.log(err);
+                callback(err, null);
+            }
+        });
     };
     return GameRepository;
 })();

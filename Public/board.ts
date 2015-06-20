@@ -43,8 +43,7 @@ class Board {
     }
 
     drawGameState(game: Literki.GameRun): void {
-
-        if (game == null || game.getState()) {
+        if (game == null || game.getState() == null) {
             return;
         }
 
@@ -268,6 +267,7 @@ class BoardViewModel {
             success: (result) => {
                 this.game = new Literki.GameRun();
                 this.refreshModel(result);
+                this.refreshBoard();
                 ko.applyBindings(this);
             }
         });

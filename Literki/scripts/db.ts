@@ -18,16 +18,21 @@ export class GameRepository {
 
 
     newState(state: literki.IGameState, callback: (err: Error, gameId: number) => any): void {
-        var gameId = 1;
-        state.gameId = gameId;
-        this.saveState(state, err => {
-            if (err == null) {
-                callback(null, gameId);
+        var gameId = this.getMaxGameId((err, result) => {
+            if (result != null) {
+                var newGameId = result + 1;
+                state.gameId = newGameId;
+                this.saveState(state, err => {
+                    if (err == null) {
+                        callback(null, newGameId);
+                    } else {
+                        console.log(err);
+                        callback(err, -1);
+                    }
+                });
             } else {
-                console.log(err);
                 callback(err, -1);
             }
-
         });
     }
 
@@ -78,6 +83,17 @@ export class GameRepository {
             }]
         });
         this.GameState = mongoose.model<IGameStateModel>("GameState", this.schema);
+    }
+
+    private getMaxGameId(callback: (err: Error, gameId: number) => any): void {
+        this.GameState.findOne({}).sort({ gameId: -1 }).exec((err, result) => {
+            if (err == null && result != null) {
+                callback(null, result.gameId);
+            } else {
+                console.log(err);
+                callback(err, null);
+            }
+        })
     }
 }
  

@@ -33,7 +33,7 @@ var Board = (function () {
         this.bonusColors[0 /* None */] = "darkgreen";
     };
     Board.prototype.drawGameState = function (game) {
-        if (game == null || game.getState()) {
+        if (game == null || game.getState() == null) {
             return;
         }
         var backgroundLayer = new Kinetic.Layer();
@@ -214,6 +214,7 @@ var BoardViewModel = (function () {
             success: function (result) {
                 _this.game = new Literki.GameRun();
                 _this.refreshModel(result);
+                _this.refreshBoard();
                 ko.applyBindings(_this);
             }
         });
