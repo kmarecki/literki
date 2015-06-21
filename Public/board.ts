@@ -137,10 +137,12 @@ class Board {
         var foregroundLayer = new Kinetic.Layer();
 
         for (var x = 0; x < Literki.MAX_LETTERS; x++) {
-            var letter = game.getCurrentPlayer().freeLetters[x];
-            var xpos = BOARD_MARGIN + x * FIELD_SIZE;
+            if (x < game.getCurrentPlayer().freeLetters.length) {
+                var letter = game.getCurrentPlayer().freeLetters[x];
+                var xpos = BOARD_MARGIN + x * FIELD_SIZE;
 
-            foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+                foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+            }
         }
 
         this.stage.add(foregroundLayer);

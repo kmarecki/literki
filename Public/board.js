@@ -25,12 +25,12 @@ var Board = (function () {
         this.initalizeFields();
     }
     Board.prototype.initalizeFields = function () {
-        this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
-        this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
-        this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue";
-        this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
-        this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
-        this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
+        this.bonusColors[1 /* DoubleLetter */] = "lightblue";
+        this.bonusColors[3 /* DoubleWord */] = "lightpink";
+        this.bonusColors[2 /* TripleLetter */] = "blue";
+        this.bonusColors[4 /* TripleWord */] = "red";
+        this.bonusColors[5 /* Start */] = "lightpink";
+        this.bonusColors[0 /* None */] = "darkgreen";
     };
     Board.prototype.drawGameState = function (game) {
         if (game == null || game.getState() == null) {
@@ -107,9 +107,11 @@ var Board = (function () {
         // moving letters
         var foregroundLayer = new Kinetic.Layer();
         for (var x = 0; x < Literki.MAX_LETTERS; x++) {
-            var letter = game.getCurrentPlayer().freeLetters[x];
-            var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-            foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+            if (x < game.getCurrentPlayer().freeLetters.length) {
+                var letter = game.getCurrentPlayer().freeLetters[x];
+                var xpos = BOARD_MARGIN + x * FIELD_SIZE;
+                foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+            }
         }
         this.stage.add(foregroundLayer);
     };

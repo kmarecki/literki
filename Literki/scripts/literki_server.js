@@ -20,9 +20,13 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.makeMove = function (move) {
         var _this = this;
-        move.freeLetters.forEach(function (fl) { return _this.putFreeLetter(fl.letter, fl.index, fl.x, fl.y); });
+        move.freeLetters.forEach(function (fl) {
+            _this.putFreeLetter(fl.letter, fl.index, fl.x, fl.y);
+            var playersFreeLetters = _this.getCurrentPlayer().freeLetters;
+            var index = playersFreeLetters.indexOf(fl.letter);
+            playersFreeLetters.splice(index, 1);
+        });
         this.updateState();
-        this.freeLetters;
     };
     GameRun_Server.prototype.allLetters = function () {
         var letters = new Array();
