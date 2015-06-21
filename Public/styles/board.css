@@ -27,6 +27,15 @@
     width:200px;
 }
 
+.activeplayerDiv {
+    border: 2px solid green; 
+    display: table-cell;
+    white-space:normal;
+    font-weight: bold;
+    font-size:x-large;
+    width:200px;
+}
+
 .messageDiv {
     height: 100%;
     vertical-align: bottom;

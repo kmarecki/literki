@@ -42,14 +42,14 @@
                             <tr>
                                 <!-- ko foreach: $parent.getPlayers($data * 2, ($data + 1) * 2) -->
                                 <td>
-                                    <div class="playerDiv">
+                                    <div data-bind="css: isCurrentPlayer ? 'activeplayerDiv' : 'playerDiv'">
                                         <table>
                                             <tr>
-                                                <td><label class="left" data-bind="text: playerName"/></td>
-                                                <td><label class="right" data-bind="text: remainingTime"/></td>
+                                                <td><label class="left" data-bind="text: player.playerName" /></td>
+                                                <td><label class="right" data-bind="text: player.remainingTime" /></td>
                                             </tr>
                                             <tr>
-                                                <td colspan="2"><label class="center" data-bind="text: getPoints()"/></td>
+                                                <td colspan="2"><label class="center" data-bind="text: player.getPoints()" /></td>
                                             </tr>
                                         </table>
                                     </div>

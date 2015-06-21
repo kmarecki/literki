@@ -218,6 +218,15 @@ class BoardViewModelWord {
     points: number;
 }
 
+class PlayerViewModel {
+    player: Literki.IGamePlayer;
+    isCurrentPlayer: boolean;
+
+    constructor(player: Literki.IGamePlayer) {
+        this.player = player;
+    }
+}
+
 class BoardViewModel {
 
     private self = this;
@@ -231,35 +240,42 @@ class BoardViewModel {
         this.newWords = ko.observableArray<BoardViewModelWord>();ko.observable
     }
 
-    getNewWords() {
+    getNewWords(): KnockoutObservableArray<BoardViewModelWord> {
         return this.newWords;
     }
 
-    setNewWords(newWords: BoardViewModelWord[]) {
+    setNewWords(newWords: BoardViewModelWord[]): void {
         this.newWords.removeAll();
         newWords.forEach(word => this.newWords.push(word));
     }
 
-    getPlayers(start: number, end: number) {
-        return this.game.getPlayers().slice(start, end);
+    getPlayers(start: number, end: number): PlayerViewModel[] {
+        var players = new Array<PlayerViewModel>();
+
+        this.game.getPlayers().slice(start, end).forEach(p => {
+            var playerModel = new PlayerViewModel(p);
+            playerModel.isCurrentPlayer = this.game.getCurrentPlayer() == p;
+            players.push(playerModel);
+        });
+
+        return players;
     }
 
-    getPlayersRow() {
+    getPlayersRow(): Number[] {
         return this.game.getPlayers().length > 2 ? [0, 1] : [0];
     }
 
-    refreshBoard() {
+    refreshBoard(): void {
         this.board.clearBoard();
         this.board.drawGameState(this.game);
     }
 
-    runState(state: Literki.GameState) {
+    runState(state: Literki.GameState): void {
         viewModel.game.runState(state);
-
         viewModel.board.drawGameState(viewModel.game);
     }
 
-    init() {
+    init(): void {
         $.ajax({
             type: "GET",
             url: "/games/new",
@@ -273,7 +289,7 @@ class BoardViewModel {
         });
     }
 
-    refreshClick() {
+    refreshClick(): void {
         $.ajax({
             type: "GET",
             url: "/game/get",
@@ -286,7 +302,7 @@ class BoardViewModel {
         });
     }
 
-    moveClick() {
+    moveClick(): void {
         var move = this.game.getActualMove();
         $.ajax({
             type: "POST",

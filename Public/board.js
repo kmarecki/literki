@@ -176,6 +176,12 @@ var BoardViewModelWord = (function () {
     }
     return BoardViewModelWord;
 })();
+var PlayerViewModel = (function () {
+    function PlayerViewModel(player) {
+        this.player = player;
+    }
+    return PlayerViewModel;
+})();
 var BoardViewModel = (function () {
     function BoardViewModel() {
         this.self = this;
@@ -192,7 +198,14 @@ var BoardViewModel = (function () {
         newWords.forEach(function (word) { return _this.newWords.push(word); });
     };
     BoardViewModel.prototype.getPlayers = function (start, end) {
-        return this.game.getPlayers().slice(start, end);
+        var _this = this;
+        var players = new Array();
+        this.game.getPlayers().slice(start, end).forEach(function (p) {
+            var playerModel = new PlayerViewModel(p);
+            playerModel.isCurrentPlayer = _this.game.getCurrentPlayer() == p;
+            players.push(playerModel);
+        });
+        return players;
     };
     BoardViewModel.prototype.getPlayersRow = function () {
         return this.game.getPlayers().length > 2 ? [0, 1] : [0];
