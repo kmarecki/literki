@@ -25,12 +25,12 @@ var Board = (function () {
         this.initalizeFields();
     }
     Board.prototype.initalizeFields = function () {
-        this.bonusColors[1 /* DoubleLetter */] = "lightblue";
-        this.bonusColors[3 /* DoubleWord */] = "lightpink";
-        this.bonusColors[2 /* TripleLetter */] = "blue";
-        this.bonusColors[4 /* TripleWord */] = "red";
-        this.bonusColors[5 /* Start */] = "lightpink";
-        this.bonusColors[0 /* None */] = "darkgreen";
+        this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+        this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
+        this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue";
+        this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
+        this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
+        this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
     };
     Board.prototype.drawGameState = function (game) {
         if (game == null || game.getState() == null) {
@@ -178,32 +178,40 @@ var BoardViewModelWord = (function () {
 })();
 var PlayerViewModel = (function () {
     function PlayerViewModel(player) {
+        this.isCurrentPlayer = ko.observable(false);
         this.player = player;
     }
+    PlayerViewModel.prototype.setIsCurrentPlayer = function (currentPlayer) {
+        this.isCurrentPlayer(currentPlayer.playerName == this.player.playerName);
+    };
     return PlayerViewModel;
 })();
 var BoardViewModel = (function () {
     function BoardViewModel() {
         this.self = this;
-        this.errorMessage = ko.observable('');
         this.newWords = ko.observableArray();
-        ko.observable;
+        this.allPlayers = new Array();
+        this.errorMessage = ko.observable('');
     }
     BoardViewModel.prototype.getNewWords = function () {
         return this.newWords;
     };
     BoardViewModel.prototype.setNewWords = function (newWords) {
         var _this = this;
-        this.newWords.removeAll();
+        this.cleanNewWords();
         newWords.forEach(function (word) { return _this.newWords.push(word); });
+    };
+    BoardViewModel.prototype.cleanNewWords = function () {
+        this.newWords.removeAll();
     };
     BoardViewModel.prototype.getPlayers = function (start, end) {
         var _this = this;
         var players = new Array();
         this.game.getPlayers().slice(start, end).forEach(function (p) {
             var playerModel = new PlayerViewModel(p);
-            playerModel.isCurrentPlayer = _this.game.getCurrentPlayer() == p;
+            playerModel.setIsCurrentPlayer(_this.game.getCurrentPlayer());
             players.push(playerModel);
+            _this.allPlayers.push(playerModel);
         });
         return players;
     };
@@ -255,7 +263,8 @@ var BoardViewModel = (function () {
             data: JSON.stringify(move),
             dataType: "json",
             success: function (result) {
-                _this.refreshClick();
+                _this.refreshModel(result);
+                _this.refreshBoard();
             }
         });
     };
@@ -263,8 +272,14 @@ var BoardViewModel = (function () {
         if (result.state != null) {
             var state = Literki.GameState.fromJSON(result.state);
             this.game.runState(state);
+            this.cleanNewWords();
+            this.refreshPlayerModels();
         }
         this.errorMessage = result.errorMessage;
+    };
+    BoardViewModel.prototype.refreshPlayerModels = function () {
+        var _this = this;
+        this.allPlayers.forEach(function (p) { return p.setIsCurrentPlayer(_this.game.getCurrentPlayer()); });
     };
     return BoardViewModel;
 })();
@@ -274,7 +289,7 @@ window.onload = function () {
     boardDiv.style.width = screen.availWidth / 2 + "px";
     boardDiv.style.height = screen.availHeight * 0.9 + "px";
     var infoDiv = document.getElementById("infoDiv");
-    infoDiv.style.width = screen.availWidth / 2 + "px";
+    infoDiv.style.width = screen.availWidth / 2 - 10 + "px";
     infoDiv.style.height = screen.availHeight * 0.9 + "px";
     var debugLabel = document.getElementById("debugLabel");
     setInterval(function () {

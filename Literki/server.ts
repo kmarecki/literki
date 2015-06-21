@@ -82,12 +82,25 @@ app.get('/game/get',(req, res) => {
 
 app.post('/game/move',(req, res) => {
     var move: literki.GameMove = req.body;
-    //var state: literki.IGameState = repo.loadState(move.gameId);
-    //var game = new literki_server.GameRun_Server();
-    //game.runState(state);
-    //game.makeMove(move);
-    //state = game.getState();
-    //repo.saveState(state);
+    var game = new literki_server.GameRun_Server();
+
+    repo.loadState(move.gameId,(err, state) => {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+            res.json({ state: state, errorMessage: errorMessages });
+        } else {
+            game.runState(state);
+            game.makeMove(move);
+            state = game.getState();
+            repo.saveState(state,(err) => {
+                if (err != null) {
+                    errorMessages = errorMessages.concat(util.formatError(err));
+                }
+                res.json({ state: state, errorMessage: errorMessages });
+            });
+        }
+    });
 });
 
 

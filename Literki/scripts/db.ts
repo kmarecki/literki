@@ -49,7 +49,7 @@ export class GameRepository {
 
     saveState(state: literki.IGameState, callback: (err: Error) => any): void {
         var modelState = new this.GameState(state);
-        modelState.save(callback);
+        this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, callback);
     }
 
     private connect(): void {
@@ -91,7 +91,7 @@ export class GameRepository {
                 callback(null, result.gameId);
             } else {
                 console.log(err);
-                callback(err, null);
+                callback(err, -1);
             }
         })
     }

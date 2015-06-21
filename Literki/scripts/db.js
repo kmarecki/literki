@@ -42,7 +42,7 @@ var GameRepository = (function () {
     };
     GameRepository.prototype.saveState = function (state, callback) {
         var modelState = new this.GameState(state);
-        modelState.save(callback);
+        this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, callback);
     };
     GameRepository.prototype.connect = function () {
         var uri = 'mongodb://localhost/literki';
@@ -82,7 +82,7 @@ var GameRepository = (function () {
             }
             else {
                 console.log(err);
-                callback(err, null);
+                callback(err, -1);
             }
         });
     };

@@ -220,33 +220,38 @@ class BoardViewModelWord {
 
 class PlayerViewModel {
     player: Literki.IGamePlayer;
-    isCurrentPlayer: boolean;
+    isCurrentPlayer = ko.observable(false);
 
     constructor(player: Literki.IGamePlayer) {
         this.player = player;
+    }
+
+    setIsCurrentPlayer(currentPlayer: Literki.IGamePlayer): void {
+        this.isCurrentPlayer(currentPlayer.playerName == this.player.playerName);
     }
 }
 
 class BoardViewModel {
 
     private self = this;
-    private newWords: KnockoutObservableArray<BoardViewModelWord>;
+    private newWords = ko.observableArray<BoardViewModelWord>();
+    private allPlayers = new Array<PlayerViewModel>();
 
     board: Board;
     game: Literki.GameRun;
     errorMessage = ko.observable('');
-
-    constructor() {
-        this.newWords = ko.observableArray<BoardViewModelWord>();ko.observable
-    }
 
     getNewWords(): KnockoutObservableArray<BoardViewModelWord> {
         return this.newWords;
     }
 
     setNewWords(newWords: BoardViewModelWord[]): void {
-        this.newWords.removeAll();
+        this.cleanNewWords();
         newWords.forEach(word => this.newWords.push(word));
+    }
+
+    private cleanNewWords(): void {
+        this.newWords.removeAll();
     }
 
     getPlayers(start: number, end: number): PlayerViewModel[] {
@@ -254,8 +259,9 @@ class BoardViewModel {
 
         this.game.getPlayers().slice(start, end).forEach(p => {
             var playerModel = new PlayerViewModel(p);
-            playerModel.isCurrentPlayer = this.game.getCurrentPlayer() == p;
+            playerModel.setIsCurrentPlayer(this.game.getCurrentPlayer());
             players.push(playerModel);
+            this.allPlayers.push(playerModel);
         });
 
         return players;
@@ -311,7 +317,8 @@ class BoardViewModel {
             data: JSON.stringify(move),
             dataType: "json",
             success: (result) => {
-                this.refreshClick();
+                this.refreshModel(result);
+                this.refreshBoard();
             }
         });
     }
@@ -320,8 +327,14 @@ class BoardViewModel {
         if (result.state != null) {
             var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
             this.game.runState(state);
+            this.cleanNewWords();
+            this.refreshPlayerModels();
         }
         this.errorMessage = result.errorMessage;
+    }
+
+    private refreshPlayerModels(): void {
+        this.allPlayers.forEach(p => p.setIsCurrentPlayer(this.game.getCurrentPlayer()));
     }
 }
 
@@ -334,7 +347,7 @@ window.onload = () => {
     boardDiv.style.height = screen.availHeight * 0.9 + "px";
 
     var infoDiv = <HTMLElement>document.getElementById("infoDiv");
-    infoDiv.style.width = screen.availWidth / 2 + "px";
+    infoDiv.style.width = screen.availWidth / 2 - 10 + "px";
     infoDiv.style.height = screen.availHeight * 0.9 + "px";
 
     var debugLabel = <HTMLLabelElement>document.getElementById("debugLabel");

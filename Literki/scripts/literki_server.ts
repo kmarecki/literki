@@ -11,9 +11,9 @@ export class GameRun_Server extends literki.GameRun {
     }
 
     makeMove(move: literki.GameMove): void {
-        for (var freeLetter in move.freeLetters) {
-            this.putFreeLetter(freeLetter.letter, freeLetter.index, freeLetter.x, freeLetter.y);
-        }
+        move.freeLetters.forEach(fl => this.putFreeLetter(fl.letter, fl.index, fl.x, fl.y));
+        this.updateState();
+        this.freeLetters
     }
 
     private allLetters(): Array<string> {
@@ -36,5 +36,15 @@ export class GameRun_Server extends literki.GameRun {
             player.freeLetters.push(this.state.remainingLetters[pickIndex]);
             this.state.remainingLetters.splice(pickIndex, 1);
         }
+    }
+
+    private updateState(): literki.IGameState {
+        var move = new literki.GameMoveHistory();
+        this.getNewWords().forEach(p => move.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)));
+        this.getCurrentPlayer().moves.push(move);
+        
+        this.state.currentPlayerIndex = (this.state.currentPlayerIndex + 1) % this.state.players.length;
+
+        return this.state;
     }
 }

@@ -64,11 +64,24 @@ app.get('/game/get', function (req, res) {
 });
 app.post('/game/move', function (req, res) {
     var move = req.body;
-    //var state: literki.IGameState = repo.loadState(move.gameId);
-    //var game = new literki_server.GameRun_Server();
-    //game.runState(state);
-    //game.makeMove(move);
-    //state = game.getState();
-    //repo.saveState(state);
+    var game = new literki_server.GameRun_Server();
+    repo.loadState(move.gameId, function (err, state) {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+            res.json({ state: state, errorMessage: errorMessages });
+        }
+        else {
+            game.runState(state);
+            game.makeMove(move);
+            state = game.getState();
+            repo.saveState(state, function (err) {
+                if (err != null) {
+                    errorMessages = errorMessages.concat(util.formatError(err));
+                }
+                res.json({ state: state, errorMessage: errorMessages });
+            });
+        }
+    });
 });
 //# sourceMappingURL=server.js.map

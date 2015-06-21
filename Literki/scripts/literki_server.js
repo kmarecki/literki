@@ -19,9 +19,10 @@ var GameRun_Server = (function (_super) {
         this.state.players.forEach(function (p) { return _this.pickLetters(_this.state.players.indexOf(p)); });
     };
     GameRun_Server.prototype.makeMove = function (move) {
-        for (var freeLetter in move.freeLetters) {
-            this.putFreeLetter(freeLetter.letter, freeLetter.index, freeLetter.x, freeLetter.y);
-        }
+        var _this = this;
+        move.freeLetters.forEach(function (fl) { return _this.putFreeLetter(fl.letter, fl.index, fl.x, fl.y); });
+        this.updateState();
+        this.freeLetters;
     };
     GameRun_Server.prototype.allLetters = function () {
         var letters = new Array();
@@ -42,6 +43,13 @@ var GameRun_Server = (function (_super) {
             player.freeLetters.push(this.state.remainingLetters[pickIndex]);
             this.state.remainingLetters.splice(pickIndex, 1);
         }
+    };
+    GameRun_Server.prototype.updateState = function () {
+        var move = new literki.GameMoveHistory();
+        this.getNewWords().forEach(function (p) { return move.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)); });
+        this.getCurrentPlayer().moves.push(move);
+        this.state.currentPlayerIndex = (this.state.currentPlayerIndex + 1) % this.state.players.length;
+        return this.state;
     };
     return GameRun_Server;
 })(literki.GameRun);
