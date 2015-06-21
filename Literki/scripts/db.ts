@@ -77,7 +77,8 @@ export class GameRepository {
                         x: Number,
                         y: Number,
                         //direction: { type: String, enum: ['Vertical', 'Horizontal'] }
-                        direction: Number
+                        direction: Number,
+                        points: Number
                     }]
                 }]
             }]

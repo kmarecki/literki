@@ -221,15 +221,24 @@ class BoardViewModelWord {
 }
 
 class PlayerViewModel {
-    player: Literki.IGamePlayer;
     isCurrentPlayer = ko.observable(false);
+    playerName = ko.observable("");
+    points = ko.observable(0);
+    remainingTime = ko.observable(0);
 
-    constructor(player: Literki.IGamePlayer) {
-        this.player = player;
+    findAndRefresh(players: Literki.IGamePlayer[], currentPlayer: Literki.IGamePlayer): void {
+        players.forEach(p => {
+            if (p.playerName == this.playerName()) {
+                this.refresh(p, currentPlayer);
+            }
+        });
     }
 
-    setIsCurrentPlayer(currentPlayer: Literki.IGamePlayer): void {
-        this.isCurrentPlayer(currentPlayer.playerName == this.player.playerName);
+    refresh(player: Literki.IGamePlayer, currentPlayer: Literki.IGamePlayer): void {
+        this.playerName(player.playerName);
+        this.remainingTime(player.remainingTime);
+        this.points((<Literki.GamePlayer>player).getPoints());
+        this.isCurrentPlayer(currentPlayer.playerName == this.playerName());
     }
 }
 
@@ -241,7 +250,7 @@ class BoardViewModel {
 
     board: Board;
     game: Literki.GameRun;
-    errorMessage = ko.observable('');
+    errorMessage = ko.observable("");
 
     getNewWords(): KnockoutObservableArray<BoardViewModelWord> {
         return this.newWords;
@@ -260,8 +269,8 @@ class BoardViewModel {
         var players = new Array<PlayerViewModel>();
 
         this.game.getPlayers().slice(start, end).forEach(p => {
-            var playerModel = new PlayerViewModel(p);
-            playerModel.setIsCurrentPlayer(this.game.getCurrentPlayer());
+            var playerModel = new PlayerViewModel();
+            playerModel.refresh(p, this.game.getCurrentPlayer());
             players.push(playerModel);
             this.allPlayers.push(playerModel);
         });
@@ -336,7 +345,7 @@ class BoardViewModel {
     }
 
     private refreshPlayerModels(): void {
-        this.allPlayers.forEach(p => p.setIsCurrentPlayer(this.game.getCurrentPlayer()));
+        this.allPlayers.forEach(p => p.findAndRefresh(this.game.getPlayers(), this.game.getCurrentPlayer()));
     }
 }
 

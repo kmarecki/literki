@@ -179,12 +179,25 @@ var BoardViewModelWord = (function () {
     return BoardViewModelWord;
 })();
 var PlayerViewModel = (function () {
-    function PlayerViewModel(player) {
+    function PlayerViewModel() {
         this.isCurrentPlayer = ko.observable(false);
-        this.player = player;
+        this.playerName = ko.observable("");
+        this.points = ko.observable(0);
+        this.remainingTime = ko.observable(0);
     }
-    PlayerViewModel.prototype.setIsCurrentPlayer = function (currentPlayer) {
-        this.isCurrentPlayer(currentPlayer.playerName == this.player.playerName);
+    PlayerViewModel.prototype.findAndRefresh = function (players, currentPlayer) {
+        var _this = this;
+        players.forEach(function (p) {
+            if (p.playerName == _this.playerName()) {
+                _this.refresh(p, currentPlayer);
+            }
+        });
+    };
+    PlayerViewModel.prototype.refresh = function (player, currentPlayer) {
+        this.playerName(player.playerName);
+        this.remainingTime(player.remainingTime);
+        this.points(player.getPoints());
+        this.isCurrentPlayer(currentPlayer.playerName == this.playerName());
     };
     return PlayerViewModel;
 })();
@@ -193,7 +206,7 @@ var BoardViewModel = (function () {
         this.self = this;
         this.newWords = ko.observableArray();
         this.allPlayers = new Array();
-        this.errorMessage = ko.observable('');
+        this.errorMessage = ko.observable("");
     }
     BoardViewModel.prototype.getNewWords = function () {
         return this.newWords;
@@ -210,8 +223,8 @@ var BoardViewModel = (function () {
         var _this = this;
         var players = new Array();
         this.game.getPlayers().slice(start, end).forEach(function (p) {
-            var playerModel = new PlayerViewModel(p);
-            playerModel.setIsCurrentPlayer(_this.game.getCurrentPlayer());
+            var playerModel = new PlayerViewModel();
+            playerModel.refresh(p, _this.game.getCurrentPlayer());
             players.push(playerModel);
             _this.allPlayers.push(playerModel);
         });
@@ -281,7 +294,7 @@ var BoardViewModel = (function () {
     };
     BoardViewModel.prototype.refreshPlayerModels = function () {
         var _this = this;
-        this.allPlayers.forEach(function (p) { return p.setIsCurrentPlayer(_this.game.getCurrentPlayer()); });
+        this.allPlayers.forEach(function (p) { return p.findAndRefresh(_this.game.getPlayers(), _this.game.getCurrentPlayer()); });
     };
     return BoardViewModel;
 })();
