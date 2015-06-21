@@ -8,6 +8,14 @@ var GameRepository = (function () {
     GameRepository.prototype.open = function () {
         this.connect();
     };
+    GameRepository.prototype.allGames = function (callback) {
+        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, _id: 0 }, function (err, result) {
+            if (err != null) {
+                console.log(err);
+            }
+            callback(err, result);
+        });
+    };
     GameRepository.prototype.newState = function (state, callback) {
         var _this = this;
         var gameId = this.getMaxGameId(function (err, result) {

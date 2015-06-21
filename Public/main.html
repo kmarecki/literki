@@ -8,6 +8,17 @@
     <script src="main.js"></script>
 </head>
 <body>
-
+    <table>
+        <thead>
+            <tr>
+                <th>Lista gier</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: games">
+            <tr>
+                <td><a data-bind="attr: { href: './board.html?gameId=' + gameId }, text: gameId"/></td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>

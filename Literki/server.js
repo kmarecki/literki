@@ -51,6 +51,13 @@ app.get('/games/new', function (req, res) {
     });
 });
 app.get('/games/list', function (req, res) {
+    repo.allGames(function (err, games) {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+        }
+        res.json({ games: games, errorMessage: errorMessages });
+    });
 });
 app.get('/game/get', function (req, res) {
     var gameId = req.query.gameId;

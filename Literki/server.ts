@@ -65,6 +65,13 @@ app.get('/games/new',(req, res) => {
 });
 
 app.get('/games/list',(req, res) => {
+    repo.allGames((err, games) => {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+        }
+        res.json({ games: games, errorMessage: errorMessages });
+    });
 });
 
 

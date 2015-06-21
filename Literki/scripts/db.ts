@@ -16,6 +16,14 @@ export class GameRepository {
         this.connect();
     }
 
+    allGames(callback: (err: Error, games: any) => any): void {
+        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, _id: 0 }, (err, result) => {
+            if (err != null) {
+                console.log(err);
+            }
+            callback(err, result);
+        });
+    }
 
     newState(state: literki.IGameState, callback: (err: Error, gameId: number) => any): void {
         var gameId = this.getMaxGameId((err, result) => {
