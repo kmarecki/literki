@@ -65,6 +65,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="board.ts" />
     <TypeScriptCompile Include="main.ts" />
+    <TypeScriptCompile Include="scripts\app.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\kineticjs\kineticjs.d.ts" />

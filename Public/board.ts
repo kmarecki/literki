@@ -1,6 +1,7 @@
 ﻿/// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path=".\typings\knockout\knockout.d.ts"/>
 /// <reference path=".\typings\jquery\jquery.d.ts"/>
+/// <reference path=".\scripts\app.ts"/>
 /// <reference path=".\scripts\literki.ts"/>
 
 module board {
@@ -294,17 +295,34 @@ module board {
         }
 
         init(): void {
-            $.ajax({
-                type: "GET",
-                url: "/games/new",
-                dataType: "json",
-                success: (result) => {
-                    this.game = new Literki.GameRun();
-                    this.refreshModel(result);
-                    this.refreshBoard();
-                    ko.applyBindings(this);
-                }
-            });
+            var gameId = App.urlParam("gameId");
+            
+            if (gameId != null) {
+                $.ajax({
+                    type: "GET",
+                    url: "/game/get",
+                    data: { gameId: gameId },
+                    dataType: "json",
+                    success: (result) => {
+                        this.game = new Literki.GameRun();
+                        this.refreshModel(result);
+                        this.refreshBoard();
+                        ko.applyBindings(this);
+                    }
+                });
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: "/games/new",
+                    dataType: "json",
+                    success: (result) => {
+                        this.game = new Literki.GameRun();
+                        this.refreshModel(result);
+                        this.refreshBoard();
+                        ko.applyBindings(this);
+                    }
+                });
+            }
         }
 
         refreshClick(): void {
@@ -360,7 +378,7 @@ module board {
 
         var infoDiv = <HTMLElement>document.getElementById("infoDiv");
         infoDiv.style.width = screen.availWidth / 2 - 50 + "px";
-        infoDiv.style.height = screen.availHeight * 0.9 + "px";
+        infoDiv.style.height = boardDiv.style.height;
 
         var debugLabel = <HTMLLabelElement>document.getElementById("debugLabel");
 
@@ -379,6 +397,8 @@ module board {
         viewModel.refreshBoard();
     }
 }
+
+
 
 
 

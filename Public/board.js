@@ -1,6 +1,7 @@
 /// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path=".\typings\knockout\knockout.d.ts"/>
 /// <reference path=".\typings\jquery\jquery.d.ts"/>
+/// <reference path=".\scripts\app.ts"/>
 /// <reference path=".\scripts\literki.ts"/>
 var board;
 (function (board) {
@@ -245,17 +246,34 @@ var board;
         };
         BoardViewModel.prototype.init = function () {
             var _this = this;
-            $.ajax({
-                type: "GET",
-                url: "/games/new",
-                dataType: "json",
-                success: function (result) {
-                    _this.game = new Literki.GameRun();
-                    _this.refreshModel(result);
-                    _this.refreshBoard();
-                    ko.applyBindings(_this);
-                }
-            });
+            var gameId = App.urlParam("gameId");
+            if (gameId != null) {
+                $.ajax({
+                    type: "GET",
+                    url: "/game/get",
+                    data: { gameId: gameId },
+                    dataType: "json",
+                    success: function (result) {
+                        _this.game = new Literki.GameRun();
+                        _this.refreshModel(result);
+                        _this.refreshBoard();
+                        ko.applyBindings(_this);
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "GET",
+                    url: "/games/new",
+                    dataType: "json",
+                    success: function (result) {
+                        _this.game = new Literki.GameRun();
+                        _this.refreshModel(result);
+                        _this.refreshBoard();
+                        ko.applyBindings(_this);
+                    }
+                });
+            }
         };
         BoardViewModel.prototype.refreshClick = function () {
             var _this = this;
@@ -307,7 +325,7 @@ var board;
         boardDiv.style.height = screen.availHeight * 0.9 + "px";
         var infoDiv = document.getElementById("infoDiv");
         infoDiv.style.width = screen.availWidth / 2 - 50 + "px";
-        infoDiv.style.height = screen.availHeight * 0.9 + "px";
+        infoDiv.style.height = boardDiv.style.height;
         var debugLabel = document.getElementById("debugLabel");
         setInterval(function () {
             debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
