@@ -342,7 +342,7 @@ module board {
                 this.cleanNewWords();
                 this.refreshPlayerModels();
             }
-            this.errorMessage = result.errorMessage;
+            this.errorMessage(result.errorMessage);
         }
 
         private refreshPlayerModels(): void {

@@ -292,7 +292,7 @@ var board;
                 this.cleanNewWords();
                 this.refreshPlayerModels();
             }
-            this.errorMessage = result.errorMessage;
+            this.errorMessage(result.errorMessage);
         };
         BoardViewModel.prototype.refreshPlayerModels = function () {
             var _this = this;

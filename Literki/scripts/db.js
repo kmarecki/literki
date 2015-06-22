@@ -20,7 +20,7 @@ var GameRepository = (function () {
         var _this = this;
         var gameId = this.getMaxGameId(function (err, result) {
             if (result != null) {
-                var newGameId = result + 1;
+                var newGameId = result != -1 ? result + 1 : 1;
                 state.gameId = newGameId;
                 _this.saveState(state, function (err) {
                     if (err == null) {
@@ -50,7 +50,12 @@ var GameRepository = (function () {
     };
     GameRepository.prototype.saveState = function (state, callback) {
         var modelState = new this.GameState(state);
-        this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, callback);
+        this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, function (err) {
+            if (err != null) {
+                console.log(err);
+            }
+            callback(err);
+        });
     };
     GameRepository.prototype.connect = function () {
         var uri = 'mongodb://localhost/literki';

@@ -28,9 +28,9 @@ export class GameRepository {
     newState(state: literki.IGameState, callback: (err: Error, gameId: number) => any): void {
         var gameId = this.getMaxGameId((err, result) => {
             if (result != null) {
-                var newGameId = result + 1;
+                var newGameId = result != -1 ? result + 1 : 1;
                 state.gameId = newGameId;
-                this.saveState(state, err => {
+                this.saveState(state, (err) => {
                     if (err == null) {
                         callback(null, newGameId);
                     } else {
@@ -57,7 +57,12 @@ export class GameRepository {
 
     saveState(state: literki.IGameState, callback: (err: Error) => any): void {
         var modelState = new this.GameState(state);
-        this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, callback);
+        this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true },(err) => {
+            if (err != null) {
+                console.log(err);
+            }
+            callback(err);
+        });
     }
 
     private connect(): void {
