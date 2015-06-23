@@ -301,6 +301,10 @@
         exists(x: number, y: number): boolean {
             return this.freeLetters.filter(pos => pos.x == x && pos.y == y).length > 0;
         }
+
+        clear(): void {
+            this.freeLetters = [];
+        }
     }
 
     export class GameRun {
@@ -333,6 +337,7 @@
 
         private renderState(): void {
             this.board = new BoardFields();
+            this.freeLetters.clear();
             this.state.players.forEach(
                 player => player.moves.forEach(
                     move => move.words.forEach(

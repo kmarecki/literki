@@ -289,6 +289,9 @@ var Literki;
         FreeLetters.prototype.exists = function (x, y) {
             return this.freeLetters.filter(function (pos) { return pos.x == x && pos.y == y; }).length > 0;
         };
+        FreeLetters.prototype.clear = function () {
+            this.freeLetters = [];
+        };
         return FreeLetters;
     })();
     Literki.FreeLetters = FreeLetters;
@@ -315,6 +318,7 @@ var Literki;
         GameRun.prototype.renderState = function () {
             var _this = this;
             this.board = new BoardFields();
+            this.freeLetters.clear();
             this.state.players.forEach(function (player) { return player.moves.forEach(function (move) { return move.words.forEach(function (word) { return _this.board.addWord(word.word, word.x, word.y, word.direction); }); }); });
         };
         GameRun.prototype.putFreeLetter = function (letter, index, x, y) {
