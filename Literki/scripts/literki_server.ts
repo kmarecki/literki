@@ -1,7 +1,7 @@
 ﻿import literki = require('./literki');
 
 export class GameRun_Server extends literki.GameRun {
-    
+
     newGame(players: Array<literki.GamePlayer>): void {
         this.state = new literki.GameState();
         this.state.gameId = 1;

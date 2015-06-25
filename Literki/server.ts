@@ -17,7 +17,7 @@ app.listen(port);
 var repo = new db.GameRepository();
 repo.open();
 
-app.get('/games/new',(req, res) => {
+app.get('/games/new', (req, res) => {
     var player1 = new literki.GamePlayer();
     player1.playerName = "Mama";
     player1.remainingTime = 18 * 60 + 35;
@@ -54,7 +54,7 @@ app.get('/games/new',(req, res) => {
 
 });
 
-app.get('/games/list',(req, res) => {
+app.get('/games/list', (req, res) => {
     repo.allGames((err, games) => {
         var errorMessages = '';
         if (err != null) {
@@ -65,7 +65,7 @@ app.get('/games/list',(req, res) => {
 });
 
 
-app.get('/game/get',(req, res) => {
+app.get('/game/get', (req, res) => {
     var gameId: number = req.query.gameId;
    
     repo.loadState(gameId,(err, state) => {
@@ -77,7 +77,7 @@ app.get('/game/get',(req, res) => {
     });
 });
 
-app.post('/game/move',(req, res) => {
+app.post('/game/move', (req, res) => {
     var move: literki.GameMove = req.body;
     var game = new literki_server.GameRun_Server();
 
@@ -95,6 +95,32 @@ app.post('/game/move',(req, res) => {
                     errorMessages = errorMessages.concat(util.formatError(err));
                 }
                 res.json({ state: state, errorMessage: errorMessages });
+            });
+        }
+    });
+});
+
+app.post('/game/alive',(req, res) => {
+    var gameId: number = req.body.gameId;
+    var playerName: string = req.body.playerName;
+    var game = new literki_server.GameRun_Server();
+
+    repo.loadState(gameId,(err, state) => {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+            res.json({ state: state, errorMessage: errorMessages });
+        } else {
+            var remainingTime = state.players[state.currentPlayerIndex].remainingTime;
+            if (remainingTime > 0) {
+                remainingTime--;
+                state.players[state.currentPlayerIndex].remainingTime = remainingTime;
+            }
+            repo.saveState(state,(err) => {
+                if (err != null) {
+                    errorMessages = errorMessages.concat(util.formatError(err));
+                }
+                res.json({ remainingTime: remainingTime, errorMessage: errorMessages });
             });
         }
     });

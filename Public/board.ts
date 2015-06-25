@@ -325,6 +325,27 @@ module board {
             }
         }
 
+        alive(): void {
+            $.ajax({
+                type: "POST",
+                url: "/game/alive",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    gameId: this.game.getState().gameId,
+                    playerName: this.game.getCurrentPlayer().playerName
+                }),
+                dataType: "json",
+                success: (result) => {
+                    if (result.remainingTime != null) {
+                        this.game.getCurrentPlayer().remainingTime = result.remainingTime;
+                    }
+                    this.refreshPlayerModels();
+                    this.errorMessage(result.errorMessage);
+                }
+            });
+        }
+
+
         refreshClick(): void {
             $.ajax({
                 type: "GET",
@@ -358,13 +379,15 @@ module board {
                 var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
                 this.game.runState(state);
                 this.cleanNewWords();
-                this.refreshPlayerModels();
             }
+            this.refreshPlayerModels();
             this.errorMessage(result.errorMessage);
         }
 
         private refreshPlayerModels(): void {
-            this.allPlayers.forEach(p => p.findAndRefresh(this.game.getPlayers(), this.game.getCurrentPlayer()));
+            if (this.game != null) {
+                this.allPlayers.forEach(p => p.findAndRefresh(this.game.getPlayers(), this.game.getCurrentPlayer()));
+            }
         }
     }
 
@@ -382,15 +405,16 @@ module board {
 
         var debugLabel = <HTMLLabelElement>document.getElementById("debugLabel");
 
-        setInterval(() => {
-            debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
-        }, 1000);
-
         setupDisplay(screen.availHeight / 20);
 
         viewModel = new BoardViewModel();
         viewModel.board = new Board("boardDiv");
         viewModel.init();
+
+        setInterval(() => {
+            debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
+            viewModel.alive();
+        }, 1000);
     }
 
     window.onresize = () => {

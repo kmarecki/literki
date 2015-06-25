@@ -275,6 +275,26 @@ var board;
                 });
             }
         };
+        BoardViewModel.prototype.alive = function () {
+            var _this = this;
+            $.ajax({
+                type: "POST",
+                url: "/game/alive",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    gameId: this.game.getState().gameId,
+                    playerName: this.game.getCurrentPlayer().playerName
+                }),
+                dataType: "json",
+                success: function (result) {
+                    if (result.remainingTime != null) {
+                        _this.game.getCurrentPlayer().remainingTime = result.remainingTime;
+                    }
+                    _this.refreshPlayerModels();
+                    _this.errorMessage(result.errorMessage);
+                }
+            });
+        };
         BoardViewModel.prototype.refreshClick = function () {
             var _this = this;
             $.ajax({
@@ -308,13 +328,15 @@ var board;
                 var state = Literki.GameState.fromJSON(result.state);
                 this.game.runState(state);
                 this.cleanNewWords();
-                this.refreshPlayerModels();
             }
+            this.refreshPlayerModels();
             this.errorMessage(result.errorMessage);
         };
         BoardViewModel.prototype.refreshPlayerModels = function () {
             var _this = this;
-            this.allPlayers.forEach(function (p) { return p.findAndRefresh(_this.game.getPlayers(), _this.game.getCurrentPlayer()); });
+            if (this.game != null) {
+                this.allPlayers.forEach(function (p) { return p.findAndRefresh(_this.game.getPlayers(), _this.game.getCurrentPlayer()); });
+            }
         };
         return BoardViewModel;
     })();
@@ -327,13 +349,14 @@ var board;
         infoDiv.style.width = screen.availWidth / 2 - 50 + "px";
         infoDiv.style.height = boardDiv.style.height;
         var debugLabel = document.getElementById("debugLabel");
-        setInterval(function () {
-            debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
-        }, 1000);
         setupDisplay(screen.availHeight / 20);
         viewModel = new BoardViewModel();
         viewModel.board = new Board("boardDiv");
         viewModel.init();
+        setInterval(function () {
+            debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
+            viewModel.alive();
+        }, 1000);
     };
     window.onresize = function () {
         viewModel.refreshBoard();

@@ -83,4 +83,29 @@ app.post('/game/move', function (req, res) {
         }
     });
 });
+app.post('/game/alive', function (req, res) {
+    var gameId = req.body.gameId;
+    var playerName = req.body.playerName;
+    var game = new literki_server.GameRun_Server();
+    repo.loadState(gameId, function (err, state) {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+            res.json({ state: state, errorMessage: errorMessages });
+        }
+        else {
+            var remainingTime = state.players[state.currentPlayerIndex].remainingTime;
+            if (remainingTime > 0) {
+                remainingTime--;
+                state.players[state.currentPlayerIndex].remainingTime = remainingTime;
+            }
+            repo.saveState(state, function (err) {
+                if (err != null) {
+                    errorMessages = errorMessages.concat(util.formatError(err));
+                }
+                res.json({ remainingTime: remainingTime, errorMessage: errorMessages });
+            });
+        }
+    });
+});
 //# sourceMappingURL=server.js.map
