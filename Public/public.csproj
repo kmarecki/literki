@@ -59,17 +59,20 @@
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
     <Content Include="scripts\knockout-3.2.0.debug.js" />
     <Content Include="scripts\knockout-3.2.0.js" />
+    <Content Include="scripts\moment.js" />
     <Content Include="styles\app.css" />
     <Content Include="styles\board.css" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="board.ts" />
     <TypeScriptCompile Include="main.ts" />
-    <TypeScriptCompile Include="scripts\app.ts" />
+    <TypeScriptCompile Include="scripts\system.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\kineticjs\kineticjs.d.ts" />
     <TypeScriptCompile Include="typings\knockout\knockout.d.ts" />
+    <TypeScriptCompile Include="typings\moment\moment-node.d.ts" />
+    <TypeScriptCompile Include="typings\moment\moment.d.ts" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>

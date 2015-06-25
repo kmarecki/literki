@@ -20,25 +20,15 @@ repo.open();
 app.get('/games/new',(req, res) => {
     var player1 = new literki.GamePlayer();
     player1.playerName = "Mama";
-    player1.remainingTime = 1345;
-
-    var word1 = new literki.GameWord("literko", 5, 7, literki.GameMoveDirection.Horizontal, 10);
-    var move1 = new literki.GameMoveHistory();
-    move1.words.push(word1);
-    player1.moves.push(move1);
+    player1.remainingTime = 18 * 60 + 35;
 
     var player2 = new literki.GamePlayer();
     player2.playerName = "Irenka";
-    player2.remainingTime = 1560;
-
-    var word2 = new literki.GameWord("piliśmy", 6, 6, literki.GameMoveDirection.Vertical, 12);
-    var move2 = new literki.GameMoveHistory();
-    move2.words.push(word2);
-    player2.moves.push(move2);
+    player2.remainingTime = 20 * 60;
 
     var player3 = new literki.GamePlayer();
     player3.playerName = "Krzyś";
-    player3.remainingTime = 1800;
+    player3.remainingTime = 20 * 60;
 
     var players = new Array<literki.GamePlayer>();
     players.push(player1);

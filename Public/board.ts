@@ -1,7 +1,7 @@
 ﻿/// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path=".\typings\knockout\knockout.d.ts"/>
 /// <reference path=".\typings\jquery\jquery.d.ts"/>
-/// <reference path=".\scripts\app.ts"/>
+/// <reference path=".\scripts\system.ts"/>
 /// <reference path=".\scripts\literki.ts"/>
 
 module board {
@@ -226,7 +226,7 @@ module board {
         isCurrentPlayer = ko.observable(false);
         playerName = ko.observable("");
         points = ko.observable(0);
-        remainingTime = ko.observable(0);
+        remainingTime = ko.observable('');
 
         findAndRefresh(players: Literki.IGamePlayer[], currentPlayer: Literki.IGamePlayer): void {
             players.forEach(p => {
@@ -238,8 +238,8 @@ module board {
 
         refresh(player: Literki.IGamePlayer, currentPlayer: Literki.IGamePlayer): void {
             this.playerName(player.playerName);
-            this.remainingTime(player.remainingTime);
             this.points((<Literki.GamePlayer>player).getPoints());
+            this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
             this.isCurrentPlayer(currentPlayer.playerName == this.playerName());
         }
     }
@@ -295,7 +295,7 @@ module board {
         }
 
         init(): void {
-            var gameId = App.urlParam("gameId");
+            var gameId = System.urlParam("gameId");
             
             if (gameId != null) {
                 $.ajax({

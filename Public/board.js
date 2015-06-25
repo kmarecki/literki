@@ -1,7 +1,7 @@
 /// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path=".\typings\knockout\knockout.d.ts"/>
 /// <reference path=".\typings\jquery\jquery.d.ts"/>
-/// <reference path=".\scripts\app.ts"/>
+/// <reference path=".\scripts\system.ts"/>
 /// <reference path=".\scripts\literki.ts"/>
 var board;
 (function (board) {
@@ -186,7 +186,7 @@ var board;
             this.isCurrentPlayer = ko.observable(false);
             this.playerName = ko.observable("");
             this.points = ko.observable(0);
-            this.remainingTime = ko.observable(0);
+            this.remainingTime = ko.observable('');
         }
         PlayerViewModel.prototype.findAndRefresh = function (players, currentPlayer) {
             var _this = this;
@@ -198,8 +198,8 @@ var board;
         };
         PlayerViewModel.prototype.refresh = function (player, currentPlayer) {
             this.playerName(player.playerName);
-            this.remainingTime(player.remainingTime);
             this.points(player.getPoints());
+            this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
             this.isCurrentPlayer(currentPlayer.playerName == this.playerName());
         };
         return PlayerViewModel;
@@ -246,7 +246,7 @@ var board;
         };
         BoardViewModel.prototype.init = function () {
             var _this = this;
-            var gameId = App.urlParam("gameId");
+            var gameId = System.urlParam("gameId");
             if (gameId != null) {
                 $.ajax({
                     type: "GET",
