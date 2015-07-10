@@ -3,11 +3,16 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var passport = require('passport');
-var GoogleStrategy = require('passport-google').Strategy;
+var GoogleStrategy = require('passport-google-openidconnect').Strategy;
 passport.use(new GoogleStrategy({
-    returnURL: 'http://localhost:1337/auth/google/return',
-    realm: 'http://localhost:1337/'
-}, function (identifier, profile, done) {
+    clientID: '699211361113-6b5hmrk8169iipecd81tpq9it0s0aim4.apps.googleusercontent.com',
+    clientSecret: 'Lc6wOH0NjHGYRw5KgJfxftQr',
+    callbackURL: 'http://localhost:1337/auth/google/return'
+}, function (iss, sub, profile, accessToken, refreshToken, done) {
+    {
+        googleId: profile.id;
+    }
+    ;
 }));
 var literki = require('./scripts/literki');
 var literki_server = require('./scripts/literki_server');
@@ -25,11 +30,11 @@ repo.open();
 // Redirect the user to Google for authentication.  When complete, Google
 // will redirect the user back to the application at
 //     /auth/google/return
-app.get('/auth/google', passport.authenticate('google'));
+app.get('/auth/google', passport.authenticate('google-openidconnect'));
 // Google will redirect the user to this URL after authentication.  Finish
 // the process by verifying the assertion.  If valid, the user will be
 // logged in.  Otherwise, authentication has failed.
-app.get('/auth/google/return', passport.authenticate('google', {
+app.get('/auth/google/return', passport.authenticate('google-openidconnect', {
     successRedirect: '/',
     failureRedirect: '/login.html'
 }));
