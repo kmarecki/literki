@@ -53,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="board.html" />
+    <Content Include="login.html" />
     <Content Include="main.html" />
     <Content Include="scripts\jquery-1.11.2.js" />
     <Content Include="scripts\kinetic-v5.1.0.js" />
