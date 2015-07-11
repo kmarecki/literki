@@ -1,21 +1,12 @@
 ﻿///<reference path="typings\express\express.d.ts"/>
-/// <reference path="typings\body-parser\body-parser.d.ts"/>
+///<reference path="typings\passport\passport.d.ts"/>
+///<reference path="typings\body-parser\body-parser.d.ts"/>
 
 import express = require('express');
 import bodyParser = require('body-parser');
 
 import passport = require('passport');
 var GoogleStrategy = require('passport-google-openidconnect').Strategy;
-passport.use(
-    new GoogleStrategy({
-        clientID: '699211361113-6b5hmrk8169iipecd81tpq9it0s0aim4.apps.googleusercontent.com',
-        clientSecret: 'Lc6wOH0NjHGYRw5KgJfxftQr',
-        callbackURL: 'http://localhost:1337/auth/google/return'
-    },
-        function (iss, sub, profile, accessToken, refreshToken, done) {
-            { googleId: profile.id };
-        }
-));
 
 import literki = require('./scripts/literki');
 import literki_server = require('./scripts/literki_server');
@@ -34,6 +25,20 @@ app.listen(port);
 var repo = new db.GameRepository();
 repo.open();
 
+passport.use(
+    new GoogleStrategy({
+        clientID: '699211361113-6b5hmrk8169iipecd81tpq9it0s0aim4.apps.googleusercontent.com',
+        clientSecret: 'Lc6wOH0NjHGYRw5KgJfxftQr',
+        callbackURL: 'http://localhost:1337/auth/google/return'
+    },(iss, sub, profile, accessToken, refreshToken, done) => {
+            repo.loadUser(profile.id, profile.displayName, (err, user) => {
+                done(err, user);
+            });
+      })
+);
+
+
+
 // Redirect the user to Google for authentication.  When complete, Google
 // will redirect the user back to the application at
 //     /auth/google/return
@@ -44,9 +49,13 @@ app.get('/auth/google', passport.authenticate('google-openidconnect'));
 // logged in.  Otherwise, authentication has failed.
 app.get('/auth/google/return',
     passport.authenticate('google-openidconnect', {
-        successRedirect: '/',
+        successRedirect: '/main.html',
         failureRedirect: '/login.html'
-    })
+    }),
+    function (req, res) {
+        // Successful authentication, redirect home.
+        res.redirect('/main.html');
+    }
 );
 
 app.get('/games/new', (req, res) => {

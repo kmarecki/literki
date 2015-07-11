@@ -57,13 +57,26 @@ var GameRepository = (function () {
             callback(err);
         });
     };
+    GameRepository.prototype.loadUser = function (googleId, userName, callback) {
+        var _this = this;
+        this.User.findOne({ googleId: googleId }).exec(function (err, result) {
+            if (err != null) {
+                console.log(err);
+                callback(err, result);
+            }
+            if (result == null) {
+                _this.User.create({ googleId: googleId, userName: userName }, callback);
+            }
+        });
+    };
     GameRepository.prototype.connect = function () {
         var uri = 'mongodb://localhost/literki';
         mongoose.connect(uri);
-        this.addGameSchema();
+        this.addGameStateSchema();
+        this.addUserProfileSchema();
     };
-    GameRepository.prototype.addGameSchema = function () {
-        this.schema = new mongoose.Schema({
+    GameRepository.prototype.addGameStateSchema = function () {
+        var schema = new mongoose.Schema({
             gameId: {
                 type: Number,
                 unique: true,
@@ -87,7 +100,14 @@ var GameRepository = (function () {
                 }]
             }]
         });
-        this.GameState = mongoose.model("GameState", this.schema);
+        this.GameState = mongoose.model("GameState", schema);
+    };
+    GameRepository.prototype.addUserProfileSchema = function () {
+        var schema = new mongoose.Schema({
+            googleId: String,
+            userName: String
+        });
+        this.User = mongoose.model("UserProfile", schema);
     };
     GameRepository.prototype.getMaxGameId = function (callback) {
         this.GameState.findOne({}).sort({ gameId: -1 }).exec(function (err, result) {

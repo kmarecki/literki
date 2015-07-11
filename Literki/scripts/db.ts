@@ -5,12 +5,18 @@ import mongoose = require('mongoose');
 import async = require('async');
 import literki = require('./literki');
 
+interface IUserProfile {
+    googleId: string;
+    userName: string;
+}
+
 interface IGameStateModel extends literki.IGameState, mongoose.Document { }
+interface IUserProfilModel extends IUserProfile, mongoose.Document { }
 
 export class GameRepository {
     
-    private schema: mongoose.Schema;
-    private GameState: mongoose.Model<IGameStateModel>;
+    GameState: mongoose.Model<IGameStateModel>;
+    User: mongoose.Model<IUserProfilModel>;
 
     open(): void {
         this.connect();
@@ -52,7 +58,7 @@ export class GameRepository {
                 console.log(err);
                 callback(err, literki.GameState.invalidState());
             }
-        })
+        });
     }
 
     saveState(state: literki.IGameState, callback: (err: Error) => any): void {
@@ -65,14 +71,28 @@ export class GameRepository {
         });
     }
 
+    loadUser(googleId: number, userName: string, callback: (err: Error, user: IUserProfile) => any): void {
+        this.User.findOne({ googleId: googleId }).exec((err, result) => {
+            if (err != null) {
+                console.log(err)
+                callback(err, result)
+            }
+            if (result == null) {
+                this.User.create({ googleId: googleId, userName: userName }, callback)
+            }
+        });
+    }
+
+
     private connect(): void {
         var uri = 'mongodb://localhost/literki';
         mongoose.connect(uri);
-        this.addGameSchema();
+        this.addGameStateSchema();
+        this.addUserProfileSchema();
     }
 
-    private addGameSchema(): void {
-        this.schema = new mongoose.Schema({
+    private addGameStateSchema(): void {
+       var schema = new mongoose.Schema({
             gameId: {
                 type: Number,
                 unique: true,
@@ -96,7 +116,15 @@ export class GameRepository {
                 }]
             }]
         });
-        this.GameState = mongoose.model<IGameStateModel>("GameState", this.schema);
+        this.GameState = mongoose.model<IGameStateModel>("GameState", schema);
+    }
+
+    private addUserProfileSchema(): void {
+        var schema = new mongoose.Schema({
+            googleId: String,
+            userName: String
+        });
+        this.User = mongoose.model<IUserProfilModel>("UserProfile", schema);
     }
 
     private getMaxGameId(callback: (err: Error, gameId: number) => any): void {
