@@ -1,9 +1,13 @@
 ﻿///<reference path="typings\express\express.d.ts"/>
+///<reference path="typings\express-session\express-session.d.ts"/>
 ///<reference path="typings\passport\passport.d.ts"/>
 ///<reference path="typings\body-parser\body-parser.d.ts"/>
+///<reference path="typings\cookie-parser\cookie-parser.d.ts"/>
 
 import express = require('express');
+import session = require('express-session');
 import bodyParser = require('body-parser');
+import cookieParser = require('cookie-parser');
 
 import passport = require('passport');
 var GoogleStrategy = require('passport-google-openidconnect').Strategy;
@@ -17,6 +21,8 @@ var port = process.env.port || 1337;
 
 var app = express();
 app.use(express.static(__dirname + '/../public'));
+app.use(session({ secret: '1234567890qwerty' }));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());

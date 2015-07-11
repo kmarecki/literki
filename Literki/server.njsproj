@@ -45,6 +45,8 @@
     <Content Include="README.md" />
     <TypeScriptCompile Include="typings\async\async.d.ts" />
     <TypeScriptCompile Include="typings\body-parser\body-parser.d.ts" />
+    <TypeScriptCompile Include="typings\cookie-parser\cookie-parser.d.ts" />
+    <TypeScriptCompile Include="typings\express-session\express-session.d.ts" />
     <TypeScriptCompile Include="typings\express\express.d.ts" />
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
@@ -55,6 +57,8 @@
     <Folder Include="typings\" />
     <Folder Include="typings\async\" />
     <Folder Include="typings\body-parser\" />
+    <Folder Include="typings\cookie-parser\" />
+    <Folder Include="typings\express-session\" />
     <Folder Include="typings\express\" />
     <Folder Include="typings\mongoose\" />
     <Folder Include="typings\node\" />

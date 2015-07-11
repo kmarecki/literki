@@ -1,8 +1,12 @@
 ///<reference path="typings\express\express.d.ts"/>
+///<reference path="typings\express-session\express-session.d.ts"/>
 ///<reference path="typings\passport\passport.d.ts"/>
 ///<reference path="typings\body-parser\body-parser.d.ts"/>
+///<reference path="typings\cookie-parser\cookie-parser.d.ts"/>
 var express = require('express');
+var session = require('express-session');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-openidconnect').Strategy;
 var literki = require('./scripts/literki');
@@ -12,6 +16,8 @@ var util = require('./scripts/util');
 var port = process.env.port || 1337;
 var app = express();
 app.use(express.static(__dirname + '/../public'));
+app.use(session({ secret: '1234567890qwerty' }));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
