@@ -56,7 +56,7 @@ export class GameRepository {
                 callback(null, result);
             } else {
                 console.log(err);
-                callback(err, literki.GameState.invalidState());
+                callback(err, result);
             }
         });
     }
@@ -85,7 +85,7 @@ export class GameRepository {
     }
 
     loadUser(id: number, callback: (err: Error, user: IUserProfile) => any): void {
-        this.User.findOne(id).exec((err, result) => {
+        this.User.findOne({ _id: id }).exec((err, result) => {
             if (err != null) {
                 console.log(err);
             }
@@ -111,6 +111,7 @@ export class GameRepository {
             remainingLetters: [String],
             currentPlayerIndex: Number,
             players: [{
+                userId: mongoose.Schema.Types.ObjectId,
                 playerName: String,
                 remainingTime: Number,
                 freeLetters: [String],

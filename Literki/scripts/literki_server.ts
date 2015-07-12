@@ -1,4 +1,7 @@
-﻿import literki = require('./literki');
+﻿///<reference path="..\typings\underscore\underscore.d.ts"/>
+
+import _ = require('underscore');
+import literki = require('./literki');
 
 export class GameRun_Server extends literki.GameRun {
 
@@ -18,6 +21,16 @@ export class GameRun_Server extends literki.GameRun {
             playersFreeLetters.splice(index, 1);
         });
         this.updateState();
+    }
+
+    addPlayer(player: literki.IGamePlayer): boolean {
+        var res = _.find(this.state.players, p => p.userId == player.userId);
+        if (res == null) {
+            this.state.players.push(player);
+            this.pickLetters(this.state.players.length - 1);
+            return true;
+        }
+        return false;
     }
 
     private allLetters(): Array<string> {

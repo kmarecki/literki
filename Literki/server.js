@@ -14,8 +14,8 @@ var literki_server = require('./scripts/literki_server');
 var db = require('./scripts/db');
 var util = require('./scripts/util');
 var app = express();
-app.use(cookieParser('1234567890qwerty'));
-app.use(session());
+app.use(cookieParser());
+app.use(session({ secret: '1234567890qwerty' }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -48,20 +48,19 @@ app.get('/auth/google/signout', function (req, res) {
     req.logout();
     res.redirect('/login.html');
 });
-app.get('/game/new', function (req, res) {
-    var player1 = new literki.GamePlayer();
-    player1.playerName = "Mama";
-    player1.remainingTime = 18 * 60 + 35;
-    var player2 = new literki.GamePlayer();
-    player2.playerName = "Irenka";
-    player2.remainingTime = 20 * 60;
-    var player3 = new literki.GamePlayer();
-    player3.playerName = "Krzyś";
-    player3.remainingTime = 20 * 60;
+var auth = function (req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.json({ errorMessage: "Not authenticated" });
+};
+app.get('/game/new', auth, function (req, res) {
+    var player = new literki.GamePlayer();
+    player.userId = req.user.id;
+    player.playerName = "Irenka";
+    player.remainingTime = 15 * 60;
     var players = new Array();
-    players.push(player1);
-    players.push(player2);
-    players.push(player3);
+    players.push(player);
     var game = new literki_server.GameRun_Server();
     game.newGame(players);
     var state = game.getState();
@@ -78,7 +77,37 @@ app.get('/game/new', function (req, res) {
         });
     });
 });
-app.get('/game/list', function (req, res) {
+app.get('/game/join', auth, function (req, res) {
+    var gameId = req.query.gameId;
+    repo.loadState(gameId, function (err, state) {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+            res.json({ errorMessage: errorMessages });
+        }
+        else if (state != null) {
+            var game = new literki_server.GameRun_Server();
+            game.runState(state);
+            var player = new literki.GamePlayer();
+            player.userId = req.user.id;
+            player.playerName = "Krzyś";
+            player.remainingTime = 15 * 60;
+            if (game.addPlayer(player)) {
+                state = game.getState();
+                repo.saveState(state, function (err) {
+                    if (err != null) {
+                        errorMessages = errorMessages.concat(util.formatError(err));
+                    }
+                    res.json({ state: state, errorMessage: errorMessages });
+                });
+            }
+            else {
+                res.json({ errorMessage: "Player not added" });
+            }
+        }
+    });
+});
+app.get('/game/list', auth, function (req, res) {
     repo.allGames(function (err, games) {
         var errorMessages = '';
         if (err != null) {
@@ -87,7 +116,7 @@ app.get('/game/list', function (req, res) {
         res.json({ games: games, errorMessage: errorMessages });
     });
 });
-app.get('/game/get', function (req, res) {
+app.get('/game/get', auth, function (req, res) {
     var gameId = req.query.gameId;
     repo.loadState(gameId, function (err, state) {
         var errorMessages = '';
@@ -97,16 +126,16 @@ app.get('/game/get', function (req, res) {
         res.json({ state: state, errorMessage: errorMessages });
     });
 });
-app.post('/game/move', function (req, res) {
+app.post('/game/move', auth, function (req, res) {
     var move = req.body;
-    var game = new literki_server.GameRun_Server();
     repo.loadState(move.gameId, function (err, state) {
         var errorMessages = '';
         if (err != null) {
             errorMessages = util.formatError(err);
-            res.json({ state: state, errorMessage: errorMessages });
+            res.json({ errorMessage: errorMessages });
         }
         else {
+            var game = new literki_server.GameRun_Server();
             game.runState(state);
             game.makeMove(move);
             state = game.getState();
@@ -119,7 +148,7 @@ app.post('/game/move', function (req, res) {
         }
     });
 });
-app.post('/game/alive', function (req, res) {
+app.post('/game/alive', auth, function (req, res) {
     var gameId = req.body.gameId;
     var playerName = req.body.playerName;
     var game = new literki_server.GameRun_Server();

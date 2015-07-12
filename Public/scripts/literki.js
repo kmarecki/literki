@@ -208,6 +208,7 @@ var Literki;
             var player = new GamePlayer();
             player.freeLetters = json.freeLetters;
             player.moves = json.moves;
+            player.userId = json.userId;
             player.playerName = json.playerName;
             player.remainingTime = json.remainingTime;
             return player;
@@ -216,6 +217,7 @@ var Literki;
             var json = {
                 freeLetters: this.freeLetters,
                 moves: this.moves,
+                userId: this.userId,
                 playerName: this.playerName,
                 remainingTime: this.remainingTime
             };
@@ -228,6 +230,13 @@ var Literki;
         function GameState() {
             this.currentPlayerIndex = 0;
         }
+        GameState.invalidState = function () {
+            var state = new GameState();
+            state.gameId = -1;
+            state.players = new Array();
+            state.remainingLetters = new Array();
+            return state;
+        };
         GameState.fromJSON = function (json) {
             var state = new GameState();
             state.gameId = json.gameId;

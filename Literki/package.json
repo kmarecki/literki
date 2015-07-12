@@ -15,6 +15,7 @@
     "express-session": "^1.11.3",
     "mongoose": "^4.0.6",
     "passport": "^0.2.2",
-    "passport-google-openidconnect": "0.0.4"
+    "passport-google-openidconnect": "0.0.4",
+    "underscore": "^1.8.3"
   }
 }

@@ -1,7 +1,6 @@
 /// <reference path="..\typings\mongoose\mongoose.d.ts"/>
 /// <reference path=".\literki.ts"/>
 var mongoose = require('mongoose');
-var literki = require('./literki');
 var GameRepository = (function () {
     function GameRepository() {
     }
@@ -44,7 +43,7 @@ var GameRepository = (function () {
             }
             else {
                 console.log(err);
-                callback(err, literki.GameState.invalidState());
+                callback(err, result);
             }
         });
     };
@@ -72,7 +71,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.loadUser = function (id, callback) {
-        this.User.findOne(id).exec(function (err, result) {
+        this.User.findOne({ _id: id }).exec(function (err, result) {
             if (err != null) {
                 console.log(err);
             }
@@ -95,6 +94,7 @@ var GameRepository = (function () {
             remainingLetters: [String],
             currentPlayerIndex: Number,
             players: [{
+                userId: mongoose.Schema.Types.ObjectId,
                 playerName: String,
                 remainingTime: Number,
                 freeLetters: [String],

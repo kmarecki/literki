@@ -206,6 +206,7 @@ var GamePlayer = (function () {
         var player = new GamePlayer();
         player.freeLetters = json.freeLetters;
         player.moves = json.moves;
+        player.userId = json.userId;
         player.playerName = json.playerName;
         player.remainingTime = json.remainingTime;
         return player;
@@ -214,6 +215,7 @@ var GamePlayer = (function () {
         var json = {
             freeLetters: this.freeLetters,
             moves: this.moves,
+            userId: this.userId,
             playerName: this.playerName,
             remainingTime: this.remainingTime
         };

@@ -179,6 +179,7 @@
     }
 
     export interface IGamePlayer {
+        userId: string;
         playerName: string;
         freeLetters: Array<string>;
         remainingTime: number;
@@ -186,7 +187,7 @@
     }
 
     export class GamePlayer implements IGamePlayer {
-
+        userId: string;
         playerName: string;
         freeLetters: Array<string> = [];
         remainingTime: number;
@@ -202,6 +203,7 @@
             var player = new GamePlayer();
             player.freeLetters = json.freeLetters;
             player.moves = json.moves;
+            player.userId = json.userId;
             player.playerName = json.playerName;
             player.remainingTime = json.remainingTime;
             return player;
@@ -211,6 +213,7 @@
             var json: IGamePlayer = {
                 freeLetters: this.freeLetters,
                 moves: this.moves,
+                userId: this.userId,
                 playerName: this.playerName,
                 remainingTime: this.remainingTime
             }
@@ -230,6 +233,14 @@
         players: Array<GamePlayer>;
         currentPlayerIndex: number = 0;
         remainingLetters: Array<string>;
+
+        static invalidState(): GameState {
+            var state = new GameState();
+            state.gameId = -1;
+            state.players = new Array<GamePlayer>();
+            state.remainingLetters = new Array<string>();
+            return state;
+        }
 
         static fromJSON(json: IGameState): GameState {
             var state = new GameState();
@@ -466,5 +477,4 @@
         gameId: number;
         freeLetters: Array<LetterPosition>;
     }
-
 }

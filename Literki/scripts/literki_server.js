@@ -1,9 +1,11 @@
+///<reference path="..\typings\underscore\underscore.d.ts"/>
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var _ = require('underscore');
 var literki = require('./literki');
 var GameRun_Server = (function (_super) {
     __extends(GameRun_Server, _super);
@@ -27,6 +29,15 @@ var GameRun_Server = (function (_super) {
             playersFreeLetters.splice(index, 1);
         });
         this.updateState();
+    };
+    GameRun_Server.prototype.addPlayer = function (player) {
+        var res = _.find(this.state.players, function (p) { return p.userId == player.userId; });
+        if (res == null) {
+            this.state.players.push(player);
+            this.pickLetters(this.state.players.length - 1);
+            return true;
+        }
+        return false;
     };
     GameRun_Server.prototype.allLetters = function () {
         var letters = new Array();

@@ -17,6 +17,7 @@
         <tbody data-bind="foreach: games">
             <tr>
                 <td><a data-bind="attr: { href: 'board.html?gameId=' + gameId }, text: gameId"/></td>
+                <td><a data-bind="attr: { href: 'board.html?gameId=' + gameId + '&join=1' }" />Dołącz</td>
             </tr>
         </tbody>
     </table>

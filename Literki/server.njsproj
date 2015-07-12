@@ -51,6 +51,7 @@
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="typings\passport\passport.d.ts" />
+    <TypeScriptCompile Include="typings\underscore\underscore.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="scripts\" />
@@ -63,6 +64,7 @@
     <Folder Include="typings\mongoose\" />
     <Folder Include="typings\node\" />
     <Folder Include="typings\passport\" />
+    <Folder Include="typings\underscore\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

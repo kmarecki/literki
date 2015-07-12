@@ -247,33 +247,41 @@ var board;
         BoardViewModel.prototype.init = function () {
             var _this = this;
             var gameId = System.urlParam("gameId");
-            if (gameId != null) {
+            var join = System.urlParam("join");
+            if (join) {
                 $.ajax({
                     type: "GET",
-                    url: "/game/get",
+                    url: "/game/join",
                     data: { gameId: gameId },
                     dataType: "json",
-                    success: function (result) {
-                        _this.game = new Literki.GameRun();
-                        _this.refreshModel(result);
-                        _this.refreshBoard();
-                        ko.applyBindings(_this);
-                    }
+                    success: function (result) { return _this.initRefresh(result); }
                 });
             }
             else {
-                $.ajax({
-                    type: "GET",
-                    url: "/game/new",
-                    dataType: "json",
-                    success: function (result) {
-                        _this.game = new Literki.GameRun();
-                        _this.refreshModel(result);
-                        _this.refreshBoard();
-                        ko.applyBindings(_this);
-                    }
-                });
+                if (gameId != null) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/game/get",
+                        data: { gameId: gameId },
+                        dataType: "json",
+                        success: function (result) { return _this.initRefresh(result); }
+                    });
+                }
+                else {
+                    $.ajax({
+                        type: "GET",
+                        url: "/game/new",
+                        dataType: "json",
+                        success: function (result) { return _this.initRefresh(result); }
+                    });
+                }
             }
+        };
+        BoardViewModel.prototype.initRefresh = function (result) {
+            this.game = new Literki.GameRun();
+            this.refreshModel(result);
+            this.refreshBoard();
+            ko.applyBindings(this);
         };
         BoardViewModel.prototype.alive = function () {
             var _this = this;

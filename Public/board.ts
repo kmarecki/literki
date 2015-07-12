@@ -296,33 +296,41 @@ module board {
 
         init(): void {
             var gameId = System.urlParam("gameId");
-            
-            if (gameId != null) {
+            var join = System.urlParam("join");
+
+            if (join) {
                 $.ajax({
                     type: "GET",
-                    url: "/game/get",
+                    url: "/game/join",
                     data: { gameId: gameId },
                     dataType: "json",
-                    success: (result) => {
-                        this.game = new Literki.GameRun();
-                        this.refreshModel(result);
-                        this.refreshBoard();
-                        ko.applyBindings(this);
-                    }
+                    success: result => this.initRefresh(result)
                 });
             } else {
-                $.ajax({
-                    type: "GET",
-                    url: "/game/new",
-                    dataType: "json",
-                    success: (result) => {
-                        this.game = new Literki.GameRun();
-                        this.refreshModel(result);
-                        this.refreshBoard();
-                        ko.applyBindings(this);
-                    }
-                });
+                if (gameId != null) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/game/get",
+                        data: { gameId: gameId },
+                        dataType: "json",
+                        success: result => this.initRefresh(result)
+                    });
+                } else {
+                    $.ajax({
+                        type: "GET",
+                        url: "/game/new",
+                        dataType: "json",
+                        success: result => this.initRefresh(result)
+                    });
+                }
             }
+        }
+
+        private initRefresh(result: any): void {
+            this.game = new Literki.GameRun();
+            this.refreshModel(result);
+            this.refreshBoard();
+            ko.applyBindings(this);
         }
 
         alive(): void {
