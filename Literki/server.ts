@@ -17,8 +17,6 @@ import literki_server = require('./scripts/literki_server');
 import db = require('./scripts/db');
 import util = require('./scripts/util');
 
-var port = process.env.port || 1337;
-
 var app = express();
 app.use(express.static(__dirname + '/../public'));
 app.use(session({ secret: '1234567890qwerty' }));
@@ -26,6 +24,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
+var port = process.env.port || 1337;
 app.listen(port);
 
 var repo = new db.GameRepository();
@@ -35,13 +34,21 @@ passport.use(
     new GoogleStrategy({
         clientID: '699211361113-6b5hmrk8169iipecd81tpq9it0s0aim4.apps.googleusercontent.com',
         clientSecret: 'Lc6wOH0NjHGYRw5KgJfxftQr',
-        callbackURL: 'http://localhost:1337/auth/google/return'
+        callbackURL: 'http://localhost:1337/auth/google/return',
     },(iss, sub, profile, accessToken, refreshToken, done) => {
-            repo.loadUser(profile.id, profile.displayName, (err, user) => {
-                done(err, user);
+            repo.loadOrCreateUser(profile.id, profile.displayName, (err, user) => {
+                return done(err, user)
             });
       })
 );
+
+passport.serializeUser((user, done) => {
+    done(null, user.id)
+});
+
+passport.deserializeUser((id, done) => {
+    repo.loadUser(id,(err, user) => done(err, user));
+});
 
 
 
@@ -63,6 +70,11 @@ app.get('/auth/google/return',
         res.redirect('/main.html');
     }
 );
+
+app.get('/auth/google/signout',(req, res) => {
+    req.logout();
+    res.redirect('/login.html');
+});
 
 app.get('/games/new', (req, res) => {
     var player1 = new literki.GamePlayer();

@@ -13,7 +13,6 @@ var literki = require('./scripts/literki');
 var literki_server = require('./scripts/literki_server');
 var db = require('./scripts/db');
 var util = require('./scripts/util');
-var port = process.env.port || 1337;
 var app = express();
 app.use(express.static(__dirname + '/../public'));
 app.use(session({ secret: '1234567890qwerty' }));
@@ -21,18 +20,25 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
+var port = process.env.port || 1337;
 app.listen(port);
 var repo = new db.GameRepository();
 repo.open();
 passport.use(new GoogleStrategy({
     clientID: '699211361113-6b5hmrk8169iipecd81tpq9it0s0aim4.apps.googleusercontent.com',
     clientSecret: 'Lc6wOH0NjHGYRw5KgJfxftQr',
-    callbackURL: 'http://localhost:1337/auth/google/return'
+    callbackURL: 'http://localhost:1337/auth/google/return',
 }, function (iss, sub, profile, accessToken, refreshToken, done) {
-    repo.loadUser(profile.id, profile.displayName, function (err, user) {
-        done(err, user);
+    repo.loadOrCreateUser(profile.id, profile.displayName, function (err, user) {
+        return done(err, user);
     });
 }));
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+passport.deserializeUser(function (id, done) {
+    repo.loadUser(id, function (err, user) { return done(err, user); });
+});
 // Redirect the user to Google for authentication.  When complete, Google
 // will redirect the user back to the application at
 //     /auth/google/return
@@ -46,6 +52,10 @@ app.get('/auth/google/return', passport.authenticate('google-openidconnect', {
 }), function (req, res) {
     // Successful authentication, redirect home.
     res.redirect('/main.html');
+});
+app.get('/auth/google/signout', function (req, res) {
+    req.logout();
+    res.redirect('/login.html');
 });
 app.get('/games/new', function (req, res) {
     var player1 = new literki.GamePlayer();

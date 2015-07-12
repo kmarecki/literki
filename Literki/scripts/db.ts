@@ -71,15 +71,25 @@ export class GameRepository {
         });
     }
 
-    loadUser(googleId: number, userName: string, callback: (err: Error, user: IUserProfile) => any): void {
+    loadOrCreateUser(googleId: number, userName: string, callback: (err: Error, user: IUserProfile) => any): void {
         this.User.findOne({ googleId: googleId }).exec((err, result) => {
             if (err != null) {
-                console.log(err)
-                callback(err, result)
+                console.log(err);
             }
-            if (result == null) {
-                this.User.create({ googleId: googleId, userName: userName }, callback)
+            if (result == null && err == null) {
+                this.User.create({ googleId: googleId, userName: userName }, callback);
+            } else {
+                callback(err, result);
             }
+        });
+    }
+
+    loadUser(googleId: number, callback: (err: Error, user: IUserProfile) => any): void {
+        this.User.findOne({ googleId: googleId }).exec((err, result) => {
+            if (err != null) {
+                console.log(err);
+            }
+            callback(err, result);
         });
     }
 

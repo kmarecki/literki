@@ -57,16 +57,26 @@ var GameRepository = (function () {
             callback(err);
         });
     };
-    GameRepository.prototype.loadUser = function (googleId, userName, callback) {
+    GameRepository.prototype.loadOrCreateUser = function (googleId, userName, callback) {
         var _this = this;
         this.User.findOne({ googleId: googleId }).exec(function (err, result) {
             if (err != null) {
                 console.log(err);
-                callback(err, result);
             }
-            if (result == null) {
+            if (result == null && err == null) {
                 _this.User.create({ googleId: googleId, userName: userName }, callback);
             }
+            else {
+                callback(err, result);
+            }
+        });
+    };
+    GameRepository.prototype.loadUser = function (googleId, callback) {
+        this.User.findOne({ googleId: googleId }).exec(function (err, result) {
+            if (err != null) {
+                console.log(err);
+            }
+            callback(err, result);
         });
     };
     GameRepository.prototype.connect = function () {
