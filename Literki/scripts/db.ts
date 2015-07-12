@@ -84,8 +84,8 @@ export class GameRepository {
         });
     }
 
-    loadUser(googleId: number, callback: (err: Error, user: IUserProfile) => any): void {
-        this.User.findOne({ googleId: googleId }).exec((err, result) => {
+    loadUser(id: number, callback: (err: Error, user: IUserProfile) => any): void {
+        this.User.findOne(id).exec((err, result) => {
             if (err != null) {
                 console.log(err);
             }

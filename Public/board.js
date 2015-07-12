@@ -264,7 +264,7 @@ var board;
             else {
                 $.ajax({
                     type: "GET",
-                    url: "/games/new",
+                    url: "/game/new",
                     dataType: "json",
                     success: function (result) {
                         _this.game = new Literki.GameRun();

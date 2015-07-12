@@ -14,7 +14,7 @@ var main;
             var _this = this;
             $.ajax({
                 type: "GET",
-                url: "/games/list",
+                url: "/game/list",
                 dataType: "json",
                 success: function (result) {
                     _this.refreshModel(result.games);

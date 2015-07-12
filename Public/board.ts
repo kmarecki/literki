@@ -313,7 +313,7 @@ module board {
             } else {
                 $.ajax({
                     type: "GET",
-                    url: "/games/new",
+                    url: "/game/new",
                     dataType: "json",
                     success: (result) => {
                         this.game = new Literki.GameRun();

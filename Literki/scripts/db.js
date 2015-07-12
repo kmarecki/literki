@@ -71,8 +71,8 @@ var GameRepository = (function () {
             }
         });
     };
-    GameRepository.prototype.loadUser = function (googleId, callback) {
-        this.User.findOne({ googleId: googleId }).exec(function (err, result) {
+    GameRepository.prototype.loadUser = function (id, callback) {
+        this.User.findOne(id).exec(function (err, result) {
             if (err != null) {
                 console.log(err);
             }

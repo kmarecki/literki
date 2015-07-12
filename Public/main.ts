@@ -11,7 +11,7 @@
         init(): void {
             $.ajax({
                 type: "GET",
-                url: "/games/list",
+                url: "/game/list",
                 dataType: "json",
                 success: (result) => {
                     this.refreshModel(result.games);
