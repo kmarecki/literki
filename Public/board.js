@@ -352,7 +352,7 @@ var board;
     window.onload = function () {
         var boardDiv = document.getElementById("boardDiv");
         boardDiv.style.width = screen.availWidth / 2 + "px";
-        boardDiv.style.height = screen.availHeight * 0.9 + "px";
+        boardDiv.style.height = screen.availHeight * 0.85 + "px";
         var infoDiv = document.getElementById("infoDiv");
         infoDiv.style.width = screen.availWidth / 2 - 50 + "px";
         infoDiv.style.height = boardDiv.style.height;

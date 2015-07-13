@@ -8,7 +8,6 @@
 
 #boardDiv {
     border: 6px solid silver;
-    display: table-cell;
     white-space:normal;
 }
 
@@ -36,11 +35,30 @@
     width:200px;
 }
 
-.messageDiv {
-    height: 100%;
+#messageDiv {
+    height: 90%;
     vertical-align: bottom;
+    display:table-row;
 }
 
 #buttonsDiv {
     display:table-row;
+    float:right;
+}
+
+button {
+  background: #2cdb69;
+  background-image: linear-gradient(to bottom, #2cdb69, #184526);
+  border-radius: 28px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+}
+
+button:hover {
+  background: #32c965;
+  background-image: linear-gradient(to bottom, #32c965, #142b1b);
+  text-decoration: none;
 }
