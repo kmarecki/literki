@@ -124,7 +124,7 @@ app.get('/game/join', auth,(req, res) => {
                     res.json({ state: state, errorMessage: errorMessages });
                 });
             } else {
-                res.json({ errorMessage: "Player not added" });
+                res.json({ state: state, errorMessage: "Player not added" });
             }
         }
     });

@@ -102,7 +102,7 @@ app.get('/game/join', auth, function (req, res) {
                 });
             }
             else {
-                res.json({ errorMessage: "Player not added" });
+                res.json({ state: state, errorMessage: "Player not added" });
             }
         }
     });
