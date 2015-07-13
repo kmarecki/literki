@@ -355,9 +355,21 @@ module board {
 
 
         refreshClick(): void {
+            this.callGameMethod("get");
+        }
+
+        startClick(): void {
+            this.callGameMethod("start");
+        }
+
+        pauseClick(): void {
+            this.callGameMethod("pause");
+        }
+
+        private callGameMethod(name: string): void {
             $.ajax({
                 type: "GET",
-                url: "/game/get",
+                url: "/game/" + name,
                 data: { gameId: this.game.getState().gameId },
                 dataType: "json",
                 success: (result) => {

@@ -126,6 +126,48 @@ app.get('/game/get', auth, function (req, res) {
         res.json({ state: state, errorMessage: errorMessages });
     });
 });
+app.get('/game/start', auth, function (req, res) {
+    var gameId = req.query.gameId;
+    repo.loadState(gameId, function (err, state) {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+        }
+        if (state.runState == 0 /* Created */ || 2 /* Paused */) {
+            state.runState = 1 /* Running */;
+            repo.saveState(state, function (err) {
+                if (err != null) {
+                    errorMessages = errorMessages.concat(util.formatError(err));
+                }
+                res.json({ state: state, errorMessage: errorMessages });
+            });
+        }
+        else {
+            res.json({ state: state, errorMessage: errorMessages });
+        }
+    });
+});
+app.get('/game/pause', auth, function (req, res) {
+    var gameId = req.query.gameId;
+    repo.loadState(gameId, function (err, state) {
+        var errorMessages = '';
+        if (err != null) {
+            errorMessages = util.formatError(err);
+        }
+        if (state.runState == 1 /* Running */) {
+            state.runState = 2 /* Paused */;
+            repo.saveState(state, function (err) {
+                if (err != null) {
+                    errorMessages = errorMessages.concat(util.formatError(err));
+                }
+                res.json({ state: state, errorMessage: errorMessages });
+            });
+        }
+        else {
+            res.json({ state: state, errorMessage: errorMessages });
+        }
+    });
+});
 app.post('/game/move', auth, function (req, res) {
     var move = req.body;
     repo.loadState(move.gameId, function (err, state) {
@@ -160,16 +202,21 @@ app.post('/game/alive', auth, function (req, res) {
         }
         else {
             var remainingTime = state.players[state.currentPlayerIndex].remainingTime;
-            if (remainingTime > 0) {
-                remainingTime--;
-                state.players[state.currentPlayerIndex].remainingTime = remainingTime;
-            }
-            repo.saveState(state, function (err) {
-                if (err != null) {
-                    errorMessages = errorMessages.concat(util.formatError(err));
+            if (state.runState == 1 /* Running */) {
+                if (remainingTime > 0) {
+                    remainingTime--;
+                    state.players[state.currentPlayerIndex].remainingTime = remainingTime;
                 }
+                repo.saveState(state, function (err) {
+                    if (err != null) {
+                        errorMessages = errorMessages.concat(util.formatError(err));
+                    }
+                    res.json({ remainingTime: remainingTime, errorMessage: errorMessages });
+                });
+            }
+            else {
                 res.json({ remainingTime: remainingTime, errorMessage: errorMessages });
-            });
+            }
         }
     });
 });

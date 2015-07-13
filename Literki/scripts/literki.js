@@ -224,6 +224,13 @@ var GamePlayer = (function () {
     return GamePlayer;
 })();
 exports.GamePlayer = GamePlayer;
+(function (GameRunState) {
+    GameRunState[GameRunState["Created"] = 0] = "Created";
+    GameRunState[GameRunState["Running"] = 1] = "Running";
+    GameRunState[GameRunState["Paused"] = 2] = "Paused";
+    GameRunState[GameRunState["Finished"] = 3] = "Finished";
+})(exports.GameRunState || (exports.GameRunState = {}));
+var GameRunState = exports.GameRunState;
 var GameState = (function () {
     function GameState() {
         this.currentPlayerIndex = 0;
@@ -238,6 +245,7 @@ var GameState = (function () {
     GameState.fromJSON = function (json) {
         var state = new GameState();
         state.gameId = json.gameId;
+        state.runState = json.runState;
         state.currentPlayerIndex = json.currentPlayerIndex;
         state.players = new Array();
         json.players.forEach(function (p) {
@@ -251,6 +259,7 @@ var GameState = (function () {
     GameState.prototype.toJSON = function () {
         var json = {
             gameId: this.gameId,
+            runState: this.runState,
             currentPlayerIndex: this.currentPlayerIndex,
             players: new Array(),
             remainingLetters: new Array(),

@@ -1,6 +1,7 @@
 /// <reference path="..\typings\mongoose\mongoose.d.ts"/>
 /// <reference path=".\literki.ts"/>
 var mongoose = require('mongoose');
+var literki = require('./literki');
 var GameRepository = (function () {
     function GameRepository() {
     }
@@ -21,6 +22,7 @@ var GameRepository = (function () {
             if (result != null) {
                 var newGameId = result != -1 ? result + 1 : 1;
                 state.gameId = newGameId;
+                state.runState = 0 /* Created */;
                 _this.saveState(state, function (err) {
                     if (err == null) {
                         callback(null, newGameId);
@@ -91,6 +93,7 @@ var GameRepository = (function () {
                 unique: true,
                 index: true
             },
+            runState: Number,
             remainingLetters: [String],
             currentPlayerIndex: Number,
             players: [{
@@ -103,7 +106,6 @@ var GameRepository = (function () {
                         word: String,
                         x: Number,
                         y: Number,
-                        //direction: { type: String, enum: ['Vertical', 'Horizontal'] }
                         direction: Number,
                         points: Number
                     }]

@@ -220,8 +220,16 @@ export class GamePlayer implements IGamePlayer {
     }
 }
 
+export enum GameRunState {
+   Created,
+   Running,
+   Paused,
+   Finished
+}
+
 export interface IGameState {
     gameId: number;
+    runState: GameRunState;
     players: Array<IGamePlayer>;
     currentPlayerIndex: number;
     remainingLetters: Array<string>;
@@ -229,6 +237,7 @@ export interface IGameState {
 
 export class GameState implements IGameState {
     gameId: number;
+    runState: GameRunState;
     players: Array<GamePlayer>;
     currentPlayerIndex: number = 0;
     remainingLetters: Array<string>;
@@ -244,6 +253,7 @@ export class GameState implements IGameState {
     static fromJSON(json: IGameState): GameState {
         var state = new GameState();
         state.gameId = json.gameId;
+        state.runState = json.runState;
         state.currentPlayerIndex = json.currentPlayerIndex;
         state.players = new Array<GamePlayer>();
         json.players.forEach(p => {
@@ -259,6 +269,7 @@ export class GameState implements IGameState {
     toJSON(): IGameState {
         var json: IGameState = {
             gameId: this.gameId,
+            runState: this.runState,
             currentPlayerIndex: this.currentPlayerIndex,
             players: new Array<IGamePlayer>(),
             remainingLetters: new Array<string>(),

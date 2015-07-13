@@ -28,12 +28,12 @@ var board;
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.bonusColors[1 /* DoubleLetter */] = "lightblue";
-            this.bonusColors[3 /* DoubleWord */] = "lightpink";
-            this.bonusColors[2 /* TripleLetter */] = "blue";
-            this.bonusColors[4 /* TripleWord */] = "red";
-            this.bonusColors[5 /* Start */] = "lightpink";
-            this.bonusColors[0 /* None */] = "darkgreen";
+            this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+            this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
+            this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue";
+            this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
+            this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
+            this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
         };
         Board.prototype.drawGameState = function (game) {
             if (game == null || game.getState() == null) {
@@ -304,10 +304,19 @@ var board;
             });
         };
         BoardViewModel.prototype.refreshClick = function () {
+            this.callGameMethod("get");
+        };
+        BoardViewModel.prototype.startClick = function () {
+            this.callGameMethod("start");
+        };
+        BoardViewModel.prototype.pauseClick = function () {
+            this.callGameMethod("pause");
+        };
+        BoardViewModel.prototype.callGameMethod = function (name) {
             var _this = this;
             $.ajax({
                 type: "GET",
-                url: "/game/get",
+                url: "/game/" + name,
                 data: { gameId: this.game.getState().gameId },
                 dataType: "json",
                 success: function (result) {

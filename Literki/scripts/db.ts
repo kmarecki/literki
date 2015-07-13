@@ -36,6 +36,7 @@ export class GameRepository {
             if (result != null) {
                 var newGameId = result != -1 ? result + 1 : 1;
                 state.gameId = newGameId;
+                state.runState = literki.GameRunState.Created;
                 this.saveState(state, (err) => {
                     if (err == null) {
                         callback(null, newGameId);
@@ -108,6 +109,7 @@ export class GameRepository {
                 unique: true,
                 index: true
             },
+            runState: Number,
             remainingLetters: [String],
             currentPlayerIndex: Number,
             players: [{
@@ -120,7 +122,6 @@ export class GameRepository {
                         word: String,
                         x: Number,
                         y: Number,
-                        //direction: { type: String, enum: ['Vertical', 'Horizontal'] }
                         direction: Number,
                         points: Number
                     }]
