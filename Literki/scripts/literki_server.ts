@@ -24,11 +24,13 @@ export class GameRun_Server extends literki.GameRun {
     }
 
     addPlayer(player: literki.IGamePlayer): boolean {
-        var res = _.find(this.state.players, p => p.userId == player.userId);
-        if (res == null) {
-            this.state.players.push(player);
-            this.pickLetters(this.state.players.length - 1);
-            return true;
+        if (this.state.runState == literki.GameRunState.Created) {
+            var res = _.find(this.state.players, p => p.userId == player.userId);
+            if (res == null) {
+                this.state.players.push(player);
+                this.pickLetters(this.state.players.length - 1);
+                return true;
+            }
         }
         return false;
     }

@@ -3,6 +3,9 @@ var main;
     var GameViewModel = (function () {
         function GameViewModel() {
         }
+        GameViewModel.prototype.joinAction = function () {
+            return this.runState == 0 /* Created */ ? "Dołącz" : "Obserwuj";
+        };
         return GameViewModel;
     })();
     var MainViewModel = (function () {
@@ -28,6 +31,7 @@ var main;
             games.forEach(function (g) {
                 var gameModel = new GameViewModel();
                 gameModel.gameId = g.gameId;
+                gameModel.runState = g.runState;
                 _this.games.push(gameModel);
             });
         };

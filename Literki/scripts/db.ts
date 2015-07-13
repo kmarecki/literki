@@ -23,7 +23,7 @@ export class GameRepository {
     }
 
     allGames(callback: (err: Error, games: any) => any): void {
-        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, _id: 0 }, (err, result) => {
+        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, _id: 0 }, (err, result) => {
             if (err != null) {
                 console.log(err);
             }

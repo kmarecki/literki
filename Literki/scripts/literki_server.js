@@ -31,11 +31,13 @@ var GameRun_Server = (function (_super) {
         this.updateState();
     };
     GameRun_Server.prototype.addPlayer = function (player) {
-        var res = _.find(this.state.players, function (p) { return p.userId == player.userId; });
-        if (res == null) {
-            this.state.players.push(player);
-            this.pickLetters(this.state.players.length - 1);
-            return true;
+        if (this.state.runState == 0 /* Created */) {
+            var res = _.find(this.state.players, function (p) { return p.userId == player.userId; });
+            if (res == null) {
+                this.state.players.push(player);
+                this.pickLetters(this.state.players.length - 1);
+                return true;
+            }
         }
         return false;
     };

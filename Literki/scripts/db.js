@@ -9,7 +9,7 @@ var GameRepository = (function () {
         this.connect();
     };
     GameRepository.prototype.allGames = function (callback) {
-        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, _id: 0 }, function (err, result) {
+        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, _id: 0 }, function (err, result) {
             if (err != null) {
                 console.log(err);
             }

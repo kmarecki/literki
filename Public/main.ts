@@ -1,6 +1,10 @@
 ﻿module main {
     class GameViewModel {
         gameId: number;
+        runState: Literki.GameRunState;
+        joinAction(): string {
+            return this.runState == Literki.GameRunState.Created ? "Dołącz" : "Obserwuj";
+        }
     }
 
     class MainViewModel {
@@ -25,6 +29,7 @@
             games.forEach(g => {
                 var gameModel = new GameViewModel();
                 gameModel.gameId = g.gameId;
+                gameModel.runState = g.runState;
                 this.games.push(gameModel);
             });
         }
