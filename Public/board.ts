@@ -1,10 +1,12 @@
-﻿/// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
-/// <reference path=".\typings\knockout\knockout.d.ts"/>
-/// <reference path=".\typings\jquery\jquery.d.ts"/>
-/// <reference path=".\scripts\system.ts"/>
-/// <reference path=".\scripts\literki.ts"/>
+﻿
 
-module board {
+import Literki = require('./scripts/literki');
+import System = require('./scripts/system');
+import ko = require('knockout');
+import $ = require('jquery');
+import Kinetic = require('Kinetic');
+
+
     var FIELD_SIZE: number;
     var LINE_WIDTH: number;
     var BOARD_MARGIN: number;
@@ -413,7 +415,7 @@ module board {
 
     var viewModel: BoardViewModel;
 
-    window.onload = () => {
+   export function init(): void {
 
         var boardDiv = <HTMLElement>document.getElementById("boardDiv");
         boardDiv.style.width = screen.availWidth / 2 + "px";
@@ -440,7 +442,7 @@ module board {
     window.onresize = () => {
         viewModel.refreshBoard();
     }
-}
+
 
 
 

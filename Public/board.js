@@ -1,10 +1,4 @@
-/// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
-/// <reference path=".\typings\knockout\knockout.d.ts"/>
-/// <reference path=".\typings\jquery\jquery.d.ts"/>
-/// <reference path=".\scripts\system.ts"/>
-/// <reference path=".\scripts\literki.ts"/>
-var board;
-(function (board) {
+define(["require", "exports", './scripts/literki', './scripts/system', 'knockout', 'jquery'], function (require, exports, Literki, System, ko, $) {
     var FIELD_SIZE;
     var LINE_WIDTH;
     var BOARD_MARGIN;
@@ -28,12 +22,12 @@ var board;
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.bonusColors[1 /* DoubleLetter */] = "lightblue";
-            this.bonusColors[3 /* DoubleWord */] = "lightpink";
-            this.bonusColors[2 /* TripleLetter */] = "blue";
-            this.bonusColors[4 /* TripleWord */] = "red";
-            this.bonusColors[5 /* Start */] = "lightpink";
-            this.bonusColors[0 /* None */] = "darkgreen";
+            this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+            this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
+            this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue";
+            this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
+            this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
+            this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
         };
         Board.prototype.drawGameState = function (game) {
             if (game == null || game.getState() == null) {
@@ -358,7 +352,7 @@ var board;
         return BoardViewModel;
     })();
     var viewModel;
-    window.onload = function () {
+    function init() {
         var boardDiv = document.getElementById("boardDiv");
         boardDiv.style.width = screen.availWidth / 2 + "px";
         boardDiv.style.height = screen.availHeight * 0.85 + "px";
@@ -374,9 +368,10 @@ var board;
             debugLabel.textContent = screen.availWidth + " X " + screen.availHeight + " " + new Date().toLocaleTimeString();
             viewModel.alive();
         }, 1000);
-    };
+    }
+    exports.init = init;
     window.onresize = function () {
         viewModel.refreshBoard();
     };
-})(board || (board = {}));
+});
 //# sourceMappingURL=board.js.map

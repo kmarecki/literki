@@ -52,8 +52,10 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="board-conf.js" />
     <Content Include="board.html" />
     <Content Include="login.html" />
+    <Content Include="main-conf.js" />
     <Content Include="main.html" />
     <Content Include="scripts\jquery-1.11.2.js" />
     <Content Include="scripts\kinetic-v5.1.0.js" />
@@ -61,6 +63,7 @@
     <Content Include="scripts\knockout-3.2.0.debug.js" />
     <Content Include="scripts\knockout-3.2.0.js" />
     <Content Include="scripts\moment.js" />
+    <Content Include="scripts\require.js" />
     <Content Include="styles\app.css" />
     <Content Include="styles\board.css" />
   </ItemGroup>
@@ -74,6 +77,7 @@
     <TypeScriptCompile Include="typings\knockout\knockout.d.ts" />
     <TypeScriptCompile Include="typings\moment\moment-node.d.ts" />
     <TypeScriptCompile Include="typings\moment\moment.d.ts" />
+    <TypeScriptCompile Include="typings\requirejs\require.d.ts" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>

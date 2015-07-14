@@ -540,4 +540,15 @@ declare module Kinetic {
         new (config?: TweenConfig): ITween;
     }
 
+    interface KineticStatic {
+    }
+
 }
+
+declare module 'Kinetic' {
+    var Kinetic: Kinetic.KineticStatic;
+    export = Kinetic;
+}
+
+
+
