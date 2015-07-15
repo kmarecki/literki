@@ -1,4 +1,4 @@
-﻿
+﻿/// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
 
 import Literki = require('./scripts/literki');
 import System = require('./scripts/system');

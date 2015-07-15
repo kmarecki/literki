@@ -38,5 +38,9 @@ export class MainViewModel {
     }
 }
 
+export function init(): void  {
+    var viewModel = new MainViewModel();
+    viewModel.init();
+}
     
     

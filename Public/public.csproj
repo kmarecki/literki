@@ -83,4 +83,7 @@
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>copy $(ProjectDir)\..\Literki\scripts\literki.ts $(ProjectDir)\scripts\literki.ts</PreBuildEvent>
+  </PropertyGroup>
 </Project>
