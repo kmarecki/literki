@@ -1,3 +1,4 @@
+var _ = require('underscore');
 exports.ROW_SIZE = 15;
 exports.MAX_LETTERS = 7;
 var LetterDefinition = (function () {
@@ -312,14 +313,19 @@ var FreeLetters = (function () {
 })();
 exports.FreeLetters = FreeLetters;
 var GameRun = (function () {
-    function GameRun() {
+    function GameRun(userId) {
         this.freeLetters = new FreeLetters();
+        this.currentUserId = userId;
     }
     GameRun.prototype.getPlayers = function () {
         return this.state.players;
     };
     GameRun.prototype.getCurrentPlayer = function () {
         return this.state.players[this.state.currentPlayerIndex];
+    };
+    GameRun.prototype.getCurrentUser = function () {
+        var _this = this;
+        return _.find(this.state.players, function (p) { return p.userId == _this.currentUserId; });
     };
     GameRun.prototype.getState = function () {
         return this.state;

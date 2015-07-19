@@ -1,4 +1,6 @@
-﻿export var ROW_SIZE = 15;
+﻿import _ = require('underscore');
+
+export var ROW_SIZE = 15;
 export var MAX_LETTERS = 7;
 
 export class LetterDefinition {
@@ -334,6 +336,11 @@ export class GameRun {
 
     protected state: IGameState;
     protected freeLetters = new FreeLetters();
+    currentUserId: string;
+
+    constructor(userId: string) {
+        this.currentUserId = userId;
+    }
 
     getPlayers(): Array<IGamePlayer> {
         return this.state.players;
@@ -341,6 +348,10 @@ export class GameRun {
 
     getCurrentPlayer(): IGamePlayer {
         return this.state.players[this.state.currentPlayerIndex];
+    }
+
+    getCurrentUser(): IGamePlayer {
+        return _.find(this.state.players, p => p.userId == this.currentUserId);
     }
 
     getState(): IGameState {

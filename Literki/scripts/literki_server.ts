@@ -35,6 +35,26 @@ export class GameRun_Server extends literki.GameRun {
         return false;
     }
 
+    start(): string {
+        if (!this.isGameOwner()) {
+            return "Tylko założyciel gry może ją rozpocząć";
+        }
+        if (this.state.players.length < 2) {
+            return "Za mało graczy do rozpoczęcia gry";
+        }
+        if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
+            this.state.runState = literki.GameRunState.Running;
+        } else {
+            return "Nie można rozpocząć gry";
+        }
+        return "";
+    }
+
+    isGameOwner(): boolean {
+        var gameOwner = this.state.players[0];
+        return gameOwner.userId == this.currentUserId;
+    }
+
     private allLetters(): Array<string> {
         var letters = new Array<string>();
         for (var key in literki.LETTERS) {

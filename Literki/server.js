@@ -61,7 +61,7 @@ app.get('/game/new', auth, function (req, res) {
     player.remainingTime = 15 * 60;
     var players = new Array();
     players.push(player);
-    var game = new literki_server.GameRun_Server();
+    var game = new literki_server.GameRun_Server(req.user.googleId);
     game.newGame(players);
     var state = game.getState();
     repo.newState(state, function (err, gameId) {
@@ -73,7 +73,7 @@ app.get('/game/new', auth, function (req, res) {
             if (err != null) {
                 errorMessages = errorMessages.concat(util.formatError(err));
             }
-            res.json({ state: state, errorMessage: errorMessages });
+            res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
         });
     });
 });
@@ -86,7 +86,7 @@ app.get('/game/join', auth, function (req, res) {
             res.json({ errorMessage: errorMessages });
         }
         else if (state != null) {
-            var game = new literki_server.GameRun_Server();
+            var game = new literki_server.GameRun_Server(req.user.id);
             game.runState(state);
             var player = new literki.GamePlayer();
             player.userId = req.user.id;
@@ -98,11 +98,11 @@ app.get('/game/join', auth, function (req, res) {
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));
                     }
-                    res.json({ state: state, errorMessage: errorMessages });
+                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
                 });
             }
             else {
-                res.json({ state: state, errorMessage: "Player not added" });
+                res.json({ state: state, userId: req.user.id, errorMessage: "Player not added" });
             }
         }
     });
@@ -123,7 +123,7 @@ app.get('/game/get', auth, function (req, res) {
         if (err != null) {
             errorMessages = util.formatError(err);
         }
-        res.json({ state: state, errorMessage: errorMessages });
+        res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
     });
 });
 app.get('/game/start', auth, function (req, res) {
@@ -132,18 +132,23 @@ app.get('/game/start', auth, function (req, res) {
         var errorMessages = '';
         if (err != null) {
             errorMessages = util.formatError(err);
-        }
-        if (state.runState == 0 /* Created */ || 2 /* Paused */) {
-            state.runState = 1 /* Running */;
-            repo.saveState(state, function (err) {
-                if (err != null) {
-                    errorMessages = errorMessages.concat(util.formatError(err));
-                }
-                res.json({ state: state, errorMessage: errorMessages });
-            });
+            res.json({ state: state, errorMessage: errorMessages });
         }
         else {
-            res.json({ state: state, errorMessage: errorMessages });
+            var game = new literki_server.GameRun_Server(req.user.id);
+            game.runState(state);
+            var errMsg = game.start();
+            if (errMsg != null) {
+                res.json({ state: state, errorMessage: errMsg });
+            }
+            else {
+                repo.saveState(state, function (err) {
+                    if (err != null) {
+                        errorMessages = errorMessages.concat(util.formatError(err));
+                    }
+                    res.json({ state: state, errorMessage: errorMessages });
+                });
+            }
         }
     });
 });
@@ -177,7 +182,7 @@ app.post('/game/move', auth, function (req, res) {
             res.json({ errorMessage: errorMessages });
         }
         else {
-            var game = new literki_server.GameRun_Server();
+            var game = new literki_server.GameRun_Server(req.user.userId);
             game.runState(state);
             game.makeMove(move);
             state = game.getState();
@@ -193,7 +198,7 @@ app.post('/game/move', auth, function (req, res) {
 app.post('/game/alive', auth, function (req, res) {
     var gameId = req.body.gameId;
     var playerName = req.body.playerName;
-    var game = new literki_server.GameRun_Server();
+    var game = new literki_server.GameRun_Server(req.user.userId);
     repo.loadState(gameId, function (err, state) {
         var errorMessages = '';
         if (err != null) {

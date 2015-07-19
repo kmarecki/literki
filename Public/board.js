@@ -8,6 +8,8 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         LINE_WIDTH = fieldSize / 15;
         BOARD_MARGIN = fieldSize / 4;
     }
+    var game;
+    var viewModel;
     var Board = (function () {
         function Board(container) {
             this.bonusColors = {};
@@ -30,7 +32,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             this.bonusColors[5 /* Start */] = "lightpink";
             this.bonusColors[0 /* None */] = "darkgreen";
         };
-        Board.prototype.drawGameState = function (game) {
+        Board.prototype.drawGameState = function () {
             if (game == null || game.getState() == null) {
                 return;
             }
@@ -102,16 +104,19 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                 }
             }
             this.stage.add(letterLayer);
-            // moving letters
-            var foregroundLayer = new Kinetic.Layer();
-            for (var x = 0; x < Literki.MAX_LETTERS; x++) {
-                if (x < game.getCurrentPlayer().freeLetters.length) {
-                    var letter = game.getCurrentPlayer().freeLetters[x];
-                    var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-                    foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+            var currentUser = game.getCurrentUser();
+            if (currentUser != null) {
+                // moving letters
+                var foregroundLayer = new Kinetic.Layer();
+                for (var x = 0; x < Literki.MAX_LETTERS; x++) {
+                    if (x < currentUser.freeLetters.length) {
+                        var letter = currentUser.freeLetters[x];
+                        var xpos = BOARD_MARGIN + x * FIELD_SIZE;
+                        foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+                    }
                 }
+                this.stage.add(foregroundLayer);
             }
-            this.stage.add(foregroundLayer);
         };
         Board.prototype.getLetterGroup = function (x, y, letter, index, foreground) {
             var letterRect = new Kinetic.Rect({
@@ -157,8 +162,8 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                         duration: 0.1
                     });
                     tween.play();
-                    viewModel.game.putFreeLetter(letter, index, fieldX, fieldY);
-                    var newWords = viewModel.game.getNewWords();
+                    game.putFreeLetter(letter, index, fieldX, fieldY);
+                    var newWords = game.getNewWords();
                     viewModel.setNewWords(newWords);
                 });
             }
@@ -171,17 +176,19 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         };
         return Board;
     })();
+    var game;
     var BoardViewModelWord = (function () {
         function BoardViewModelWord() {
         }
         return BoardViewModelWord;
     })();
     var PlayerViewModel = (function () {
-        function PlayerViewModel() {
+        function PlayerViewModel(parent) {
             this.isCurrentPlayer = ko.observable(false);
             this.playerName = ko.observable("");
             this.points = ko.observable(0);
             this.remainingTime = ko.observable('');
+            this.parentModel = parent;
         }
         PlayerViewModel.prototype.findAndRefresh = function (players, currentPlayer) {
             var _this = this;
@@ -195,7 +202,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             this.playerName(player.playerName);
             this.points(player.getPoints());
             this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
-            this.isCurrentPlayer(currentPlayer.playerName == this.playerName());
+            this.isCurrentPlayer(player.userId == game.currentUserId);
         };
         return PlayerViewModel;
     })();
@@ -220,24 +227,24 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         BoardViewModel.prototype.getPlayers = function (start, end) {
             var _this = this;
             var players = new Array();
-            this.game.getPlayers().slice(start, end).forEach(function (p) {
-                var playerModel = new PlayerViewModel();
-                playerModel.refresh(p, _this.game.getCurrentPlayer());
+            game.getPlayers().slice(start, end).forEach(function (p) {
+                var playerModel = new PlayerViewModel(_this);
+                playerModel.refresh(p, game.getCurrentPlayer());
                 players.push(playerModel);
                 _this.allPlayers.push(playerModel);
             });
             return players;
         };
         BoardViewModel.prototype.getPlayersRow = function () {
-            return this.game.getPlayers().length > 2 ? [0, 1] : [0];
+            return game.getPlayers().length > 2 ? [0, 1] : [0];
         };
         BoardViewModel.prototype.refreshBoard = function () {
             this.board.clearBoard();
-            this.board.drawGameState(this.game);
+            this.board.drawGameState();
         };
         BoardViewModel.prototype.runState = function (state) {
-            viewModel.game.runState(state);
-            viewModel.board.drawGameState(viewModel.game);
+            game.runState(state);
+            viewModel.board.drawGameState();
         };
         BoardViewModel.prototype.init = function () {
             var _this = this;
@@ -273,7 +280,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             }
         };
         BoardViewModel.prototype.initRefresh = function (result) {
-            this.game = new Literki.GameRun();
+            game = new Literki.GameRun(result.userId);
             this.refreshModel(result);
             this.refreshBoard();
             ko.applyBindings(this);
@@ -285,13 +292,13 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                 url: "/game/alive",
                 contentType: 'application/json',
                 data: JSON.stringify({
-                    gameId: this.game.getState().gameId,
-                    playerName: this.game.getCurrentPlayer().playerName
+                    gameId: game.getState().gameId,
+                    playerName: game.getCurrentPlayer().playerName
                 }),
                 dataType: "json",
                 success: function (result) {
                     if (result.remainingTime != null) {
-                        _this.game.getCurrentPlayer().remainingTime = result.remainingTime;
+                        game.getCurrentPlayer().remainingTime = result.remainingTime;
                     }
                     _this.refreshPlayerModels();
                     _this.errorMessage(result.errorMessage);
@@ -312,7 +319,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             $.ajax({
                 type: "GET",
                 url: "/game/" + name,
-                data: { gameId: this.game.getState().gameId },
+                data: { gameId: game.getState().gameId },
                 dataType: "json",
                 success: function (result) {
                     _this.refreshModel(result);
@@ -322,7 +329,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         };
         BoardViewModel.prototype.moveClick = function () {
             var _this = this;
-            var move = this.game.getActualMove();
+            var move = game.getActualMove();
             $.ajax({
                 type: "POST",
                 url: "/game/move",
@@ -338,21 +345,19 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         BoardViewModel.prototype.refreshModel = function (result) {
             if (result.state != null) {
                 var state = Literki.GameState.fromJSON(result.state);
-                this.game.runState(state);
+                game.runState(state);
                 this.cleanNewWords();
             }
             this.refreshPlayerModels();
             this.errorMessage(result.errorMessage);
         };
         BoardViewModel.prototype.refreshPlayerModels = function () {
-            var _this = this;
-            if (this.game != null) {
-                this.allPlayers.forEach(function (p) { return p.findAndRefresh(_this.game.getPlayers(), _this.game.getCurrentPlayer()); });
+            if (game != null) {
+                this.allPlayers.forEach(function (p) { return p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()); });
             }
         };
         return BoardViewModel;
     })();
-    var viewModel;
     function init() {
         var boardDiv = document.getElementById("boardDiv");
         boardDiv.style.width = screen.availWidth / 2 + "px";

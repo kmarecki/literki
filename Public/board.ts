@@ -17,6 +17,9 @@ import Kinetic = require('Kinetic');
         BOARD_MARGIN = fieldSize / 4;
     }
 
+    var game: Literki.GameRun;
+    var viewModel: BoardViewModel;
+
     class Board {
         private stage: Kinetic.IStage;
         private bonusColors: { [id: number]: string; } = {};
@@ -46,7 +49,7 @@ import Kinetic = require('Kinetic');
             this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
         }
 
-        drawGameState(game: Literki.GameRun): void {
+        drawGameState(): void {
             if (game == null || game.getState() == null) {
                 return;
             }
@@ -137,19 +140,22 @@ import Kinetic = require('Kinetic');
 
             this.stage.add(letterLayer);
 
-            // moving letters
-            var foregroundLayer = new Kinetic.Layer();
+            var currentUser = game.getCurrentUser();
+            if (currentUser != null) {
+                // moving letters
+                var foregroundLayer = new Kinetic.Layer();
 
-            for (var x = 0; x < Literki.MAX_LETTERS; x++) {
-                if (x < game.getCurrentPlayer().freeLetters.length) {
-                    var letter = game.getCurrentPlayer().freeLetters[x];
-                    var xpos = BOARD_MARGIN + x * FIELD_SIZE;
+                for (var x = 0; x < Literki.MAX_LETTERS; x++) {
+                    if (x < currentUser.freeLetters.length) {
+                        var letter = currentUser.freeLetters[x];
+                        var xpos = BOARD_MARGIN + x * FIELD_SIZE;
 
-                    foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+                        foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+                    }
                 }
-            }
 
-            this.stage.add(foregroundLayer);
+                this.stage.add(foregroundLayer);
+            }
         }
 
         private getLetterGroup(x: number, y: number, letter: string, index: number, foreground: boolean): Kinetic.IGroup {
@@ -203,8 +209,8 @@ import Kinetic = require('Kinetic');
                     });
                     tween.play();
 
-                    viewModel.game.putFreeLetter(letter, index, fieldX, fieldY);
-                    var newWords = viewModel.game.getNewWords();
+                    game.putFreeLetter(letter, index, fieldX, fieldY);
+                    var newWords = game.getNewWords();
                     viewModel.setNewWords(newWords);
                 });
             }
@@ -219,6 +225,8 @@ import Kinetic = require('Kinetic');
         }
     }
 
+    var game: Literki.GameRun
+
     class BoardViewModelWord {
         word: string;
         points: number;
@@ -229,6 +237,11 @@ import Kinetic = require('Kinetic');
         playerName = ko.observable("");
         points = ko.observable(0);
         remainingTime = ko.observable('');
+        parentModel: BoardViewModel;
+
+        constructor(parent: BoardViewModel) {
+            this.parentModel = parent;
+        }
 
         findAndRefresh(players: Literki.IGamePlayer[], currentPlayer: Literki.IGamePlayer): void {
             players.forEach(p => {
@@ -242,8 +255,9 @@ import Kinetic = require('Kinetic');
             this.playerName(player.playerName);
             this.points((<Literki.GamePlayer>player).getPoints());
             this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
-            this.isCurrentPlayer(currentPlayer.playerName == this.playerName());
+            this.isCurrentPlayer(player.userId == game.currentUserId);
         }
+
     }
 
     class BoardViewModel {
@@ -253,7 +267,6 @@ import Kinetic = require('Kinetic');
         private allPlayers = new Array<PlayerViewModel>();
 
         board: Board;
-        game: Literki.GameRun;
         errorMessage = ko.observable("");
 
         getNewWords(): KnockoutObservableArray<BoardViewModelWord> {
@@ -272,9 +285,9 @@ import Kinetic = require('Kinetic');
         getPlayers(start: number, end: number): PlayerViewModel[] {
             var players = new Array<PlayerViewModel>();
 
-            this.game.getPlayers().slice(start, end).forEach(p => {
-                var playerModel = new PlayerViewModel();
-                playerModel.refresh(p, this.game.getCurrentPlayer());
+            game.getPlayers().slice(start, end).forEach(p => {
+                var playerModel = new PlayerViewModel(this);
+                playerModel.refresh(p, game.getCurrentPlayer());
                 players.push(playerModel);
                 this.allPlayers.push(playerModel);
             });
@@ -283,17 +296,17 @@ import Kinetic = require('Kinetic');
         }
 
         getPlayersRow(): Number[] {
-            return this.game.getPlayers().length > 2 ? [0, 1] : [0];
+            return game.getPlayers().length > 2 ? [0, 1] : [0];
         }
 
         refreshBoard(): void {
             this.board.clearBoard();
-            this.board.drawGameState(this.game);
+            this.board.drawGameState();
         }
 
         runState(state: Literki.GameState): void {
-            viewModel.game.runState(state);
-            viewModel.board.drawGameState(viewModel.game);
+            game.runState(state);
+            viewModel.board.drawGameState();
         }
 
         init(): void {
@@ -329,7 +342,7 @@ import Kinetic = require('Kinetic');
         }
 
         private initRefresh(result: any): void {
-            this.game = new Literki.GameRun();
+            game = new Literki.GameRun(result.userId);
             this.refreshModel(result);
             this.refreshBoard();
             ko.applyBindings(this);
@@ -341,13 +354,13 @@ import Kinetic = require('Kinetic');
                 url: "/game/alive",
                 contentType: 'application/json',
                 data: JSON.stringify({
-                    gameId: this.game.getState().gameId,
-                    playerName: this.game.getCurrentPlayer().playerName
+                    gameId: game.getState().gameId,
+                    playerName: game.getCurrentPlayer().playerName
                 }),
                 dataType: "json",
                 success: (result) => {
                     if (result.remainingTime != null) {
-                        this.game.getCurrentPlayer().remainingTime = result.remainingTime;
+                        game.getCurrentPlayer().remainingTime = result.remainingTime;
                     }
                     this.refreshPlayerModels();
                     this.errorMessage(result.errorMessage);
@@ -372,7 +385,7 @@ import Kinetic = require('Kinetic');
             $.ajax({
                 type: "GET",
                 url: "/game/" + name,
-                data: { gameId: this.game.getState().gameId },
+                data: { gameId: game.getState().gameId },
                 dataType: "json",
                 success: (result) => {
                     this.refreshModel(result);
@@ -382,7 +395,7 @@ import Kinetic = require('Kinetic');
         }
 
         moveClick(): void {
-            var move = this.game.getActualMove();
+            var move = game.getActualMove();
             $.ajax({
                 type: "POST",
                 url: "/game/move",
@@ -399,7 +412,7 @@ import Kinetic = require('Kinetic');
         private refreshModel(result: any): void {
             if (result.state != null) {
                 var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
-                this.game.runState(state);
+                game.runState(state);
                 this.cleanNewWords();
             }
             this.refreshPlayerModels();
@@ -407,13 +420,11 @@ import Kinetic = require('Kinetic');
         }
 
         private refreshPlayerModels(): void {
-            if (this.game != null) {
-                this.allPlayers.forEach(p => p.findAndRefresh(this.game.getPlayers(), this.game.getCurrentPlayer()));
+            if (game != null) {
+                this.allPlayers.forEach(p => p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()));
             }
         }
     }
-
-    var viewModel: BoardViewModel;
 
    export function init(): void {
 

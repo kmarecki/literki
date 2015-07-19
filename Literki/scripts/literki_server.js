@@ -41,6 +41,25 @@ var GameRun_Server = (function (_super) {
         }
         return false;
     };
+    GameRun_Server.prototype.start = function () {
+        if (!this.isGameOwner()) {
+            return "Tylko założyciel gry może ją rozpocząć";
+        }
+        if (this.state.players.length < 2) {
+            return "Za mało graczy do rozpoczęcia gry";
+        }
+        if (this.state.runState == 0 /* Created */ || 2 /* Paused */) {
+            this.state.runState = 1 /* Running */;
+        }
+        else {
+            return "Nie można rozpocząć gry";
+        }
+        return "";
+    };
+    GameRun_Server.prototype.isGameOwner = function () {
+        var gameOwner = this.state.players[0];
+        return gameOwner.userId == this.currentUserId;
+    };
     GameRun_Server.prototype.allLetters = function () {
         var letters = new Array();
         for (var key in literki.LETTERS) {

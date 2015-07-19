@@ -64,6 +64,7 @@
     <Content Include="scripts\knockout-3.2.0.js" />
     <Content Include="scripts\moment.js" />
     <Content Include="scripts\require.js" />
+    <Content Include="scripts\underscore.js" />
     <Content Include="styles\app.css" />
     <Content Include="styles\board.css" />
   </ItemGroup>
@@ -78,6 +79,7 @@
     <TypeScriptCompile Include="typings\moment\moment-node.d.ts" />
     <TypeScriptCompile Include="typings\moment\moment.d.ts" />
     <TypeScriptCompile Include="typings\requirejs\require.d.ts" />
+    <TypeScriptCompile Include="typings\underscore\underscore.d.ts" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>
