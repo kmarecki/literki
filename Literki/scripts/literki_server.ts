@@ -20,7 +20,7 @@ export class GameRun_Server extends literki.GameRun {
             var index = playersFreeLetters.indexOf(fl.letter);
             playersFreeLetters.splice(index, 1);
         });
-        this.updateState();
+        this.updateStateAfterMove();
     }
 
     addPlayer(player: literki.IGamePlayer): boolean {
@@ -47,7 +47,7 @@ export class GameRun_Server extends literki.GameRun {
         } else {
             return "Nie można rozpocząć gry";
         }
-        return "";
+        return null;
     }
 
     isGameOwner(): boolean {
@@ -77,12 +77,12 @@ export class GameRun_Server extends literki.GameRun {
         }
     }
 
-    private updateState(): literki.IGameState {
+    private updateStateAfterMove(): literki.IGameState {
         var move = new literki.GameMoveHistory();
         this.getNewWords().forEach(p => move.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)));
         this.getCurrentPlayer().moves.push(move);    
+        this.pickLetters(this.state.currentPlayerIndex);
         this.state.currentPlayerIndex = (this.state.currentPlayerIndex + 1) % this.state.players.length;
-
         return this.state;
     }
 }

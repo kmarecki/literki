@@ -28,7 +28,7 @@ var GameRun_Server = (function (_super) {
             var index = playersFreeLetters.indexOf(fl.letter);
             playersFreeLetters.splice(index, 1);
         });
-        this.updateState();
+        this.updateStateAfterMove();
     };
     GameRun_Server.prototype.addPlayer = function (player) {
         if (this.state.runState == 0 /* Created */) {
@@ -54,7 +54,7 @@ var GameRun_Server = (function (_super) {
         else {
             return "Nie można rozpocząć gry";
         }
-        return "";
+        return null;
     };
     GameRun_Server.prototype.isGameOwner = function () {
         var gameOwner = this.state.players[0];
@@ -80,10 +80,11 @@ var GameRun_Server = (function (_super) {
             this.state.remainingLetters.splice(pickIndex, 1);
         }
     };
-    GameRun_Server.prototype.updateState = function () {
+    GameRun_Server.prototype.updateStateAfterMove = function () {
         var move = new literki.GameMoveHistory();
         this.getNewWords().forEach(function (p) { return move.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)); });
         this.getCurrentPlayer().moves.push(move);
+        this.pickLetters(this.state.currentPlayerIndex);
         this.state.currentPlayerIndex = (this.state.currentPlayerIndex + 1) % this.state.players.length;
         return this.state;
     };
