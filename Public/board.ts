@@ -172,10 +172,23 @@ import Kinetic = require('Kinetic');
                 width: FIELD_SIZE,
                 height: FIELD_SIZE,
                 align: "center",
-                verticalAlign: "middle",
+                y: (FIELD_SIZE - 30) / 2,
                 text: letter.toUpperCase(),
                 fontFamily: "Calibri",
                 fontSize: 30,
+                fontStyle: "bold",
+                fill: "black",
+            });
+
+            var pointsText = new Kinetic.Text({
+                width: FIELD_SIZE,
+                height: FIELD_SIZE,
+                align: "right",
+                x: -5,
+                y: FIELD_SIZE - 15,
+                text: Literki.LETTERS[letter].points.toString(),
+                fontFamily: "Calibri",
+                fontSize: 14,
                 fontStyle: "bold",
                 fill: "black",
             });
@@ -217,6 +230,7 @@ import Kinetic = require('Kinetic');
 
             letterGroup.add(letterRect);
             letterGroup.add(letterText);
+            letterGroup.add(pointsText);
             return letterGroup;
         }
 
