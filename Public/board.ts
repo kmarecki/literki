@@ -172,10 +172,10 @@ import Kinetic = require('Kinetic');
                 width: FIELD_SIZE,
                 height: FIELD_SIZE,
                 align: "center",
-                y: (FIELD_SIZE - 30) / 2,
+                y: (FIELD_SIZE - FIELD_SIZE * 2 / 3) / 2,
                 text: letter.toUpperCase(),
                 fontFamily: "Calibri",
-                fontSize: 30,
+                fontSize: FIELD_SIZE * 2 / 3,
                 fontStyle: "bold",
                 fill: "black",
             });
@@ -369,15 +369,20 @@ import Kinetic = require('Kinetic');
                 contentType: 'application/json',
                 data: JSON.stringify({
                     gameId: game.getState().gameId,
-                    playerName: game.getCurrentPlayer().playerName
+                    currentPlayerId: game.getCurrentPlayer().userId
                 }),
                 dataType: "json",
                 success: (result) => {
-                    if (result.remainingTime != null) {
-                        game.getCurrentPlayer().remainingTime = result.remainingTime;
-                    }
-                    this.refreshPlayerModels();
                     this.errorMessage(result.errorMessage);
+
+                    if (!result.forceRefresh) {
+                        if (result.remainingTime != null) {
+                            game.getCurrentPlayer().remainingTime = result.remainingTime;
+                        }
+                        this.refreshPlayerModels();
+                    } else {
+                        this.refreshClick();
+                    }
                 }
             });
         }
@@ -424,13 +429,14 @@ import Kinetic = require('Kinetic');
         }
 
         private refreshModel(result: any): void {
+            this.errorMessage(result.errorMessage);
+
             if (result.state != null) {
                 var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
                 game.runState(state);
                 this.cleanNewWords();
             }
             this.refreshPlayerModels();
-            this.errorMessage(result.errorMessage);
         }
 
         private refreshPlayerModels(): void {

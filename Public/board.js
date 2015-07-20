@@ -131,10 +131,10 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                 width: FIELD_SIZE,
                 height: FIELD_SIZE,
                 align: "center",
-                y: (FIELD_SIZE - 30) / 2,
+                y: (FIELD_SIZE - FIELD_SIZE * 2 / 3) / 2,
                 text: letter.toUpperCase(),
                 fontFamily: "Calibri",
-                fontSize: 30,
+                fontSize: FIELD_SIZE * 2 / 3,
                 fontStyle: "bold",
                 fill: "black",
             });
@@ -306,15 +306,20 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                 contentType: 'application/json',
                 data: JSON.stringify({
                     gameId: game.getState().gameId,
-                    playerName: game.getCurrentPlayer().playerName
+                    currentPlayerId: game.getCurrentPlayer().userId
                 }),
                 dataType: "json",
                 success: function (result) {
-                    if (result.remainingTime != null) {
-                        game.getCurrentPlayer().remainingTime = result.remainingTime;
-                    }
-                    _this.refreshPlayerModels();
                     _this.errorMessage(result.errorMessage);
+                    if (!result.forceRefresh) {
+                        if (result.remainingTime != null) {
+                            game.getCurrentPlayer().remainingTime = result.remainingTime;
+                        }
+                        _this.refreshPlayerModels();
+                    }
+                    else {
+                        _this.refreshClick();
+                    }
                 }
             });
         };
@@ -356,13 +361,13 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             });
         };
         BoardViewModel.prototype.refreshModel = function (result) {
+            this.errorMessage(result.errorMessage);
             if (result.state != null) {
                 var state = Literki.GameState.fromJSON(result.state);
                 game.runState(state);
                 this.cleanNewWords();
             }
             this.refreshPlayerModels();
-            this.errorMessage(result.errorMessage);
         };
         BoardViewModel.prototype.refreshPlayerModels = function () {
             if (game != null) {

@@ -227,8 +227,8 @@ app.post('/game/move', auth, (req, res) => {
 
 app.post('/game/alive', auth, (req, res) => {
     var gameId: number = req.body.gameId;
-    var playerName: string = req.body.playerName;
-    var game = new literki_server.GameRun_Server(req.user.userId);
+    var currentPlayerId = req.body.currentPlayerId;
+    var userId = req.user.id;
 
     repo.loadState(gameId,(err, state) => {
         var errorMessages = '';
@@ -236,8 +236,10 @@ app.post('/game/alive', auth, (req, res) => {
             errorMessages = util.formatError(err);
             res.json({ state: state, errorMessage: errorMessages });
         } else {
-            var remainingTime = state.players[state.currentPlayerIndex].remainingTime;
-            if (state.runState == literki.GameRunState.Running) {
+            var currentPlayer = state.players[state.currentPlayerIndex];
+            var forceRefresh = currentPlayer.userId != currentPlayerId;
+            var remainingTime = currentPlayer.remainingTime; 
+            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running) {
                 if (remainingTime > 0) {
                     remainingTime--;
                     state.players[state.currentPlayerIndex].remainingTime = remainingTime;
@@ -246,10 +248,10 @@ app.post('/game/alive', auth, (req, res) => {
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));
                     }
-                    res.json({ remainingTime: remainingTime, errorMessage: errorMessages });
+                    res.json({ remainingTime: remainingTime, forceRefresh: forceRefresh, errorMessage: errorMessages });
                 });
             } else {
-                res.json({ remainingTime: remainingTime, errorMessage: errorMessages });
+                res.json({ remainingTime: remainingTime, forceRefresh: forceRefresh, errorMessage: errorMessages });
             }
         }
     });
