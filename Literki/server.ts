@@ -26,7 +26,7 @@ app.use(passport.session());
 app.use(express.static(__dirname + '/../public'));
 
 var port = process.env.port || 1337;
-app.listen(port);
+app.listen(port, "0.0.0.0");
 
 var repo = new db.GameRepository();
 repo.open();
@@ -153,7 +153,10 @@ app.get('/game/get', auth, (req, res) => {
     });
 });
 
-app.get('/game/start', auth,(req, res) => {
+app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res,(game) => game.start()));
+app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res,(game) => game.pause()));
+  
+function simpleGameMethodCall(req: express.Request, res: express.Response, call: (game:literki_server.GameRun_Server) => string): void {
     var gameId: number = req.query.gameId;
 
     repo.loadState(gameId,(err, state) => {
@@ -164,7 +167,7 @@ app.get('/game/start', auth,(req, res) => {
         } else {
             var game = new literki_server.GameRun_Server(req.user.id);
             game.runState(state);
-            var errMsg = game.start();
+            var errMsg = call(game);
             if (errMsg != null) {
                 res.json({ state: state, errorMessage: errMsg });
             } else {
@@ -177,29 +180,7 @@ app.get('/game/start', auth,(req, res) => {
             }
         }
     });
-});
-
-app.get('/game/pause', auth,(req, res) => {
-    var gameId: number = req.query.gameId;
-
-    repo.loadState(gameId,(err, state) => {
-        var errorMessages = '';
-        if (err != null) {
-            errorMessages = util.formatError(err);
-        }
-        if (state.runState == literki.GameRunState.Running) {
-            state.runState = literki.GameRunState.Paused;
-            repo.saveState(state,(err) => {
-                if (err != null) {
-                    errorMessages = errorMessages.concat(util.formatError(err));
-                }
-                res.json({ state: state, errorMessage: errorMessages });
-            });
-        } else {
-            res.json({ state: state, errorMessage: errorMessages });
-        }
-    });
-});
+}
 
 
 app.post('/game/move', auth, (req, res) => {

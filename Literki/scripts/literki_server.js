@@ -56,6 +56,18 @@ var GameRun_Server = (function (_super) {
         }
         return null;
     };
+    GameRun_Server.prototype.pause = function () {
+        if (!this.isGameOwner()) {
+            return "Tylko założyciel gry może ją zatrzymać";
+        }
+        if (this.state.runState == 1 /* Running */) {
+            this.state.runState = 2 /* Paused */;
+        }
+        else {
+            return "Nie można zatrzymać gry";
+        }
+        return null;
+    };
     GameRun_Server.prototype.isGameOwner = function () {
         var gameOwner = this.state.players[0];
         return gameOwner.userId == this.currentUserId;

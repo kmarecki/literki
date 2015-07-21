@@ -50,6 +50,18 @@ export class GameRun_Server extends literki.GameRun {
         return null;
     }
 
+    pause(): string {
+        if (!this.isGameOwner()) {
+            return "Tylko założyciel gry może ją zatrzymać";
+        }
+        if (this.state.runState == literki.GameRunState.Running) {
+            this.state.runState = literki.GameRunState.Paused;
+        } else {
+            return "Nie można zatrzymać gry";
+        }
+        return null;
+    }
+
     isGameOwner(): boolean {
         var gameOwner = this.state.players[0];
         return gameOwner.userId == this.currentUserId;
