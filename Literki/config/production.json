@@ -1,0 +1,7 @@
+﻿{
+    "GoogleAuthorization": { 
+        "clientID": "699211361113-6b5hmrk8169iipecd81tpq9it0s0aim4.apps.googleusercontent.com",
+        "clientSecret": "Lc6wOH0NjHGYRw5KgJfxftQr",
+        "callbackURL": "http://kosmos.cloudapp.net/auth/google/return"
+    }
+}

@@ -3,6 +3,7 @@
 ///<reference path="typings\passport\passport.d.ts"/>
 ///<reference path="typings\body-parser\body-parser.d.ts"/>
 ///<reference path="typings\cookie-parser\cookie-parser.d.ts"/>
+var config = require('config');
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -26,9 +27,9 @@ app.listen(port, "0.0.0.0");
 var repo = new db.GameRepository();
 repo.open();
 passport.use(new GoogleStrategy({
-    clientID: '699211361113-6b5hmrk8169iipecd81tpq9it0s0aim4.apps.googleusercontent.com',
-    clientSecret: 'Lc6wOH0NjHGYRw5KgJfxftQr',
-    callbackURL: 'http://localhost:1337/auth/google/return',
+    clientID: config.GoogleAuthorization.clientID,
+    clientSecret: config.GoogleAuthorization.clientSecret,
+    callbackURL: config.GoogleAuthorization.callbackURL
 }, function (iss, sub, profile, accessToken, refreshToken, done) {
     repo.loadOrCreateUser(profile.id, profile.displayName, function (err, user) {
         return done(err, user);

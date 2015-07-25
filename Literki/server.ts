@@ -4,6 +4,8 @@
 ///<reference path="typings\body-parser\body-parser.d.ts"/>
 ///<reference path="typings\cookie-parser\cookie-parser.d.ts"/>
 
+var config = require('config');
+
 import express = require('express');
 import session = require('express-session');
 import bodyParser = require('body-parser');
@@ -34,9 +36,9 @@ repo.open();
 
 passport.use(
     new GoogleStrategy({
-        clientID: '699211361113-6b5hmrk8169iipecd81tpq9it0s0aim4.apps.googleusercontent.com',
-        clientSecret: 'Lc6wOH0NjHGYRw5KgJfxftQr',
-        callbackURL: 'http://localhost:1337/auth/google/return',
+        clientID: config.GoogleAuthorization.clientID,
+        clientSecret: config.GoogleAuthorization.clientSecret,
+        callbackURL: config.GoogleAuthorization.callbackURL
     },(iss, sub, profile, accessToken, refreshToken, done) => {
             repo.loadOrCreateUser(profile.id, profile.displayName, (err, user) => {
                 return done(err, user)
