@@ -400,6 +400,10 @@ import Kinetic = require('Kinetic');
             this.callGameMethod("pause");
         }
 
+        foldClick(): void {
+            this.callGameMethod("fold");
+        }
+
         private callGameMethod(name: string): void {
             $.ajax({
                 type: "GET",

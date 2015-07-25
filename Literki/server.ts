@@ -157,7 +157,8 @@ app.get('/game/get', auth, (req, res) => {
 });
 
 app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res,(game) => game.start()));
-app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res,(game) => game.pause()));
+app.get('/game/pause', auth,(req, res) => simpleGameMethodCall(req, res,(game) => game.pause()));
+app.get('/game/fold', auth,(req, res) => simpleGameMethodCall(req, res,(game) => game.fold()));
   
 function simpleGameMethodCall(req: express.Request, res: express.Response, call: (game:literki_server.GameRun_Server) => string): void {
     var gameId: number = req.query.gameId;

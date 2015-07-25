@@ -367,6 +367,15 @@ export class GameRun {
         return this.state.gameId == -1;
     }
 
+    isGameOwner(): boolean {
+        var gameOwner = this.state.players[0];
+        return gameOwner.userId == this.currentUserId;
+    }
+
+    isCurrentPlayer(): boolean {
+        return this.getCurrentPlayer().userId == this.currentUserId;
+    }
+
     private renderState(): void {
         this.board = new BoardFields();
         this.freeLetters.clear();

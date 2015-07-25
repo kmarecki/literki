@@ -1,5 +1,5 @@
 ///<reference path="..\typings\underscore\underscore.d.ts"/>
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -31,7 +31,7 @@ var GameRun_Server = (function (_super) {
         this.updateStateAfterMove();
     };
     GameRun_Server.prototype.addPlayer = function (player) {
-        if (this.state.runState == 0 /* Created */) {
+        if (this.state.runState == literki.GameRunState.Created) {
             var res = _.find(this.state.players, function (p) { return p.userId == player.userId; });
             if (res == null) {
                 this.state.players.push(player);
@@ -48,8 +48,8 @@ var GameRun_Server = (function (_super) {
         if (this.state.players.length < 2) {
             return "Za mało graczy do rozpoczęcia gry";
         }
-        if (this.state.runState == 0 /* Created */ || 2 /* Paused */) {
-            this.state.runState = 1 /* Running */;
+        if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
+            this.state.runState = literki.GameRunState.Running;
         }
         else {
             return "Nie można rozpocząć gry";
@@ -60,17 +60,19 @@ var GameRun_Server = (function (_super) {
         if (!this.isGameOwner()) {
             return "Tylko założyciel gry może ją zatrzymać";
         }
-        if (this.state.runState == 1 /* Running */) {
-            this.state.runState = 2 /* Paused */;
+        if (this.state.runState == literki.GameRunState.Running) {
+            this.state.runState = literki.GameRunState.Paused;
         }
         else {
             return "Nie można zatrzymać gry";
         }
         return null;
     };
-    GameRun_Server.prototype.isGameOwner = function () {
-        var gameOwner = this.state.players[0];
-        return gameOwner.userId == this.currentUserId;
+    GameRun_Server.prototype.fold = function () {
+        if (this.isCurrentPlayer()) {
+            this.updateStateAfterMove();
+        }
+        return null;
     };
     GameRun_Server.prototype.allLetters = function () {
         var letters = new Array();

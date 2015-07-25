@@ -130,6 +130,7 @@ app.get('/game/get', auth, function (req, res) {
 });
 app.get('/game/start', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game) { return game.start(); }); });
 app.get('/game/pause', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game) { return game.pause(); }); });
+app.get('/game/fold', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game) { return game.fold(); }); });
 function simpleGameMethodCall(req, res, call) {
     var gameId = req.query.gameId;
     repo.loadState(gameId, function (err, state) {
@@ -192,7 +193,7 @@ app.post('/game/alive', auth, function (req, res) {
             var currentPlayer = state.players[state.currentPlayerIndex];
             var forceRefresh = currentPlayer.userId != currentPlayerId;
             var remainingTime = currentPlayer.remainingTime;
-            if (currentPlayer.userId == userId && state.runState == 1 /* Running */) {
+            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running) {
                 if (remainingTime > 0) {
                     remainingTime--;
                     state.players[state.currentPlayerIndex].remainingTime = remainingTime;

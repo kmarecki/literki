@@ -62,9 +62,11 @@ export class GameRun_Server extends literki.GameRun {
         return null;
     }
 
-    isGameOwner(): boolean {
-        var gameOwner = this.state.players[0];
-        return gameOwner.userId == this.currentUserId;
+    fold(): string {
+        if (this.isCurrentPlayer()) {
+            this.updateStateAfterMove();
+        }
+        return null;
     }
 
     private allLetters(): Array<string> {

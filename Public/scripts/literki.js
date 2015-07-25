@@ -337,6 +337,13 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
         GameRun.prototype.isUndefinedGame = function () {
             return this.state.gameId == -1;
         };
+        GameRun.prototype.isGameOwner = function () {
+            var gameOwner = this.state.players[0];
+            return gameOwner.userId == this.currentUserId;
+        };
+        GameRun.prototype.isCurrentPlayer = function () {
+            return this.getCurrentPlayer().userId == this.currentUserId;
+        };
         GameRun.prototype.renderState = function () {
             var _this = this;
             this.board = new BoardFields();

@@ -25,12 +25,12 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.bonusColors[1 /* DoubleLetter */] = "lightblue";
-            this.bonusColors[3 /* DoubleWord */] = "lightpink";
-            this.bonusColors[2 /* TripleLetter */] = "blue";
-            this.bonusColors[4 /* TripleWord */] = "red";
-            this.bonusColors[5 /* Start */] = "lightpink";
-            this.bonusColors[0 /* None */] = "darkgreen";
+            this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+            this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
+            this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue";
+            this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
+            this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
+            this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
         };
         Board.prototype.drawGameState = function () {
             if (game == null || game.getState() == null) {
@@ -331,6 +331,9 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         };
         BoardViewModel.prototype.pauseClick = function () {
             this.callGameMethod("pause");
+        };
+        BoardViewModel.prototype.foldClick = function () {
+            this.callGameMethod("fold");
         };
         BoardViewModel.prototype.callGameMethod = function (name) {
             var _this = this;
