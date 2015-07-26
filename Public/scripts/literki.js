@@ -186,6 +186,12 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
         return GameWord;
     })();
     exports.GameWord = GameWord;
+    (function (MoveType) {
+        MoveType[MoveType["Move"] = 0] = "Move";
+        MoveType[MoveType["Fold"] = 1] = "Fold";
+        MoveType[MoveType["Exchange"] = 2] = "Exchange";
+    })(exports.MoveType || (exports.MoveType = {}));
+    var MoveType = exports.MoveType;
     var GameMoveHistory = (function () {
         function GameMoveHistory() {
             this.words = [];
@@ -380,7 +386,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                 this.board.setFieldValue(oldPosition.x, oldPosition.y, null);
             }
         };
-        GameRun.prototype.getChangeLetters = function () {
+        GameRun.prototype.getExchangeLetters = function () {
             return this.freeLetters.getAllLetters(1 /* ExchangeLetter */).map(function (pos) { return pos.letter; });
         };
         GameRun.prototype.getNewWords = function () {

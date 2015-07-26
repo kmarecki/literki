@@ -156,11 +156,12 @@ app.get('/game/get', auth, (req, res) => {
     });
 });
 
-app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res,(game) => game.start()));
-app.get('/game/pause', auth,(req, res) => simpleGameMethodCall(req, res,(game) => game.pause()));
-app.get('/game/fold', auth,(req, res) => simpleGameMethodCall(req, res,(game) => game.fold()));
+app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.start()));
+app.get('/game/pause', auth,(req, res) => simpleGameMethodCall(req, res, (game, req) => game.pause()));
+app.get('/game/fold', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.fold()));
+app.get('/game/exchange', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.exchange(req.query.exchangeLetters)));
   
-function simpleGameMethodCall(req: express.Request, res: express.Response, call: (game:literki_server.GameRun_Server) => string): void {
+function simpleGameMethodCall(req: express.Request, res: express.Response, call: (game: literki_server.GameRun_Server, req: express.Request) => string): void {
     var gameId: number = req.query.gameId;
 
     repo.loadState(gameId,(err, state) => {
@@ -171,7 +172,7 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
         } else {
             var game = new literki_server.GameRun_Server(req.user.id);
             game.runState(state);
-            var errMsg = call(game);
+            var errMsg = call(game, req);
             if (errMsg != null) {
                 res.json({ state: state, errorMessage: errMsg });
             } else {

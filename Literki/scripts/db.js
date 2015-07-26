@@ -108,7 +108,8 @@ var GameRepository = (function () {
                                     y: Number,
                                     direction: Number,
                                     points: Number
-                                }]
+                                }],
+                            moveType: Number
                         }]
                 }]
         });

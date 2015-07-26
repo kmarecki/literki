@@ -111,7 +111,7 @@ import Kinetic = require('Kinetic');
             //letters field
             context.beginPath();
             context.rect(BOARD_MARGIN, this.lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
-            context.fillStyle = "green";
+            context.fillStyle = "gray";
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
@@ -461,11 +461,15 @@ import Kinetic = require('Kinetic');
             this.callGameMethod("fold");
         }
 
-        private callGameMethod(name: string): void {
+        exchangeClick(): void {
+            this.callGameMethod("exchange", { gameId: game.getState().gameId, exchangeLetters: game.getExchangeLetters() });
+        }
+
+        private callGameMethod(name: string, data: any = { gameId: game.getState().gameId } ): void {
             $.ajax({
                 type: "GET",
                 url: "/game/" + name,
-                data: { gameId: game.getState().gameId },
+                data: data,
                 dataType: "json",
                 success: (result) => {
                     this.refreshModel(result);
@@ -493,7 +497,7 @@ import Kinetic = require('Kinetic');
             var newWords = game.getNewWords();
             this.setNewWords(newWords);
 
-            var changeLetters = game.getChangeLetters();
+            var changeLetters = game.getExchangeLetters();
             this.setChangeLetters(changeLetters);
         }
 

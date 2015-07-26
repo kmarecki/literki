@@ -83,7 +83,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             //letters field
             context.beginPath();
             context.rect(BOARD_MARGIN, this.lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
-            context.fillStyle = "green";
+            context.fillStyle = "gray";
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
@@ -387,12 +387,16 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         BoardViewModel.prototype.foldClick = function () {
             this.callGameMethod("fold");
         };
-        BoardViewModel.prototype.callGameMethod = function (name) {
+        BoardViewModel.prototype.exchangeClick = function () {
+            this.callGameMethod("exchange", { gameId: game.getState().gameId, exchangeLetters: game.getExchangeLetters() });
+        };
+        BoardViewModel.prototype.callGameMethod = function (name, data) {
             var _this = this;
+            if (data === void 0) { data = { gameId: game.getState().gameId }; }
             $.ajax({
                 type: "GET",
                 url: "/game/" + name,
-                data: { gameId: game.getState().gameId },
+                data: data,
                 dataType: "json",
                 success: function (result) {
                     _this.refreshModel(result);
@@ -418,7 +422,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         BoardViewModel.prototype.refreshBindings = function () {
             var newWords = game.getNewWords();
             this.setNewWords(newWords);
-            var changeLetters = game.getChangeLetters();
+            var changeLetters = game.getExchangeLetters();
             this.setChangeLetters(changeLetters);
         };
         BoardViewModel.prototype.refreshModel = function (result) {

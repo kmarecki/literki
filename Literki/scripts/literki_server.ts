@@ -20,7 +20,7 @@ export class GameRun_Server extends literki.GameRun {
             var index = playersFreeLetters.indexOf(fl.letter);
             playersFreeLetters.splice(index, 1);
         });
-        this.updateStateAfterMove();
+        this.updateStateAfterMove(literki.MoveType.Move);
     }
 
     addPlayer(player: literki.IGamePlayer): boolean {
@@ -64,7 +64,21 @@ export class GameRun_Server extends literki.GameRun {
 
     fold(): string {
         if (this.isCurrentPlayer()) {
-            this.updateStateAfterMove();
+            this.updateStateAfterMove(literki.MoveType.Fold);
+        }
+        return null;
+    }
+
+    exchange(exchangeLetters: string[]): string {
+        if (this.isCurrentPlayer()) {
+            
+            if (exchangeLetters == null || exchangeLetters.length == 0) {
+                return "Nie ma żadnych literek do wymiany";
+            }
+            var freeLetters = this.getCurrentPlayer().freeLetters;
+            exchangeLetters.forEach(letter => freeLetters = _.filter(freeLetters, l => l == letter));
+            this.getCurrentPlayer().freeLetters = freeLetters;
+            this.updateStateAfterMove(literki.MoveType.Exchange);
         }
         return null;
     }
@@ -91,8 +105,9 @@ export class GameRun_Server extends literki.GameRun {
         }
     }
 
-    private updateStateAfterMove(): literki.IGameState {
+    private updateStateAfterMove(moveType: literki.MoveType): literki.IGameState {
         var move = new literki.GameMoveHistory();
+        move.moveType = moveType;
         this.getNewWords().forEach(p => move.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)));
         this.getCurrentPlayer().moves.push(move);    
         this.pickLetters(this.state.currentPlayerIndex);

@@ -124,7 +124,8 @@ export class GameRepository {
                         y: Number,
                         direction: Number,
                         points: Number
-                    }]
+                    }],
+                    moveType: Number
                 }]
             }]
         });

@@ -171,12 +171,20 @@ export class GameWord implements IGameWord {
     }
 }
 
+export enum MoveType {
+    Move,
+    Fold,
+    Exchange
+}
+
 export interface IGameMoveHistory {
     words: Array<IGameWord>;
+    moveType: MoveType;
 }
 
 export class GameMoveHistory implements IGameMoveHistory {
     words: Array<IGameWord> = [];
+    moveType: MoveType;
 }
 
 export interface IGamePlayer {
@@ -421,7 +429,7 @@ export class GameRun {
         }
     }
 
-    getChangeLetters(): string[] {
+    getExchangeLetters(): string[] {
         return this.freeLetters.getAllLetters(LetterPositionType.ExchangeLetter).map(pos => pos.letter);
     }
 

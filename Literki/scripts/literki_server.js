@@ -1,5 +1,5 @@
 ///<reference path="..\typings\underscore\underscore.d.ts"/>
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -28,7 +28,7 @@ var GameRun_Server = (function (_super) {
             var index = playersFreeLetters.indexOf(fl.letter);
             playersFreeLetters.splice(index, 1);
         });
-        this.updateStateAfterMove();
+        this.updateStateAfterMove(literki.MoveType.Move);
     };
     GameRun_Server.prototype.addPlayer = function (player) {
         if (this.state.runState == literki.GameRunState.Created) {
@@ -70,7 +70,19 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.fold = function () {
         if (this.isCurrentPlayer()) {
-            this.updateStateAfterMove();
+            this.updateStateAfterMove(literki.MoveType.Fold);
+        }
+        return null;
+    };
+    GameRun_Server.prototype.exchange = function (exchangeLetters) {
+        if (this.isCurrentPlayer()) {
+            if (exchangeLetters == null || exchangeLetters.length == 0) {
+                return "Nie ma żadnych literek do wymiany";
+            }
+            var freeLetters = this.getCurrentPlayer().freeLetters;
+            exchangeLetters.forEach(function (letter) { return freeLetters = _.filter(freeLetters, function (l) { return l == letter; }); });
+            this.getCurrentPlayer().freeLetters = freeLetters;
+            this.updateStateAfterMove(literki.MoveType.Exchange);
         }
         return null;
     };
@@ -94,8 +106,9 @@ var GameRun_Server = (function (_super) {
             this.state.remainingLetters.splice(pickIndex, 1);
         }
     };
-    GameRun_Server.prototype.updateStateAfterMove = function () {
+    GameRun_Server.prototype.updateStateAfterMove = function (moveType) {
         var move = new literki.GameMoveHistory();
+        move.moveType = moveType;
         this.getNewWords().forEach(function (p) { return move.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)); });
         this.getCurrentPlayer().moves.push(move);
         this.pickLetters(this.state.currentPlayerIndex);
