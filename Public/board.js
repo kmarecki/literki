@@ -15,11 +15,9 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             this.bonusColors = {};
             this.max = FIELD_SIZE * Literki.ROW_SIZE;
             this.maxlines = BOARD_MARGIN + this.max;
-            this.lettersTop = BOARD_MARGIN + this.maxlines + BOARD_MARGIN;
+            this.lettersTop = this.maxlines + 2 * BOARD_MARGIN;
             this.changeLettersLeft = BOARD_MARGIN + (Literki.MAX_LETTERS + 1) * FIELD_SIZE;
             this.container = container;
-            //var width = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE;
-            //var height = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE + BOARD_MARGIN * 2 + FIELD_SIZE;
             var containerElem = document.getElementById(container);
             this.stage = new Kinetic.Stage({
                 container: container,
@@ -29,12 +27,12 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.bonusColors[1 /* DoubleLetter */] = "lightblue";
-            this.bonusColors[3 /* DoubleWord */] = "lightpink";
-            this.bonusColors[2 /* TripleLetter */] = "blue";
-            this.bonusColors[4 /* TripleWord */] = "red";
-            this.bonusColors[5 /* Start */] = "lightpink";
-            this.bonusColors[0 /* None */] = "darkgreen";
+            this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+            this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
+            this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue";
+            this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
+            this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
+            this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
         };
         Board.prototype.drawGameState = function () {
             if (game == null || game.getState() == null) {
@@ -83,7 +81,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             //letters field
             context.beginPath();
             context.rect(BOARD_MARGIN, this.lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
-            context.fillStyle = "gray";
+            context.fillStyle = "silver";
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
@@ -173,6 +171,9 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                 draggable: foreground
             });
             if (foreground) {
+                letterGroup.on('dragstart', function (e) {
+                    letterGroup.moveToTop();
+                });
                 letterGroup.on('dragend', function (e) {
                     var dragEnd = _this.getDragEnd(letterGroup);
                     var tween = new Kinetic.Tween({
@@ -183,16 +184,16 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                     });
                     tween.play();
                     switch (dragEnd.endType) {
-                        case 0 /* BoardField */: {
+                        case Literki.LetterPositionType.BoardField: {
                             game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
                             viewModel.refreshBindings();
                             break;
                         }
-                        case 1 /* ExchangeLetter */:
+                        case Literki.LetterPositionType.ExchangeLetter:
                             game.addLetterToExchange(letter, index);
                             viewModel.refreshBindings();
                             break;
-                        case 2 /* FreeLetter */:
+                        case Literki.LetterPositionType.FreeLetter:
                             game.removeLetter(letter, index);
                             viewModel.refreshBindings();
                             break;
@@ -211,22 +212,26 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             var fieldY = Math.floor(y / FIELD_SIZE);
             var floorX = fieldX * FIELD_SIZE;
             var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
-            if (y < this.lettersTop) {
+            if (letterGroup.y() < this.lettersTop - 2 * BOARD_MARGIN) {
                 //board fields
-                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                x = x <= floorX + FIELD_SIZE / 3 * 2 ? floorX : floorX + FIELD_SIZE;
                 x += BOARD_MARGIN;
-                y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
+                y = floorY;
                 y += BOARD_MARGIN;
             }
             else {
                 //free letters fields
-                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                if (fieldX == Literki.ROW_SIZE / 2) {
+                    fieldX++;
+                    floorX += FIELD_SIZE;
+                }
+                x = x <= floorX + FIELD_SIZE / 3 * 2 ? floorX : floorX + FIELD_SIZE;
                 x += BOARD_MARGIN;
                 y = this.lettersTop;
             }
-            var endType = 0 /* BoardField */;
-            if (fieldY >= Literki.ROW_SIZE) {
-                endType = fieldX > Literki.ROW_SIZE / 2 ? 1 /* ExchangeLetter */ : 2 /* FreeLetter */;
+            var endType = Literki.LetterPositionType.BoardField;
+            if (fieldY >= Literki.ROW_SIZE - 1) {
+                endType = fieldX > Literki.ROW_SIZE / 2 ? Literki.LetterPositionType.ExchangeLetter : Literki.LetterPositionType.FreeLetter;
             }
             return { x: x, y: y, fieldX: fieldX, fieldY: fieldY, endType: endType };
         };
@@ -269,7 +274,7 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         function BoardViewModel() {
             this.self = this;
             this.newWords = ko.observableArray();
-            this.changeLetters = ko.observableArray();
+            this.changeLetters = ko.observable("");
             this.allPlayers = new Array();
             this.errorMessage = ko.observable("");
         }
@@ -282,12 +287,11 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             this.newWords.removeAll();
         };
         BoardViewModel.prototype.setChangeLetters = function (changeLetters) {
-            var _this = this;
             this.cleanChangeLetters();
-            changeLetters.forEach(function (letter) { return _this.changeLetters.push(letter); });
+            this.changeLetters(changeLetters.join(" "));
         };
         BoardViewModel.prototype.cleanChangeLetters = function () {
-            this.changeLetters.removeAll();
+            this.changeLetters("");
         };
         BoardViewModel.prototype.getPlayers = function (start, end) {
             var _this = this;

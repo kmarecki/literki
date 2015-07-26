@@ -27,13 +27,12 @@ import Kinetic = require('Kinetic');
 
         private max = FIELD_SIZE * Literki.ROW_SIZE;
         private maxlines = BOARD_MARGIN + this.max;
-        private lettersTop = BOARD_MARGIN + this.maxlines + BOARD_MARGIN;
+        private lettersTop = this.maxlines + 2 * BOARD_MARGIN;
         private changeLettersLeft = BOARD_MARGIN + (Literki.MAX_LETTERS + 1) * FIELD_SIZE;
 
         constructor(container: string) {
             this.container = container;
-            //var width = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE;
-            //var height = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE + BOARD_MARGIN * 2 + FIELD_SIZE;
+        
             var containerElem = document.getElementById(container);
             this.stage = new Kinetic.Stage({
                 container: container,
@@ -111,7 +110,7 @@ import Kinetic = require('Kinetic');
             //letters field
             context.beginPath();
             context.rect(BOARD_MARGIN, this.lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
-            context.fillStyle = "gray";
+            context.fillStyle = "silver";
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
@@ -218,6 +217,11 @@ import Kinetic = require('Kinetic');
             });
 
             if (foreground) {
+
+                letterGroup.on('dragstart',(e) => {
+                    letterGroup.moveToTop();
+                });
+
                 letterGroup.on('dragend',(e) => {
                     var dragEnd = this.getDragEnd(letterGroup);
 
@@ -263,21 +267,25 @@ import Kinetic = require('Kinetic');
             var floorX = fieldX * FIELD_SIZE;
             var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
 
-            if (y < this.lettersTop) {
+            if (letterGroup.y() < this.lettersTop - 2 * BOARD_MARGIN) {
                 //board fields
-                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                x = x <= floorX + FIELD_SIZE / 3 * 2 ? floorX : floorX + FIELD_SIZE;
                 x += BOARD_MARGIN;
-                y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
+                y = floorY;
                 y += BOARD_MARGIN;
             } else {
                 //free letters fields
-                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                if (fieldX == Literki.ROW_SIZE / 2) {
+                    fieldX++;
+                    floorX += FIELD_SIZE;
+                }
+                x = x <= floorX + FIELD_SIZE / 3 * 2 ? floorX : floorX + FIELD_SIZE;
                 x += BOARD_MARGIN;
                 y = this.lettersTop;
             }
 
             var endType = Literki.LetterPositionType.BoardField;
-            if (fieldY >= Literki.ROW_SIZE) {
+            if (fieldY >= Literki.ROW_SIZE - 1) {
                 endType = fieldX > Literki.ROW_SIZE / 2 ? Literki.LetterPositionType.ExchangeLetter : Literki.LetterPositionType.FreeLetter;
             }
 
@@ -328,7 +336,7 @@ import Kinetic = require('Kinetic');
 
         private self = this;
         private newWords = ko.observableArray<BoardViewModelWord>();
-        private changeLetters = ko.observableArray<string>();
+        private changeLetters = ko.observable("");
         private allPlayers = new Array<PlayerViewModel>();
 
         board: Board;
@@ -346,13 +354,12 @@ import Kinetic = require('Kinetic');
 
         setChangeLetters(changeLetters: string[]): void {
             this.cleanChangeLetters()
-            changeLetters.forEach(letter => this.changeLetters.push(letter));
+            this.changeLetters(changeLetters.join(" "));
         }
         private cleanChangeLetters(): void {
-            this.changeLetters.removeAll();
+            this.changeLetters("");
         }
         
-
         getPlayers(start: number, end: number): PlayerViewModel[] {
             var players = new Array<PlayerViewModel>();
 
