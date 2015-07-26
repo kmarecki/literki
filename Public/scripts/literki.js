@@ -275,6 +275,12 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
         return GameState;
     })();
     exports.GameState = GameState;
+    (function (LetterPositionType) {
+        LetterPositionType[LetterPositionType["BoardField"] = 0] = "BoardField";
+        LetterPositionType[LetterPositionType["ExchangeLetter"] = 1] = "ExchangeLetter";
+        LetterPositionType[LetterPositionType["FreeLetter"] = 2] = "FreeLetter";
+    })(exports.LetterPositionType || (exports.LetterPositionType = {}));
+    var LetterPositionType = exports.LetterPositionType;
     var LetterPosition = (function () {
         function LetterPosition(letter, index) {
             this.letter = letter;
@@ -291,7 +297,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             var letters = this.freeLetters.filter(function (pos) { return pos.letter == letter && pos.index == index; });
             return letters.length > 0 ? letters[0] : null;
         };
-        FreeLetters.prototype.setLetter = function (letter, index, x, y) {
+        FreeLetters.prototype.setLetter = function (letter, index, x, y, positionType) {
             var position = this.getLetter(letter, index);
             if (position == null) {
                 position = new LetterPosition(letter, index);
@@ -299,9 +305,14 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             }
             position.x = x;
             position.y = y;
+            position.positionType = positionType;
         };
-        FreeLetters.prototype.getAllLetters = function () {
-            return this.freeLetters;
+        FreeLetters.prototype.getAllLetters = function (positionType) {
+            if (positionType === void 0) { positionType = 0 /* BoardField */; }
+            return this.freeLetters.filter(function (letter) { return letter.positionType == positionType; });
+        };
+        FreeLetters.prototype.removeLetter = function (letter, index) {
+            this.freeLetters = this.freeLetters.filter(function (pos) { return pos.letter != letter || pos.index != index; });
         };
         FreeLetters.prototype.exists = function (x, y) {
             return this.freeLetters.filter(function (pos) { return pos.x == x && pos.y == y; }).length > 0;
@@ -350,13 +361,27 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             this.freeLetters.clear();
             this.state.players.forEach(function (player) { return player.moves.forEach(function (move) { return move.words.forEach(function (word) { return _this.board.addWord(word.word, word.x, word.y, word.direction); }); }); });
         };
-        GameRun.prototype.putFreeLetter = function (letter, index, x, y) {
+        GameRun.prototype.putLetterOnBoard = function (letter, index, x, y) {
+            this.cleanLetterOnBoard(letter, index);
+            this.board.setFieldValue(x, y, letter);
+            this.freeLetters.setLetter(letter, index, x, y, 0 /* BoardField */);
+        };
+        GameRun.prototype.addLetterToExchange = function (letter, index) {
+            this.cleanLetterOnBoard(letter, index);
+            this.freeLetters.setLetter(letter, index, -1, -1, 1 /* ExchangeLetter */);
+        };
+        GameRun.prototype.removeLetter = function (letter, index) {
+            this.cleanLetterOnBoard(letter, index);
+            this.freeLetters.removeLetter(letter, index);
+        };
+        GameRun.prototype.cleanLetterOnBoard = function (letter, index) {
             var oldPosition = this.freeLetters.getLetter(letter, index);
-            if (oldPosition != null) {
+            if (oldPosition != null && oldPosition.positionType == 0 /* BoardField */) {
                 this.board.setFieldValue(oldPosition.x, oldPosition.y, null);
             }
-            this.board.setFieldValue(x, y, letter);
-            this.freeLetters.setLetter(letter, index, x, y);
+        };
+        GameRun.prototype.getChangeLetters = function () {
+            return this.freeLetters.getAllLetters(1 /* ExchangeLetter */).map(function (pos) { return pos.letter; });
         };
         GameRun.prototype.getNewWords = function () {
             var _this = this;

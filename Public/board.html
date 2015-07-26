@@ -25,10 +25,22 @@
                                 <th>Punkty</th>
                             </tr>
                         </thead>
-                        <tbody data-bind="foreach: getNewWords()">
+                        <tbody data-bind="foreach: newWords">
                             <tr>
                                 <td><label data-bind="text: word"/></td>
                                 <td><label data-bind="text: points"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Literki do wymiany</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: changeLetters">
+                            <tr>
+                                <td><label data-bind="text: $data" /></td>
                             </tr>
                         </tbody>
                     </table>

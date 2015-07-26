@@ -15,7 +15,7 @@ export class GameRun_Server extends literki.GameRun {
 
     makeMove(move: literki.GameMove): void {
         move.freeLetters.forEach(fl => {
-            this.putFreeLetter(fl.letter, fl.index, fl.x, fl.y);
+            this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
             var playersFreeLetters = this.getCurrentPlayer().freeLetters;
             var index = playersFreeLetters.indexOf(fl.letter);
             playersFreeLetters.splice(index, 1);

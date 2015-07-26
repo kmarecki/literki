@@ -25,6 +25,11 @@ import Kinetic = require('Kinetic');
         private bonusColors: { [id: number]: string; } = {};
         private container: string;
 
+        private max = FIELD_SIZE * Literki.ROW_SIZE;
+        private maxlines = BOARD_MARGIN + this.max;
+        private lettersTop = BOARD_MARGIN + this.maxlines + BOARD_MARGIN;
+        private changeLettersLeft = BOARD_MARGIN + (Literki.MAX_LETTERS + 1) * FIELD_SIZE;
+
         constructor(container: string) {
             this.container = container;
             //var width = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE;
@@ -59,14 +64,11 @@ import Kinetic = require('Kinetic');
 
             var canvas = backgroundLayer.getCanvas()._canvas;
             var context = canvas.getContext("2d");
-
-            var max = FIELD_SIZE * Literki.ROW_SIZE;
-            var maxlines = BOARD_MARGIN + max;
-
+            var backgroundColor = "#FFFFCC";
             //background
             context.beginPath(),
             context.rect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = "#FFFFCC";
+            context.fillStyle = backgroundColor;
             context.fill();
 
             //board fields
@@ -87,29 +89,28 @@ import Kinetic = require('Kinetic');
             }
 
             //vertical lines
-            for (var x = BOARD_MARGIN; x <= maxlines; x += FIELD_SIZE) {
+            for (var x = BOARD_MARGIN; x <= this.maxlines; x += FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(x, BOARD_MARGIN);
-                context.lineTo(x, maxlines);
+                context.lineTo(x, this.maxlines);
                 context.lineWidth = LINE_WIDTH;
                 context.strokeStyle = "black";
                 context.stroke();
             }
 
             //horizontal lines
-            for (var y = BOARD_MARGIN; y <= maxlines; y += FIELD_SIZE) {
+            for (var y = BOARD_MARGIN; y <= this.maxlines; y += FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(BOARD_MARGIN, y);
-                context.lineTo(maxlines, y);
+                context.lineTo(this.maxlines, y);
                 context.lineWidth = LINE_WIDTH;
                 context.strokeStyle = "black";
                 context.stroke();
             }
 
-            var lettersTop = BOARD_MARGIN + maxlines + BOARD_MARGIN;
             //letters field
             context.beginPath();
-            context.rect(BOARD_MARGIN, lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
+            context.rect(BOARD_MARGIN, this.lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
             context.fillStyle = "green";
             context.fill();
             context.strokeStyle = "black";
@@ -118,8 +119,25 @@ import Kinetic = require('Kinetic');
             //letters field lines
             for (var x = 1; x < Literki.MAX_LETTERS; x++) {
                 context.beginPath();
-                context.moveTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop);
-                context.lineTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop + FIELD_SIZE);
+                context.moveTo(BOARD_MARGIN + x * FIELD_SIZE, this.lettersTop);
+                context.lineTo(BOARD_MARGIN + x * FIELD_SIZE, this.lettersTop + FIELD_SIZE);
+                context.strokeStyle = "black";
+                context.stroke();
+            }
+
+            //change letters field
+            context.beginPath();
+            context.rect(this.changeLettersLeft, this.lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
+            context.fillStyle = backgroundColor;
+            context.fill();
+            context.strokeStyle = "black";
+            context.stroke();
+
+            //change letters field lines
+            for (var x = 1; x < Literki.MAX_LETTERS; x++) {
+                context.beginPath();
+                context.moveTo(this.changeLettersLeft + x * FIELD_SIZE, this.lettersTop);
+                context.lineTo(this.changeLettersLeft + x * FIELD_SIZE, this.lettersTop + FIELD_SIZE);
                 context.strokeStyle = "black";
                 context.stroke();
             }
@@ -150,7 +168,7 @@ import Kinetic = require('Kinetic');
                         var letter = currentUser.freeLetters[x];
                         var xpos = BOARD_MARGIN + x * FIELD_SIZE;
 
-                        foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+                        foregroundLayer.add(this.getLetterGroup(xpos, this.lettersTop, letter, x, true));
                     }
                 }
 
@@ -201,30 +219,31 @@ import Kinetic = require('Kinetic');
 
             if (foreground) {
                 letterGroup.on('dragend',(e) => {
-                    var x = letterGroup.x() - BOARD_MARGIN;
-                    var y = letterGroup.y() - BOARD_MARGIN;
-                    var fieldX = Math.floor(x / FIELD_SIZE);
-                    var fieldY = Math.floor(y / FIELD_SIZE);
-                    var floorX = fieldX * FIELD_SIZE;
-                    var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
-
-                    x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
-                    y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
-
-                    x += BOARD_MARGIN;
-                    y += BOARD_MARGIN;
+                    var dragEnd = this.getDragEnd(letterGroup);
 
                     var tween = new Kinetic.Tween({
                         node: letterGroup,
-                        x: x,
-                        y: y,
+                        x: dragEnd.x,
+                        y: dragEnd.y,
                         duration: 0.1
                     });
                     tween.play();
 
-                    game.putFreeLetter(letter, index, fieldX, fieldY);
-                    var newWords = game.getNewWords();
-                    viewModel.setNewWords(newWords);
+                    switch (dragEnd.endType) {
+                        case Literki.LetterPositionType.BoardField: {
+                            game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
+                            viewModel.refreshBindings();
+                            break;
+                        }
+                        case Literki.LetterPositionType.ExchangeLetter: 
+                            game.addLetterToExchange(letter, index);
+                            viewModel.refreshBindings();
+                            break;
+                        case Literki.LetterPositionType.FreeLetter: 
+                            game.removeLetter(letter, index);
+                            viewModel.refreshBindings();
+                            break;
+                    }
                 });
             }
 
@@ -232,6 +251,37 @@ import Kinetic = require('Kinetic');
             letterGroup.add(letterText);
             letterGroup.add(pointsText);
             return letterGroup;
+        }
+
+        
+        
+        private getDragEnd(letterGroup: Kinetic.IGroup): { x: number; y: number; fieldX: number; fieldY: number; endType: Literki.LetterPositionType; } {
+            var x = letterGroup.x() - BOARD_MARGIN;
+            var y = letterGroup.y() - BOARD_MARGIN;
+            var fieldX = Math.floor(x / FIELD_SIZE);
+            var fieldY = Math.floor(y / FIELD_SIZE);
+            var floorX = fieldX * FIELD_SIZE;
+            var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
+
+            if (y < this.lettersTop) {
+                //board fields
+                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                x += BOARD_MARGIN;
+                y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
+                y += BOARD_MARGIN;
+            } else {
+                //free letters fields
+                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                x += BOARD_MARGIN;
+                y = this.lettersTop;
+            }
+
+            var endType = Literki.LetterPositionType.BoardField;
+            if (fieldY >= Literki.ROW_SIZE) {
+                endType = fieldX > Literki.ROW_SIZE / 2 ? Literki.LetterPositionType.ExchangeLetter : Literki.LetterPositionType.FreeLetter;
+            }
+
+            return { x: x, y: y, fieldX: fieldX, fieldY: fieldY, endType: endType }
         }
 
         clearBoard(): void {
@@ -278,14 +328,12 @@ import Kinetic = require('Kinetic');
 
         private self = this;
         private newWords = ko.observableArray<BoardViewModelWord>();
+        private changeLetters = ko.observableArray<string>();
         private allPlayers = new Array<PlayerViewModel>();
 
         board: Board;
         errorMessage = ko.observable("");
 
-        getNewWords(): KnockoutObservableArray<BoardViewModelWord> {
-            return this.newWords;
-        }
 
         setNewWords(newWords: BoardViewModelWord[]): void {
             this.cleanNewWords();
@@ -295,6 +343,15 @@ import Kinetic = require('Kinetic');
         private cleanNewWords(): void {
             this.newWords.removeAll();
         }
+
+        setChangeLetters(changeLetters: string[]): void {
+            this.cleanChangeLetters()
+            changeLetters.forEach(letter => this.changeLetters.push(letter));
+        }
+        private cleanChangeLetters(): void {
+            this.changeLetters.removeAll();
+        }
+        
 
         getPlayers(start: number, end: number): PlayerViewModel[] {
             var players = new Array<PlayerViewModel>();
@@ -432,6 +489,14 @@ import Kinetic = require('Kinetic');
             });
         }
 
+        refreshBindings(): void {
+            var newWords = game.getNewWords();
+            this.setNewWords(newWords);
+
+            var changeLetters = game.getChangeLetters();
+            this.setChangeLetters(changeLetters);
+        }
+
         private refreshModel(result: any): void {
             this.errorMessage(result.errorMessage);
 
@@ -439,6 +504,7 @@ import Kinetic = require('Kinetic');
                 var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
                 game.runState(state);
                 this.cleanNewWords();
+                this.cleanChangeLetters();
             }
             this.refreshPlayerModels();
         }

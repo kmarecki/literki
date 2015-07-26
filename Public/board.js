@@ -13,6 +13,10 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
     var Board = (function () {
         function Board(container) {
             this.bonusColors = {};
+            this.max = FIELD_SIZE * Literki.ROW_SIZE;
+            this.maxlines = BOARD_MARGIN + this.max;
+            this.lettersTop = BOARD_MARGIN + this.maxlines + BOARD_MARGIN;
+            this.changeLettersLeft = BOARD_MARGIN + (Literki.MAX_LETTERS + 1) * FIELD_SIZE;
             this.container = container;
             //var width = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE;
             //var height = BOARD_MARGIN * 2 + ROW_SIZE * FIELD_SIZE + BOARD_MARGIN * 2 + FIELD_SIZE;
@@ -25,12 +29,12 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
-            this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
-            this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue";
-            this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
-            this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
-            this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
+            this.bonusColors[1 /* DoubleLetter */] = "lightblue";
+            this.bonusColors[3 /* DoubleWord */] = "lightpink";
+            this.bonusColors[2 /* TripleLetter */] = "blue";
+            this.bonusColors[4 /* TripleWord */] = "red";
+            this.bonusColors[5 /* Start */] = "lightpink";
+            this.bonusColors[0 /* None */] = "darkgreen";
         };
         Board.prototype.drawGameState = function () {
             if (game == null || game.getState() == null) {
@@ -40,11 +44,10 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             this.stage.add(backgroundLayer);
             var canvas = backgroundLayer.getCanvas()._canvas;
             var context = canvas.getContext("2d");
-            var max = FIELD_SIZE * Literki.ROW_SIZE;
-            var maxlines = BOARD_MARGIN + max;
+            var backgroundColor = "#FFFFCC";
             //background
             context.beginPath(), context.rect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = "#FFFFCC";
+            context.fillStyle = backgroundColor;
             context.fill();
             for (var x = 0; x < Literki.ROW_SIZE; x++) {
                 for (var y = 0; y < Literki.ROW_SIZE; y++) {
@@ -61,34 +64,47 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                     }
                 }
             }
-            for (var x = BOARD_MARGIN; x <= maxlines; x += FIELD_SIZE) {
+            for (var x = BOARD_MARGIN; x <= this.maxlines; x += FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(x, BOARD_MARGIN);
-                context.lineTo(x, maxlines);
+                context.lineTo(x, this.maxlines);
                 context.lineWidth = LINE_WIDTH;
                 context.strokeStyle = "black";
                 context.stroke();
             }
-            for (var y = BOARD_MARGIN; y <= maxlines; y += FIELD_SIZE) {
+            for (var y = BOARD_MARGIN; y <= this.maxlines; y += FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(BOARD_MARGIN, y);
-                context.lineTo(maxlines, y);
+                context.lineTo(this.maxlines, y);
                 context.lineWidth = LINE_WIDTH;
                 context.strokeStyle = "black";
                 context.stroke();
             }
-            var lettersTop = BOARD_MARGIN + maxlines + BOARD_MARGIN;
             //letters field
             context.beginPath();
-            context.rect(BOARD_MARGIN, lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
+            context.rect(BOARD_MARGIN, this.lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
             context.fillStyle = "green";
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
             for (var x = 1; x < Literki.MAX_LETTERS; x++) {
                 context.beginPath();
-                context.moveTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop);
-                context.lineTo(BOARD_MARGIN + x * FIELD_SIZE, lettersTop + FIELD_SIZE);
+                context.moveTo(BOARD_MARGIN + x * FIELD_SIZE, this.lettersTop);
+                context.lineTo(BOARD_MARGIN + x * FIELD_SIZE, this.lettersTop + FIELD_SIZE);
+                context.strokeStyle = "black";
+                context.stroke();
+            }
+            //change letters field
+            context.beginPath();
+            context.rect(this.changeLettersLeft, this.lettersTop, FIELD_SIZE * Literki.MAX_LETTERS, FIELD_SIZE);
+            context.fillStyle = backgroundColor;
+            context.fill();
+            context.strokeStyle = "black";
+            context.stroke();
+            for (var x = 1; x < Literki.MAX_LETTERS; x++) {
+                context.beginPath();
+                context.moveTo(this.changeLettersLeft + x * FIELD_SIZE, this.lettersTop);
+                context.lineTo(this.changeLettersLeft + x * FIELD_SIZE, this.lettersTop + FIELD_SIZE);
                 context.strokeStyle = "black";
                 context.stroke();
             }
@@ -112,13 +128,14 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                     if (x < currentUser.freeLetters.length) {
                         var letter = currentUser.freeLetters[x];
                         var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-                        foregroundLayer.add(this.getLetterGroup(xpos, lettersTop, letter, x, true));
+                        foregroundLayer.add(this.getLetterGroup(xpos, this.lettersTop, letter, x, true));
                     }
                 }
                 this.stage.add(foregroundLayer);
             }
         };
         Board.prototype.getLetterGroup = function (x, y, letter, index, foreground) {
+            var _this = this;
             var letterRect = new Kinetic.Rect({
                 width: FIELD_SIZE,
                 height: FIELD_SIZE,
@@ -157,32 +174,61 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
             });
             if (foreground) {
                 letterGroup.on('dragend', function (e) {
-                    var x = letterGroup.x() - BOARD_MARGIN;
-                    var y = letterGroup.y() - BOARD_MARGIN;
-                    var fieldX = Math.floor(x / FIELD_SIZE);
-                    var fieldY = Math.floor(y / FIELD_SIZE);
-                    var floorX = fieldX * FIELD_SIZE;
-                    var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
-                    x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
-                    y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
-                    x += BOARD_MARGIN;
-                    y += BOARD_MARGIN;
+                    var dragEnd = _this.getDragEnd(letterGroup);
                     var tween = new Kinetic.Tween({
                         node: letterGroup,
-                        x: x,
-                        y: y,
+                        x: dragEnd.x,
+                        y: dragEnd.y,
                         duration: 0.1
                     });
                     tween.play();
-                    game.putFreeLetter(letter, index, fieldX, fieldY);
-                    var newWords = game.getNewWords();
-                    viewModel.setNewWords(newWords);
+                    switch (dragEnd.endType) {
+                        case 0 /* BoardField */: {
+                            game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
+                            viewModel.refreshBindings();
+                            break;
+                        }
+                        case 1 /* ExchangeLetter */:
+                            game.addLetterToExchange(letter, index);
+                            viewModel.refreshBindings();
+                            break;
+                        case 2 /* FreeLetter */:
+                            game.removeLetter(letter, index);
+                            viewModel.refreshBindings();
+                            break;
+                    }
                 });
             }
             letterGroup.add(letterRect);
             letterGroup.add(letterText);
             letterGroup.add(pointsText);
             return letterGroup;
+        };
+        Board.prototype.getDragEnd = function (letterGroup) {
+            var x = letterGroup.x() - BOARD_MARGIN;
+            var y = letterGroup.y() - BOARD_MARGIN;
+            var fieldX = Math.floor(x / FIELD_SIZE);
+            var fieldY = Math.floor(y / FIELD_SIZE);
+            var floorX = fieldX * FIELD_SIZE;
+            var floorY = Math.floor(y / FIELD_SIZE) * FIELD_SIZE;
+            if (y < this.lettersTop) {
+                //board fields
+                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                x += BOARD_MARGIN;
+                y = y <= floorY + FIELD_SIZE / 2 ? floorY : floorY + FIELD_SIZE;
+                y += BOARD_MARGIN;
+            }
+            else {
+                //free letters fields
+                x = x <= floorX + FIELD_SIZE / 2 ? floorX : floorX + FIELD_SIZE;
+                x += BOARD_MARGIN;
+                y = this.lettersTop;
+            }
+            var endType = 0 /* BoardField */;
+            if (fieldY >= Literki.ROW_SIZE) {
+                endType = fieldX > Literki.ROW_SIZE / 2 ? 1 /* ExchangeLetter */ : 2 /* FreeLetter */;
+            }
+            return { x: x, y: y, fieldX: fieldX, fieldY: fieldY, endType: endType };
         };
         Board.prototype.clearBoard = function () {
             this.stage.clear();
@@ -223,12 +269,10 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         function BoardViewModel() {
             this.self = this;
             this.newWords = ko.observableArray();
+            this.changeLetters = ko.observableArray();
             this.allPlayers = new Array();
             this.errorMessage = ko.observable("");
         }
-        BoardViewModel.prototype.getNewWords = function () {
-            return this.newWords;
-        };
         BoardViewModel.prototype.setNewWords = function (newWords) {
             var _this = this;
             this.cleanNewWords();
@@ -236,6 +280,14 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
         };
         BoardViewModel.prototype.cleanNewWords = function () {
             this.newWords.removeAll();
+        };
+        BoardViewModel.prototype.setChangeLetters = function (changeLetters) {
+            var _this = this;
+            this.cleanChangeLetters();
+            changeLetters.forEach(function (letter) { return _this.changeLetters.push(letter); });
+        };
+        BoardViewModel.prototype.cleanChangeLetters = function () {
+            this.changeLetters.removeAll();
         };
         BoardViewModel.prototype.getPlayers = function (start, end) {
             var _this = this;
@@ -363,12 +415,19 @@ define(["require", "exports", './scripts/literki', './scripts/system', 'knockout
                 }
             });
         };
+        BoardViewModel.prototype.refreshBindings = function () {
+            var newWords = game.getNewWords();
+            this.setNewWords(newWords);
+            var changeLetters = game.getChangeLetters();
+            this.setChangeLetters(changeLetters);
+        };
         BoardViewModel.prototype.refreshModel = function (result) {
             this.errorMessage(result.errorMessage);
             if (result.state != null) {
                 var state = Literki.GameState.fromJSON(result.state);
                 game.runState(state);
                 this.cleanNewWords();
+                this.cleanChangeLetters();
             }
             this.refreshPlayerModels();
         };

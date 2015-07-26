@@ -287,11 +287,18 @@ export class GameState implements IGameState {
     }
 }
 
+export enum LetterPositionType {
+    BoardField,
+    ExchangeLetter,
+    FreeLetter
+}
+
 export class LetterPosition {
     letter: string
     index: number
     x: number;
     y: number;
+    positionType: LetterPositionType;
 
     constructor(letter: string, index: number) {
         this.letter = letter;
@@ -307,7 +314,7 @@ export class FreeLetters {
         return letters.length > 0 ? letters[0] : null;
     }
 
-    setLetter(letter: string, index: number, x: number, y: number): void {
+    setLetter(letter: string, index: number, x: number, y: number, positionType: LetterPositionType): void {
         var position = this.getLetter(letter, index);
         if (position == null) {
             position = new LetterPosition(letter, index);
@@ -315,10 +322,15 @@ export class FreeLetters {
         }
         position.x = x;
         position.y = y;
+        position.positionType = positionType;
     }
 
-    getAllLetters(): Array<LetterPosition> {
-        return this.freeLetters;
+    getAllLetters(positionType: LetterPositionType = LetterPositionType.BoardField): Array<LetterPosition> {
+        return this.freeLetters.filter(letter => letter.positionType == positionType);
+    }
+
+    removeLetter(letter: string, index: number): void {
+        this.freeLetters = this.freeLetters.filter(pos => pos.letter != letter || pos.index != index);
     }
 
     exists(x: number, y: number): boolean {
@@ -386,13 +398,31 @@ export class GameRun {
     }
 
 
-    putFreeLetter(letter: string, index: number, x: number, y: number): void {
+    putLetterOnBoard(letter: string, index: number, x: number, y: number): void {
+        this.cleanLetterOnBoard(letter, index);
+        this.board.setFieldValue(x, y, letter);
+        this.freeLetters.setLetter(letter, index, x, y, LetterPositionType.BoardField);
+    }
+
+    addLetterToExchange(letter: string, index: number): void {
+        this.cleanLetterOnBoard(letter, index);
+        this.freeLetters.setLetter(letter, index, -1, -1, LetterPositionType.ExchangeLetter);
+    }
+
+    removeLetter(letter: string, index: number): void {
+        this.cleanLetterOnBoard(letter, index);
+        this.freeLetters.removeLetter(letter, index);
+    }
+
+    private cleanLetterOnBoard(letter: string, index: number): void {
         var oldPosition = this.freeLetters.getLetter(letter, index);
-        if (oldPosition != null) {
+        if (oldPosition != null && oldPosition.positionType == LetterPositionType.BoardField) {
             this.board.setFieldValue(oldPosition.x, oldPosition.y, null);
         }
-        this.board.setFieldValue(x, y, letter);
-        this.freeLetters.setLetter(letter, index, x, y);
+    }
+
+    getChangeLetters(): string[] {
+        return this.freeLetters.getAllLetters(LetterPositionType.ExchangeLetter).map(pos => pos.letter);
     }
 
     getNewWords(): GameWord[] {
