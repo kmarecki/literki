@@ -29,16 +29,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>1163</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:1163/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>
@@ -53,10 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="board-conf.js" />
-    <Content Include="board.html" />
-    <Content Include="login.html" />
     <Content Include="main-conf.js" />
-    <Content Include="main.html" />
     <Content Include="scripts\jquery-1.11.2.js" />
     <Content Include="scripts\kinetic-v5.1.0.js" />
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
@@ -73,6 +61,7 @@
     <TypeScriptCompile Include="main.ts" />
     <TypeScriptCompile Include="scripts\system.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
+    <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\kineticjs\kineticjs.d.ts" />
     <TypeScriptCompile Include="typings\knockout\knockout.d.ts" />
@@ -83,6 +72,7 @@
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <PropertyGroup>

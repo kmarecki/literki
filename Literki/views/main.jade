@@ -1,0 +1,20 @@
+﻿extends ./layout.jade
+
+block stylesheets
+    link(rel='stylesheet', href='styles/app.css', type='text/css')
+
+block scripts
+    script(src='scripts/require.js', data-main='main-conf',)
+
+block body
+    table
+      thead
+        tr
+          th Lista gier
+      tbody(data-bind='foreach: games')
+        tr
+          td
+            a(data-bind="attr: { href: 'board.html?gameId=' + gameId }, text: gameId")
+          td
+            a(data-bind="attr: { href: 'board.html?gameId=' + gameId + '&join=1'}, text: joinAction()")
+    a(href='board.html') Nowa gra

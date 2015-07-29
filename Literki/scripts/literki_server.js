@@ -1,5 +1,5 @@
 ///<reference path="..\typings\underscore\underscore.d.ts"/>
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -28,10 +28,10 @@ var GameRun_Server = (function (_super) {
             var index = playersFreeLetters.indexOf(fl.letter);
             playersFreeLetters.splice(index, 1);
         });
-        this.updateStateAfterMove(literki.MoveType.Move);
+        this.updateStateAfterMove(0 /* Move */);
     };
     GameRun_Server.prototype.addPlayer = function (player) {
-        if (this.state.runState == literki.GameRunState.Created) {
+        if (this.state.runState == 0 /* Created */) {
             var res = _.find(this.state.players, function (p) { return p.userId == player.userId; });
             if (res == null) {
                 this.state.players.push(player);
@@ -48,8 +48,8 @@ var GameRun_Server = (function (_super) {
         if (this.state.players.length < 2) {
             return "Za mało graczy do rozpoczęcia gry";
         }
-        if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
-            this.state.runState = literki.GameRunState.Running;
+        if (this.state.runState == 0 /* Created */ || 2 /* Paused */) {
+            this.state.runState = 1 /* Running */;
         }
         else {
             return "Nie można rozpocząć gry";
@@ -60,8 +60,8 @@ var GameRun_Server = (function (_super) {
         if (!this.isGameOwner()) {
             return "Tylko założyciel gry może ją zatrzymać";
         }
-        if (this.state.runState == literki.GameRunState.Running) {
-            this.state.runState = literki.GameRunState.Paused;
+        if (this.state.runState == 1 /* Running */) {
+            this.state.runState = 2 /* Paused */;
         }
         else {
             return "Nie można zatrzymać gry";
@@ -70,7 +70,7 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.fold = function () {
         if (this.isCurrentPlayer()) {
-            this.updateStateAfterMove(literki.MoveType.Fold);
+            this.updateStateAfterMove(1 /* Fold */);
         }
         return null;
     };
@@ -82,7 +82,7 @@ var GameRun_Server = (function (_super) {
             var freeLetters = this.getCurrentPlayer().freeLetters;
             exchangeLetters.forEach(function (letter) { return freeLetters = _.filter(freeLetters, function (l) { return l == letter; }); });
             this.getCurrentPlayer().freeLetters = freeLetters;
-            this.updateStateAfterMove(literki.MoveType.Exchange);
+            this.updateStateAfterMove(2 /* Exchange */);
         }
         return null;
     };

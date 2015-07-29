@@ -27,9 +27,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/../Public'));
 
+app.set('view engine', 'jade');
+app.locals.pretty = true;
+
 var port = process.env.port || 1337;
-console.log("Literki port: " + port);
-app.listen(port, "0.0.0.0");
+console.log('Literki port: ' + port);
+app.listen(port, '0.0.0.0');
 
 var repo = new db.GameRepository();
 repo.open();
@@ -52,6 +55,11 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((id, done) => {
     repo.loadUser(id,(err, user) => done(err, user));
+});
+
+
+app.get('/:pageName.html',(req, res) => {
+    res.render(req.params.pageName, { title: req.params.pageName });
 });
 
 app.get('/auth/google', passport.authenticate('google-openidconnect'));

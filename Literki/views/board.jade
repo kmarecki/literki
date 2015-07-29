@@ -1,0 +1,63 @@
+﻿extends ./layout.jade
+
+block stylesheets
+    link(rel='stylesheet', href='styles/app.css', type='text/css')
+    link(rel='stylesheet', href='styles/board.css', type='text/css')
+
+block scripts
+    script(src='scripts/require.js', data-main='board-conf')
+
+block body
+    table
+      tr
+        td
+          #boardDiv
+        td
+          #infoDiv
+            h1.center Literki
+            br
+            label#debugLabel
+            table
+              thead
+                tr
+                  th Słowo
+                  th Punkty
+              tbody(data-bind='foreach: newWords')
+                tr
+                  td
+                    label(data-bind='text: word')
+                  td
+                    label(data-bind='text: points')
+            table
+              thead
+                tr
+                  th Literki do wymiany
+              tbody
+                tr
+                  td
+                    label(data-bind='text: changeLetters')
+            table
+              tbody(data-bind='foreach: getPlayersRow()')
+                tr
+                  // ko foreach: $parent.getPlayers($data * 2, ($data + 1) * 2)
+                  td
+                    div(data-bind="css: isCurrentPlayer() ? 'activeplayerDiv' : 'playerDiv'")
+                      table
+                        tr
+                          td
+                            label.left(data-bind='text: playerName')
+                          td
+                            label.right(data-bind='text: remainingTime')
+                        tr
+                          td(colspan='2')
+                            label.center(data-bind='text: points')
+                  // /ko
+            #messageDiv
+              p(data-bind='text: errorMessage') Test
+            #buttonsDiv
+              button.commandButton(data-bind='click: refreshClick') Odśwież
+              button.commandButton(data-bind='click: startClick') Start
+              button.commandButton(data-bind='click: pauseClick') Pauza
+              button.commandButton(data-bind='click: foldClick') Pas
+              button.commandButton(data-bind='click: exchangeClick') Wymień literki
+              button.commandButton(data-bind='click: moveClick') Połóż literki

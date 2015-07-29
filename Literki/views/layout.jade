@@ -1,0 +1,16 @@
+﻿doctype html
+html(xmlns='http://www.w3.org/1999/xhtml')
+  head
+    meta(charset='utf-8')
+    title Literki - #{title}
+    block stylesheets
+    block scripts
+  body
+    block body
+    #dialogbox
+      div
+        #dialogboxhead
+        #dialogboxbody
+        #dialogboxfoot
+          button.commandButton(data-bind='click:closeMessageBoxClick') OK
+    #dialogoverlay

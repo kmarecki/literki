@@ -9,6 +9,5 @@
 });
 
 define(["require", "exports", 'main'], function (require, exports, main) {
-    var viewModel = new main.MainViewModel();
-    viewModel.init();
+    main.init();
 });

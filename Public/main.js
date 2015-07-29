@@ -1,4 +1,10 @@
-define(["require", "exports", './scripts/literki', 'knockout', 'jquery'], function (require, exports, Literki, ko, $) {
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+define(["require", "exports", './app', './scripts/literki', 'knockout', 'jquery'], function (require, exports, App, Literki, ko, $) {
     var GameViewModel = (function () {
         function GameViewModel() {
         }
@@ -7,9 +13,10 @@ define(["require", "exports", './scripts/literki', 'knockout', 'jquery'], functi
         };
         return GameViewModel;
     })();
-    exports.GameViewModel = GameViewModel;
-    var MainViewModel = (function () {
+    var MainViewModel = (function (_super) {
+        __extends(MainViewModel, _super);
         function MainViewModel() {
+            _super.apply(this, arguments);
             this.self = this;
             this.games = ko.observableArray();
         }
@@ -36,8 +43,7 @@ define(["require", "exports", './scripts/literki', 'knockout', 'jquery'], functi
             });
         };
         return MainViewModel;
-    })();
-    exports.MainViewModel = MainViewModel;
+    })(App.BaseViewModel);
     function init() {
         var viewModel = new MainViewModel();
         viewModel.init();

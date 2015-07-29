@@ -1,8 +1,9 @@
-﻿import Literki = require('./scripts/literki');
+﻿import App = require('./app');
+import Literki = require('./scripts/literki');
 import ko = require('knockout');
 import $ = require('jquery');
 
-export class GameViewModel {
+class GameViewModel {
     gameId: number;
     runState: Literki.GameRunState;
     joinAction(): string {
@@ -10,7 +11,7 @@ export class GameViewModel {
     }
 }
 
-export class MainViewModel {
+class MainViewModel extends App.BaseViewModel {
 
     private self = this;
     games = ko.observableArray<GameViewModel>();

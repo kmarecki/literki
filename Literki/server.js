@@ -21,9 +21,11 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/../Public'));
+app.set('view engine', 'jade');
+app.locals.pretty = true;
 var port = process.env.port || 1337;
-console.log("Literki port: " + port);
-app.listen(port, "0.0.0.0");
+console.log('Literki port: ' + port);
+app.listen(port, '0.0.0.0');
 var repo = new db.GameRepository();
 repo.open();
 passport.use(new GoogleStrategy({
@@ -40,6 +42,9 @@ passport.serializeUser(function (user, done) {
 });
 passport.deserializeUser(function (id, done) {
     repo.loadUser(id, function (err, user) { return done(err, user); });
+});
+app.get('/:pageName.html', function (req, res) {
+    res.render(req.params.pageName, { title: req.params.pageName });
 });
 app.get('/auth/google', passport.authenticate('google-openidconnect'));
 app.get('/auth/google/return', passport.authenticate('google-openidconnect', {
@@ -194,7 +199,7 @@ app.post('/game/alive', auth, function (req, res) {
             var currentPlayer = state.players[state.currentPlayerIndex];
             var forceRefresh = currentPlayer.userId != currentPlayerId;
             var remainingTime = currentPlayer.remainingTime;
-            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running) {
+            if (currentPlayer.userId == userId && state.runState == 1 /* Running */) {
                 if (remainingTime > 0) {
                     remainingTime--;
                     state.players[state.currentPlayerIndex].remainingTime = remainingTime;
