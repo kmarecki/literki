@@ -36,6 +36,8 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="styles\app.less" />
+    <Content Include="styles\board.less" />
     <Content Include="views\board.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\login.jade" />
@@ -61,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="config\" />
+    <Folder Include="styles\" />
     <Folder Include="views\" />
     <Folder Include="scripts\" />
     <Folder Include="typings\" />

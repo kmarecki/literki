@@ -22,7 +22,7 @@ var GameRepository = (function () {
             if (result != null) {
                 var newGameId = result != -1 ? result + 1 : 1;
                 state.gameId = newGameId;
-                state.runState = 0 /* Created */;
+                state.runState = literki.GameRunState.Created;
                 _this.saveState(state, function (err) {
                     if (err == null) {
                         callback(null, newGameId);
@@ -97,21 +97,21 @@ var GameRepository = (function () {
             remainingLetters: [String],
             currentPlayerIndex: Number,
             players: [{
-                userId: mongoose.Schema.Types.ObjectId,
-                playerName: String,
-                remainingTime: Number,
-                freeLetters: [String],
-                moves: [{
-                    words: [{
-                        word: String,
-                        x: Number,
-                        y: Number,
-                        direction: Number,
-                        points: Number
-                    }],
-                    moveType: Number
+                    userId: mongoose.Schema.Types.ObjectId,
+                    playerName: String,
+                    remainingTime: Number,
+                    freeLetters: [String],
+                    moves: [{
+                            words: [{
+                                    word: String,
+                                    x: Number,
+                                    y: Number,
+                                    direction: Number,
+                                    points: Number
+                                }],
+                            moveType: Number
+                        }]
                 }]
-            }]
         });
         this.GameState = mongoose.model("GameState", schema);
     };

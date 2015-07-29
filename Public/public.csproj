@@ -53,8 +53,6 @@
     <Content Include="scripts\moment.js" />
     <Content Include="scripts\require.js" />
     <Content Include="scripts\underscore.js" />
-    <Content Include="styles\app.css" />
-    <Content Include="styles\board.css" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="board.ts" />
@@ -69,6 +67,9 @@
     <TypeScriptCompile Include="typings\moment\moment.d.ts" />
     <TypeScriptCompile Include="typings\requirejs\require.d.ts" />
     <TypeScriptCompile Include="typings\underscore\underscore.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="styles\" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>

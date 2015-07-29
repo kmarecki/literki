@@ -8,6 +8,7 @@ var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var lessMiddleware = require('less-middleware');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-openidconnect').Strategy;
 var literki = require('./scripts/literki');
@@ -20,6 +21,9 @@ app.use(session({ secret: '1234567890qwerty' }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(lessMiddleware(__dirname, {
+    dest: __dirname + '/../Public'
+}));
 app.use(express.static(__dirname + '/../Public'));
 app.set('view engine', 'jade');
 app.locals.pretty = true;
@@ -199,7 +203,7 @@ app.post('/game/alive', auth, function (req, res) {
             var currentPlayer = state.players[state.currentPlayerIndex];
             var forceRefresh = currentPlayer.userId != currentPlayerId;
             var remainingTime = currentPlayer.remainingTime;
-            if (currentPlayer.userId == userId && state.runState == 1 /* Running */) {
+            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running) {
                 if (remainingTime > 0) {
                     remainingTime--;
                     state.players[state.currentPlayerIndex].remainingTime = remainingTime;

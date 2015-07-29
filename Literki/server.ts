@@ -10,6 +10,7 @@ import express = require('express');
 import session = require('express-session');
 import bodyParser = require('body-parser');
 import cookieParser = require('cookie-parser');
+var lessMiddleware = require('less-middleware');
 
 import passport = require('passport');
 var GoogleStrategy = require('passport-google-openidconnect').Strategy;
@@ -25,6 +26,9 @@ app.use(session({ secret: '1234567890qwerty' }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(lessMiddleware(__dirname, {
+    dest: __dirname + '/../Public'
+}));
 app.use(express.static(__dirname + '/../Public'));
 
 app.set('view engine', 'jade');
