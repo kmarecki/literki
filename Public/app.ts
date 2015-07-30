@@ -1,6 +1,17 @@
-﻿export class BaseViewModel {
+﻿import ko = require('knockout');
 
-    protected setErrorMessage(errorMessage: string): void {
+export class BaseViewModel {
+
+    errorMessage = ko.observable("");
+
+    protected refreshModel(result: any): void {
+        this.errorMessage(result.errorMessage);
+        if (result.errorMessage) {
+            this.showErrorMessage(result.errorMessage);
+        }
+    }
+
+    private showErrorMessage(errorMessage: string): void {
         var winW = window.innerWidth;
         var winH = window.innerHeight;
         var dialogoverlay = document.getElementById('dialogoverlay');
@@ -18,6 +29,5 @@
     private closeMessageBoxClick(): void {
         document.getElementById('dialogbox').style.display = "none";
         document.getElementById('dialogoverlay').style.display = "none";
-
     }
 } 

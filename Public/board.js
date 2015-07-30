@@ -374,7 +374,8 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 }),
                 dataType: "json",
                 success: function (result) {
-                    _this.errorMessage(result.errorMessage);
+                    //To refresh errorMessage
+                    _super.prototype.refreshModel.call(_this, result);
                     if (!result.forceRefresh) {
                         if (result.remainingTime != null) {
                             game.getCurrentPlayer().remainingTime = result.remainingTime;
@@ -438,7 +439,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.setChangeLetters(changeLetters);
         };
         BoardViewModel.prototype.refreshModel = function (result) {
-            this.errorMessage(result.errorMessage);
+            _super.prototype.refreshModel.call(this, result);
             if (result.state != null) {
                 var state = Literki.GameState.fromJSON(result.state);
                 game.runState(state);
@@ -446,7 +447,6 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 this.cleanChangeLetters();
             }
             this.refreshPlayerModels();
-            this.setErrorMessage(result.errorMessage);
         };
         BoardViewModel.prototype.refreshPlayerModels = function () {
             if (game != null) {

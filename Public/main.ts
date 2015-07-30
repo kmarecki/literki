@@ -22,13 +22,16 @@ class MainViewModel extends App.BaseViewModel {
             url: "/game/list",
             dataType: "json",
             success: (result) => {
-                this.refreshModel(result.games);
+                this.refreshModel(result);
                 ko.applyBindings(this);
             }
         });
     }
 
-    refreshModel(games: Array<any>): void {
+    refreshModel(result: any): void {
+        super.refreshModel(result);
+
+        var games: Array<any> = result.games;
         this.games.removeAll();
         games.forEach(g => {
             var gameModel = new GameViewModel();

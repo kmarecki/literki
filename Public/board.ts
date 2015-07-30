@@ -437,7 +437,8 @@ class BoardViewModel extends App.BaseViewModel {
             }),
             dataType: "json",
             success: (result) => {
-                this.errorMessage(result.errorMessage);
+                //To refresh errorMessage
+                super.refreshModel(result);
 
                 if (!result.forceRefresh) {
                     if (result.remainingTime != null) {
@@ -508,9 +509,8 @@ class BoardViewModel extends App.BaseViewModel {
         this.setChangeLetters(changeLetters);
     }
 
-    private refreshModel(result: any): void {
-        this.errorMessage(result.errorMessage);
-            
+    protected refreshModel(result: any): void {
+        super.refreshModel(result);
 
         if (result.state != null) {
             var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
@@ -519,7 +519,6 @@ class BoardViewModel extends App.BaseViewModel {
             this.cleanChangeLetters();
         }
         this.refreshPlayerModels();
-        this.setErrorMessage(result.errorMessage);
     }
 
     private refreshPlayerModels(): void {

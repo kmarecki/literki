@@ -27,13 +27,15 @@ define(["require", "exports", './app', './scripts/literki', 'knockout', 'jquery'
                 url: "/game/list",
                 dataType: "json",
                 success: function (result) {
-                    _this.refreshModel(result.games);
+                    _this.refreshModel(result);
                     ko.applyBindings(_this);
                 }
             });
         };
-        MainViewModel.prototype.refreshModel = function (games) {
+        MainViewModel.prototype.refreshModel = function (result) {
             var _this = this;
+            _super.prototype.refreshModel.call(this, result);
+            var games = result.games;
             this.games.removeAll();
             games.forEach(function (g) {
                 var gameModel = new GameViewModel();
