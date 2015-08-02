@@ -58,6 +58,9 @@ class Board {
             return;
         }
 
+        //For drawing star on start field
+        var letterLayer = new Kinetic.Layer();
+
         var backgroundLayer = new Kinetic.Layer();
         this.stage.add(backgroundLayer);
 
@@ -83,6 +86,17 @@ class Board {
                     context.rect(xpos, ypos, FIELD_SIZE, FIELD_SIZE);
                     context.fillStyle = fieldColor;
                     context.fill();
+                    if (bonus == Literki.BoardFieldBonus.Start) {
+                        var star = new Kinetic.Star({
+                            x: xpos + FIELD_SIZE / 2,
+                            y: ypos + FIELD_SIZE / 2,
+                            numPoints: 5,
+                            innerRadius: FIELD_SIZE / 6,
+                            outerRadius: FIELD_SIZE / 3,
+                            fill: "Black",
+                        });
+                        letterLayer.add(star);
+                    }
                 }
             }
         }
@@ -141,8 +155,6 @@ class Board {
             context.stroke();
         }
 
-        var letterLayer = new Kinetic.Layer();
-
         //letter fields
         for (var x = 0; x < Literki.ROW_SIZE; x++) {
             for (var y = 0; y < Literki.ROW_SIZE; y++) {
@@ -154,7 +166,7 @@ class Board {
                 }
             }
         }
-
+       
         this.stage.add(letterLayer);
 
         var currentUser = game.getCurrentUser();

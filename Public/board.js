@@ -44,6 +44,8 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             if (game == null || game.getState() == null) {
                 return;
             }
+            //For drawing star on start field
+            var letterLayer = new Kinetic.Layer();
             var backgroundLayer = new Kinetic.Layer();
             this.stage.add(backgroundLayer);
             var canvas = backgroundLayer.getCanvas()._canvas;
@@ -65,6 +67,17 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                         context.rect(xpos, ypos, FIELD_SIZE, FIELD_SIZE);
                         context.fillStyle = fieldColor;
                         context.fill();
+                        if (bonus == 5 /* Start */) {
+                            var star = new Kinetic.Star({
+                                x: xpos + FIELD_SIZE / 2,
+                                y: ypos + FIELD_SIZE / 2,
+                                numPoints: 5,
+                                innerRadius: FIELD_SIZE / 6,
+                                outerRadius: FIELD_SIZE / 3,
+                                fill: "Black",
+                            });
+                            letterLayer.add(star);
+                        }
                     }
                 }
             }
@@ -112,7 +125,6 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 context.strokeStyle = "black";
                 context.stroke();
             }
-            var letterLayer = new Kinetic.Layer();
             for (var x = 0; x < Literki.ROW_SIZE; x++) {
                 for (var y = 0; y < Literki.ROW_SIZE; y++) {
                     var xpos = BOARD_MARGIN + x * FIELD_SIZE;
