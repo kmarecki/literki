@@ -261,7 +261,10 @@ class Board {
         
     private getDragEnd(letterGroup: Kinetic.IGroup): { x: number; y: number; fieldX: number; fieldY: number; endType: Literki.LetterPositionType; } {
         var x = letterGroup.x() - BOARD_MARGIN;
+        x = this.normalizeDragEndPositionX(x);
         var y = letterGroup.y() - BOARD_MARGIN;
+        y = this.normalizeDragEndPositionY(y);
+      
         var fieldX = Math.floor(x / FIELD_SIZE);
         var fieldY = Math.floor(y / FIELD_SIZE);
         var floorX = fieldX * FIELD_SIZE;
@@ -285,12 +288,24 @@ class Board {
         }
 
         var endType = Literki.LetterPositionType.BoardField;
-        if (fieldY >= Literki.ROW_SIZE - 1) {
+        if (fieldY >= Literki.ROW_SIZE) {
             endType = fieldX > Literki.ROW_SIZE / 2 ? Literki.LetterPositionType.ExchangeLetter : Literki.LetterPositionType.FreeLetter;
         }
 
         return { x: x, y: y, fieldX: fieldX, fieldY: fieldY, endType: endType }
     }
+
+    private normalizeDragEndPositionX(x: number): number {
+        var lastTileX = (Literki.ROW_SIZE - 1) * FIELD_SIZE;
+        return x >= 0 ?
+            (x >= lastTileX ?  lastTileX : x) :
+            0;
+    }
+
+    private normalizeDragEndPositionY(y: number): number {
+        return y >= 0 ? y : 0;
+    }
+
 
     clearBoard(): void {
         this.stage.clear();

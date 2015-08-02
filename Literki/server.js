@@ -88,36 +88,6 @@ app.get('/game/new', auth, function (req, res) {
         });
     });
 });
-app.get('/game/join', auth, function (req, res) {
-    var gameId = req.query.gameId;
-    repo.loadState(gameId, function (err, state) {
-        var errorMessages = '';
-        if (err != null) {
-            errorMessages = util.formatError(err);
-            res.json({ errorMessage: errorMessages });
-        }
-        else if (state != null) {
-            var game = new literki_server.GameRun_Server(req.user.id);
-            game.runState(state);
-            var player = new literki.GamePlayer();
-            player.userId = req.user.id;
-            player.playerName = "Krzyś";
-            player.remainingTime = 15 * 60;
-            if (game.addPlayer(player)) {
-                state = game.getState();
-                repo.saveState(state, function (err) {
-                    if (err != null) {
-                        errorMessages = errorMessages.concat(util.formatError(err));
-                    }
-                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
-                });
-            }
-            else {
-                res.json({ state: state, userId: req.user.id, errorMessage: "Player not added" });
-            }
-        }
-    });
-});
 app.get('/game/list', auth, function (req, res) {
     repo.allGames(function (err, games) {
         var errorMessages = '';
@@ -137,6 +107,7 @@ app.get('/game/get', auth, function (req, res) {
         res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
     });
 });
+app.get('/game/join', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.join(); }); });
 app.get('/game/start', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.start(); }); });
 app.get('/game/pause', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.pause(); }); });
 app.get('/game/fold', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.fold(); }); });
@@ -157,11 +128,12 @@ function simpleGameMethodCall(req, res, call) {
                 res.json({ state: state, errorMessage: errMsg });
             }
             else {
+                state = game.getState();
                 repo.saveState(state, function (err) {
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));
                     }
-                    res.json({ state: state, errorMessage: errorMessages });
+                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
                 });
             }
         }

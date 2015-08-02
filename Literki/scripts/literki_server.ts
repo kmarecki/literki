@@ -35,6 +35,20 @@ export class GameRun_Server extends literki.GameRun {
         return false;
     }
 
+    join(): string {
+        if (this.state.runState == literki.GameRunState.Created) {
+            var res = _.find(this.state.players, p => p.userId == this.currentUserId);
+            if (res == null) {
+                var newPlayer = new literki.GamePlayer();
+                newPlayer.userId = this.currentUserId;
+                newPlayer.playerName = "Krzyś";
+                newPlayer.remainingTime = 15 * 60;
+                this.addPlayer(newPlayer);
+            }
+        }
+        return null;
+    }
+
     start(): string {
         if (!this.isGameOwner()) {
             return "Tylko założyciel gry może ją rozpocząć";

@@ -41,6 +41,20 @@ var GameRun_Server = (function (_super) {
         }
         return false;
     };
+    GameRun_Server.prototype.join = function () {
+        var _this = this;
+        if (this.state.runState == literki.GameRunState.Created) {
+            var res = _.find(this.state.players, function (p) { return p.userId == _this.currentUserId; });
+            if (res == null) {
+                var newPlayer = new literki.GamePlayer();
+                newPlayer.userId = this.currentUserId;
+                newPlayer.playerName = "Krzyś";
+                newPlayer.remainingTime = 15 * 60;
+                this.addPlayer(newPlayer);
+            }
+        }
+        return null;
+    };
     GameRun_Server.prototype.start = function () {
         if (!this.isGameOwner()) {
             return "Tylko założyciel gry może ją rozpocząć";

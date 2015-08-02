@@ -213,7 +213,9 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         };
         Board.prototype.getDragEnd = function (letterGroup) {
             var x = letterGroup.x() - BOARD_MARGIN;
+            x = this.normalizeDragEndPositionX(x);
             var y = letterGroup.y() - BOARD_MARGIN;
+            y = this.normalizeDragEndPositionY(y);
             var fieldX = Math.floor(x / FIELD_SIZE);
             var fieldY = Math.floor(y / FIELD_SIZE);
             var floorX = fieldX * FIELD_SIZE;
@@ -236,10 +238,17 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 y = this.lettersTop;
             }
             var endType = 0 /* BoardField */;
-            if (fieldY >= Literki.ROW_SIZE - 1) {
+            if (fieldY >= Literki.ROW_SIZE) {
                 endType = fieldX > Literki.ROW_SIZE / 2 ? 1 /* ExchangeLetter */ : 2 /* FreeLetter */;
             }
             return { x: x, y: y, fieldX: fieldX, fieldY: fieldY, endType: endType };
+        };
+        Board.prototype.normalizeDragEndPositionX = function (x) {
+            var lastTileX = (Literki.ROW_SIZE - 1) * FIELD_SIZE;
+            return x >= 0 ? (x >= lastTileX ? lastTileX : x) : 0;
+        };
+        Board.prototype.normalizeDragEndPositionY = function (y) {
+            return y >= 0 ? y : 0;
         };
         Board.prototype.clearBoard = function () {
             this.stage.clear();

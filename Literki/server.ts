@@ -114,37 +114,6 @@ app.get('/game/new', auth, (req, res) => {
     });
 });
 
-app.get('/game/join', auth,(req, res) => {
-     var gameId: number = req.query.gameId;
-   
-    repo.loadState(gameId,(err, state) => {
-        var errorMessages = '';
-        if (err != null) {
-            errorMessages = util.formatError(err);
-            res.json({ errorMessage: errorMessages });
-        } else if (state != null) {
-            var game = new literki_server.GameRun_Server(req.user.id);
-            game.runState(state);
-
-            var player = new literki.GamePlayer();
-            player.userId = req.user.id;
-            player.playerName = "Krzyś";
-            player.remainingTime = 15 * 60;
-            if (game.addPlayer(player)) {
-                state = game.getState();
-                repo.saveState(state,(err) => {
-                    if (err != null) {
-                        errorMessages = errorMessages.concat(util.formatError(err));
-                    }
-                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
-                });
-            } else {
-                res.json({ state: state, userId: req.user.id, errorMessage: "Player not added" });
-            }
-        }
-    });
-});
-
 app.get('/game/list', auth, (req, res) => {
     repo.allGames((err, games) => {
         var errorMessages = '';
@@ -168,6 +137,7 @@ app.get('/game/get', auth, (req, res) => {
     });
 });
 
+app.get('/game/join', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.join()));
 app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.start()));
 app.get('/game/pause', auth,(req, res) => simpleGameMethodCall(req, res, (game, req) => game.pause()));
 app.get('/game/fold', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.fold()));
@@ -188,11 +158,12 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
             if (errMsg != null) {
                 res.json({ state: state, errorMessage: errMsg });
             } else {
+                state = game.getState();
                 repo.saveState(state,(err) => {
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));
                     }
-                    res.json({ state: state, errorMessage: errorMessages });
+                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
                 });
             }
         }
