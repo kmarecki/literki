@@ -276,6 +276,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
     var PlayerViewModel = (function () {
         function PlayerViewModel(parent) {
             this.isCurrentPlayer = ko.observable(false);
+            this.isCurrentUser = ko.observable(false);
             this.playerName = ko.observable("");
             this.points = ko.observable(0);
             this.remainingTime = ko.observable('');
@@ -293,7 +294,8 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.playerName(player.playerName);
             this.points(player.getPoints());
             this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
-            this.isCurrentPlayer(player.userId == game.currentUserId);
+            this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
+            this.isCurrentUser(player.userId == game.currentUserId);
         };
         return PlayerViewModel;
     })();

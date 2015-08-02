@@ -333,6 +333,7 @@ class BoardViewModelWord {
 
 class PlayerViewModel {
     isCurrentPlayer = ko.observable(false);
+    isCurrentUser = ko.observable(false);
     playerName = ko.observable("");
     points = ko.observable(0);
     remainingTime = ko.observable('');
@@ -354,7 +355,8 @@ class PlayerViewModel {
         this.playerName(player.playerName);
         this.points((<Literki.GamePlayer>player).getPoints());
         this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
-        this.isCurrentPlayer(player.userId == game.currentUserId);
+        this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
+        this.isCurrentUser(player.userId == game.currentUserId);
     }
 
 }
