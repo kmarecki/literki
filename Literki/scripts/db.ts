@@ -110,7 +110,7 @@ export class GameRepository {
                 index: true
             },
             runState: Number,
-            remainingLetters: [String],
+            playState: Number,
             currentPlayerIndex: Number,
             players: [{
                 userId: mongoose.Schema.Types.ObjectId,
@@ -127,7 +127,17 @@ export class GameRepository {
                     }],
                     moveType: Number
                 }]
-            }]
+            }],
+            remainingLetters: [String],
+            currentMove: {
+                freeLetters: [{
+                    letter: String,
+                    index: Number,
+                    x: Number,
+                    y: Number,
+                    positionType: Number
+                }]
+            }
         });
         this.GameState = mongoose.model<IGameStateModel>("GameState", schema);
     }

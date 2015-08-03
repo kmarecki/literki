@@ -3,7 +3,15 @@
 import _ = require('underscore');
 import literki = require('./literki');
 
+enum PlayerActionType {
+    Move,
+    MoveApproval,
+    MoveCheck,
+}
+
 export class GameRun_Server extends literki.GameRun {
+
+    private UNATHORIZED_ACCESS = "Gracz jest nieuprawniony do wykonania operacji";
 
     newGame(players: Array<literki.GamePlayer>): void {
         this.state = new literki.GameState();
@@ -13,14 +21,30 @@ export class GameRun_Server extends literki.GameRun {
         this.state.players.forEach(p => this.pickLetters(this.state.players.indexOf(p)));
     }
 
-    makeMove(move: literki.GameMove): void {
-        move.freeLetters.forEach(fl => {
-            this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
-            var playersFreeLetters = this.getCurrentPlayer().freeLetters;
-            var index = playersFreeLetters.indexOf(fl.letter);
-            playersFreeLetters.splice(index, 1);
-        });
-        this.updateStateAfterMove(literki.MoveType.Move);
+    makeMove(move: literki.GameMove): string {
+        if (this.isCurrentPlayer()) {
+            move.freeLetters.forEach(fl => {
+                this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
+                var playersFreeLetters = this.getCurrentPlayer().freeLetters;
+                var index = playersFreeLetters.indexOf(fl.letter);
+                playersFreeLetters.splice(index, 1);
+            });
+            this.updateStateAfterPlayerAction(move, PlayerActionType.Move);
+            return null;
+        }
+        return this.UNATHORIZED_ACCESS;
+    }
+
+    approveMove(approve: Boolean): string {
+        if (this.isNextPlayer()) {
+            if (approve) {
+                this.updateStateAfterPlayerAction(this.getActualMove(), PlayerActionType.MoveApproval);
+            } else {
+                this.updateStateAfterPlayerAction(this.getActualMove(), PlayerActionType.MoveCheck);
+            }
+            return null;
+        }
+        return this.UNATHORIZED_ACCESS;
     }
 
     addPlayer(player: literki.IGamePlayer): boolean {
@@ -50,37 +74,40 @@ export class GameRun_Server extends literki.GameRun {
     }
 
     start(): string {
-        if (!this.isGameOwner()) {
-            return "Tylko założyciel gry może ją rozpocząć";
+        if (this.isGameOwner()) {
+
+            if (this.state.players.length < 2) {
+                return "Za mało graczy do rozpoczęcia gry";
+            }
+            if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
+                this.state.runState = literki.GameRunState.Running;
+                this.state.playState = literki.GamePlayState.PlayerMove;
+            } else {
+                return "Nie można rozpocząć gry";
+            }
+            return null;
         }
-        if (this.state.players.length < 2) {
-            return "Za mało graczy do rozpoczęcia gry";
-        }
-        if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
-            this.state.runState = literki.GameRunState.Running;
-        } else {
-            return "Nie można rozpocząć gry";
-        }
-        return null;
+        return this.UNATHORIZED_ACCESS;
     }
 
     pause(): string {
-        if (!this.isGameOwner()) {
-            return "Tylko założyciel gry może ją zatrzymać";
+        if (this.isGameOwner()) {
+            if (this.state.runState == literki.GameRunState.Running) {
+                this.state.runState = literki.GameRunState.Paused;
+            } else {
+                return "Nie można zatrzymać gry";
+            }
+            return null;
         }
-        if (this.state.runState == literki.GameRunState.Running) {
-            this.state.runState = literki.GameRunState.Paused;
-        } else {
-            return "Nie można zatrzymać gry";
-        }
-        return null;
+        return this.UNATHORIZED_ACCESS;
     }
 
     fold(): string {
         if (this.isCurrentPlayer()) {
             this.updateStateAfterMove(literki.MoveType.Fold);
+            return null;
         }
-        return null;
+        return this.UNATHORIZED_ACCESS;
     }
 
     exchange(exchangeLetters: string[]): string {
@@ -93,8 +120,9 @@ export class GameRun_Server extends literki.GameRun {
             exchangeLetters.forEach(letter => freeLetters = _.filter(freeLetters, l => l == letter));
             this.getCurrentPlayer().freeLetters = freeLetters;
             this.updateStateAfterMove(literki.MoveType.Exchange);
+            return null;
         }
-        return null;
+        return this.UNATHORIZED_ACCESS;
     }
 
     private allLetters(): Array<string> {
@@ -119,13 +147,54 @@ export class GameRun_Server extends literki.GameRun {
         }
     }
 
-    private updateStateAfterMove(moveType: literki.MoveType): literki.IGameState {
-        var move = new literki.GameMoveHistory();
-        move.moveType = moveType;
-        this.getNewWords().forEach(p => move.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)));
-        this.getCurrentPlayer().moves.push(move);    
-        this.pickLetters(this.state.currentPlayerIndex);
-        this.state.currentPlayerIndex = this.getNextPlayerIndex();
+    private updateStateAfterPlayerAction(move: literki.GameMove, actionType: PlayerActionType): literki.IGameState {
+        switch (actionType) {
+            case PlayerActionType.Move: {
+                this.state.currentMove = move;
+                this.state.playState = literki.GamePlayState.MoveApproval;
+                break;
+            }
+            case PlayerActionType.MoveApproval: {
+                this.state.currentMove = null;
+                this.state.playState = literki.GamePlayState.PlayerMove;
+                this.updateStateAfterMove(literki.MoveType.Move);
+                break;
+            }
+            case PlayerActionType.MoveCheck: {
+                this.state.currentMove = null;
+                this.state.playState = literki.GamePlayState.PlayerMove;
+                if (_.any(this.getNewWords(), w => !this.isValidWord(w.word))) {
+                    //False Move
+                    move.freeLetters.forEach(l => this.getCurrentPlayer().freeLetters.push(l.letter));
+                    this.updateStateAfterMove(literki.MoveType.WrongMove);
+                } else {
+                    //Good Move
+                    this.updateStateAfterMove(literki.MoveType.Move);
+                    //Player must be skipped because the validation was correct
+                    this.nextPlayer();
+                }
+                break;
+            }
+        }
         return this.state;
     }
+
+    private updateStateAfterMove(moveType: literki.MoveType): void {
+        var moveHistory = new literki.GameMoveHistory();
+        moveHistory.moveType = moveType;
+        this.getNewWords().forEach(p => moveHistory.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)));
+        this.getCurrentPlayer().moves.push(moveHistory);
+        this.nextPlayer();
+    }
+
+    private isValidWord(word: string): boolean {
+        //Dummy validation for tests
+        return true;
+    }
+
+    private nextPlayer(): void {
+        this.pickLetters(this.state.currentPlayerIndex);
+        this.state.currentPlayerIndex = this.getNextPlayerIndex();
+    }
+
 }

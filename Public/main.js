@@ -47,6 +47,7 @@ define(["require", "exports", './app', './scripts/literki', 'knockout', 'jquery'
         return MainViewModel;
     })(App.BaseViewModel);
     function init() {
+        $.ajaxSetup({ cache: false });
         var viewModel = new MainViewModel();
         viewModel.init();
     }

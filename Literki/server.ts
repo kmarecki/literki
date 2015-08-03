@@ -139,12 +139,16 @@ app.get('/game/get', auth, (req, res) => {
 
 app.get('/game/join', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.join()));
 app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.start()));
-app.get('/game/pause', auth,(req, res) => simpleGameMethodCall(req, res, (game, req) => game.pause()));
-app.get('/game/fold', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.fold()));
-app.get('/game/exchange', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.exchange(req.query.exchangeLetters)));
+app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.pause()));
+app.get('/game/fold', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.fold()));
+app.get('/game/exchange', auth,(req, res) => simpleGameMethodCall(req, res, (game, req) => game.exchange(req.query.exchangeLetters)));
+app.get('/game/approve', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.exchange(req.query.approve)));
+app.post('/game/move', auth,(req, res) => {
+    var move = <literki.GameMove> req.body;
+    simpleGameMethodCall(req, res, (game, req) => game.makeMove(move), move.gameId);
+});
   
-function simpleGameMethodCall(req: express.Request, res: express.Response, call: (game: literki_server.GameRun_Server, req: express.Request) => string): void {
-    var gameId: number = req.query.gameId;
+function simpleGameMethodCall(req: express.Request, res: express.Response, call: (game: literki_server.GameRun_Server, req: express.Request) => string, gameId: number = req.query.gameId): void {
 
     repo.loadState(gameId,(err, state) => {
         var errorMessages = '';
@@ -171,28 +175,28 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
 }
 
 
-app.post('/game/move', auth, (req, res) => {
-    var move: literki.GameMove = req.body;
+//app.post('/game/move', auth, (req, res) => {
+//    var move: literki.GameMove = req.body;
 
-    repo.loadState(move.gameId,(err, state) => {
-        var errorMessages = '';
-        if (err != null) {
-            errorMessages = util.formatError(err);
-            res.json({ errorMessage: errorMessages });
-        } else {
-            var game = new literki_server.GameRun_Server(req.user.userId);
-            game.runState(state);
-            game.makeMove(move);
-            state = game.getState();
-            repo.saveState(state,(err) => {
-                if (err != null) {
-                    errorMessages = errorMessages.concat(util.formatError(err));
-                }
-                res.json({ state: state, errorMessage: errorMessages });
-            });
-        }
-    });
-});
+//    repo.loadState(move.gameId,(err, state) => {
+//        var errorMessages = '';
+//        if (err != null) {
+//            errorMessages = util.formatError(err);
+//            res.json({ errorMessage: errorMessages });
+//        } else {
+//            var game = new literki_server.GameRun_Server(req.user.userId);
+//            game.runState(state);
+//            game.makeMove(move);
+//            state = game.getState();
+//            repo.saveState(state,(err) => {
+//                if (err != null) {
+//                    errorMessages = errorMessages.concat(util.formatError(err));
+//                }
+//                res.json({ state: state, errorMessage: errorMessages });
+//            });
+//        }
+//    });
+//});
 
 app.post('/game/alive', auth, (req, res) => {
     var gameId: number = req.body.gameId;
@@ -208,7 +212,7 @@ app.post('/game/alive', auth, (req, res) => {
             var currentPlayer = state.players[state.currentPlayerIndex];
             var forceRefresh = currentPlayer.userId != currentPlayerId;
             var remainingTime = currentPlayer.remainingTime; 
-            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running) {
+            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running && state.playState == literki.GamePlayState.PlayerMove) {
                 if (remainingTime > 0) {
                     remainingTime--;
                     state.players[state.currentPlayerIndex].remainingTime = remainingTime;

@@ -174,7 +174,8 @@ export class GameWord implements IGameWord {
 export enum MoveType {
     Move,
     Fold,
-    Exchange
+    Exchange,
+    WrongMove
 }
 
 export interface IGameMoveHistory {
@@ -237,20 +238,29 @@ export enum GameRunState {
    Finished
 }
 
+export enum GamePlayState {
+    PlayerMove,
+    MoveApproval
+}
+
 export interface IGameState {
     gameId: number;
     runState: GameRunState;
+    playState: GamePlayState;
     players: Array<IGamePlayer>;
     currentPlayerIndex: number;
     remainingLetters: Array<string>;
+    currentMove: GameMove;
 }
 
 export class GameState implements IGameState {
     gameId: number;
     runState: GameRunState;
+    playState: GamePlayState;
     players: Array<GamePlayer>;
     currentPlayerIndex: number = 0;
     remainingLetters: Array<string>;
+    currentMove: GameMove;
 
     static invalidState(): GameState {
         var state = new GameState();
@@ -272,6 +282,7 @@ export class GameState implements IGameState {
         });
         state.remainingLetters = new Array<string>();
         state.remainingLetters.concat(json.remainingLetters);
+        state.currentMove = json.currentMove;
 
         return state;
     }
@@ -280,9 +291,11 @@ export class GameState implements IGameState {
         var json: IGameState = {
             gameId: this.gameId,
             runState: this.runState,
+            playState: this.playState,
             currentPlayerIndex: this.currentPlayerIndex,
             players: new Array<IGamePlayer>(),
             remainingLetters: new Array<string>(),
+            currentMove: this.currentMove
         }
 
         this.players.forEach(p => {
@@ -406,6 +419,10 @@ export class GameRun {
         return this.getCurrentPlayer().userId == this.currentUserId;
     }
 
+    isNextPlayer(): boolean {
+        return this.getNextPlayer().userId == this.currentUserId;
+    }
+
     private renderState(): void {
         this.board = new BoardFields();
         this.freeLetters.clear();
@@ -509,7 +526,7 @@ export class GameRun {
     }
 
     public getActualMove(): GameMove {
-        return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters() }
+        return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters().concat(this.state.currentMove.freeLetters) };
     }
 
     private createGameWord(word: string, x: number, y: number, direction: GameMoveDirection): GameWord {

@@ -41,6 +41,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.bonusColors[0 /* None */] = "darkgreen";
         };
         Board.prototype.drawGameState = function () {
+            var _this = this;
             if (game == null || game.getState() == null) {
                 return;
             }
@@ -131,9 +132,21 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                     var ypos = BOARD_MARGIN + y * FIELD_SIZE;
                     var value = game.board.getFieldValue(x, y);
                     if (value != null && value.trim() != "") {
-                        letterLayer.add(this.getLetterGroup(xpos, ypos, value, -1, false));
+                        var letterGroup = this.getLetterGroup(xpos, ypos, value, -1, false);
+                        letterLayer.add(letterGroup);
                     }
                 }
+            }
+            //current move letters
+            if (game.isCurrentPlayer() || game.isNextPlayer()) {
+                var move = game.getActualMove();
+                move.freeLetters.forEach(function (l) {
+                    var xpos = BOARD_MARGIN + l.x * FIELD_SIZE;
+                    var ypos = BOARD_MARGIN + l.y * FIELD_SIZE;
+                    var backgroundColor = game.isNextPlayer() ? "silver" : "#FFFFCC";
+                    var letterGroup = _this.getLetterGroup(xpos, ypos, l.letter, -1, false, backgroundColor);
+                    letterLayer.add(letterGroup);
+                });
             }
             this.stage.add(letterLayer);
             var currentUser = game.getCurrentUser();
@@ -144,18 +157,21 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                     if (x < currentUser.freeLetters.length) {
                         var letter = currentUser.freeLetters[x];
                         var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-                        foregroundLayer.add(this.getLetterGroup(xpos, this.lettersTop, letter, x, true));
+                        var movable = game.isCurrentPlayer() && game.getState().playState == 0 /* PlayerMove */;
+                        var letterGroup = this.getLetterGroup(xpos, this.lettersTop, letter, x, movable);
+                        foregroundLayer.add(letterGroup);
                     }
                 }
                 this.stage.add(foregroundLayer);
             }
         };
-        Board.prototype.getLetterGroup = function (x, y, letter, index, foreground) {
+        Board.prototype.getLetterGroup = function (x, y, letter, index, foreground, backgroundColor) {
             var _this = this;
+            if (backgroundColor === void 0) { backgroundColor = "#FFFFCC"; }
             var letterRect = new Kinetic.Rect({
                 width: FIELD_SIZE,
                 height: FIELD_SIZE,
-                fill: "#FFFFCC",
+                fill: backgroundColor,
                 stroke: "black",
                 strokeWidth: LINE_WIDTH,
                 cornerRadius: 5
@@ -479,6 +495,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         return BoardViewModel;
     })(App.BaseViewModel);
     function init() {
+        $.ajaxSetup({ cache: false });
         var boardDiv = document.getElementById("boardDiv");
         boardDiv.style.width = screen.availWidth / 2 + "px";
         boardDiv.style.height = screen.availHeight * 0.85 + "px";

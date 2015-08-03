@@ -162,9 +162,22 @@ class Board {
                 var ypos = BOARD_MARGIN + y * FIELD_SIZE;
                 var value = game.board.getFieldValue(x, y);
                 if (value != null && value.trim() != "") {
-                    letterLayer.add(this.getLetterGroup(xpos, ypos, value, -1, false));
-                }
+                    var letterGroup = this.getLetterGroup(xpos, ypos, value, -1, false);
+                    letterLayer.add(letterGroup);
+                } 
             }
+        }
+
+        //current move letters
+        if (game.isCurrentPlayer() || game.isNextPlayer()) {
+            var move = game.getActualMove();
+            move.freeLetters.forEach(l => {
+                var xpos = BOARD_MARGIN + l.x * FIELD_SIZE;
+                var ypos = BOARD_MARGIN + l.y * FIELD_SIZE;
+                var backgroundColor = game.isNextPlayer() ? "silver" : "#FFFFCC";
+                var letterGroup = this.getLetterGroup(xpos, ypos, l.letter, -1, false, backgroundColor);
+                letterLayer.add(letterGroup);
+            });
         }
        
         this.stage.add(letterLayer);
@@ -178,8 +191,9 @@ class Board {
                 if (x < currentUser.freeLetters.length) {
                     var letter = currentUser.freeLetters[x];
                     var xpos = BOARD_MARGIN + x * FIELD_SIZE;
-
-                    foregroundLayer.add(this.getLetterGroup(xpos, this.lettersTop, letter, x, true));
+                    var movable = game.isCurrentPlayer() && game.getState().playState == Literki.GamePlayState.PlayerMove;
+                    var letterGroup = this.getLetterGroup(xpos, this.lettersTop, letter, x, movable);
+                    foregroundLayer.add(letterGroup);
                 }
             }
 
@@ -187,11 +201,11 @@ class Board {
         }
     }
 
-    private getLetterGroup(x: number, y: number, letter: string, index: number, foreground: boolean): Kinetic.IGroup {
+    private getLetterGroup(x: number, y: number, letter: string, index: number, foreground: boolean, backgroundColor: string = "#FFFFCC"): Kinetic.IGroup {
         var letterRect = new Kinetic.Rect({
             width: FIELD_SIZE,
             height: FIELD_SIZE,
-            fill: "#FFFFCC",
+            fill: backgroundColor,
             stroke: "black",
             strokeWidth: LINE_WIDTH,
             cornerRadius: 5
@@ -558,6 +572,8 @@ class BoardViewModel extends App.BaseViewModel {
 }
 
 export function init(): void {
+
+    $.ajaxSetup({ cache: false });
 
     var boardDiv = <HTMLElement>document.getElementById("boardDiv");
     boardDiv.style.width = screen.availWidth / 2 + "px";

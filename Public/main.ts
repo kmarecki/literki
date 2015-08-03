@@ -43,6 +43,8 @@ class MainViewModel extends App.BaseViewModel {
 }
 
 export function init(): void  {
+    $.ajaxSetup({ cache: false });
+
     var viewModel = new MainViewModel();
     viewModel.init();
 }

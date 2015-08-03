@@ -94,7 +94,7 @@ var GameRepository = (function () {
                 index: true
             },
             runState: Number,
-            remainingLetters: [String],
+            playState: Number,
             currentPlayerIndex: Number,
             players: [{
                     userId: mongoose.Schema.Types.ObjectId,
@@ -111,7 +111,17 @@ var GameRepository = (function () {
                                 }],
                             moveType: Number
                         }]
-                }]
+                }],
+            remainingLetters: [String],
+            currentMove: {
+                freeLetters: [{
+                        letter: String,
+                        index: Number,
+                        x: Number,
+                        y: Number,
+                        positionType: Number
+                    }]
+            }
         });
         this.GameState = mongoose.model("GameState", schema);
     };

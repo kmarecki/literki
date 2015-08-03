@@ -151,6 +151,7 @@ exports.GameWord = GameWord;
     MoveType[MoveType["Move"] = 0] = "Move";
     MoveType[MoveType["Fold"] = 1] = "Fold";
     MoveType[MoveType["Exchange"] = 2] = "Exchange";
+    MoveType[MoveType["WrongMove"] = 3] = "WrongMove";
 })(exports.MoveType || (exports.MoveType = {}));
 var MoveType = exports.MoveType;
 var GameMoveHistory = (function () {
@@ -199,6 +200,11 @@ exports.GamePlayer = GamePlayer;
     GameRunState[GameRunState["Finished"] = 3] = "Finished";
 })(exports.GameRunState || (exports.GameRunState = {}));
 var GameRunState = exports.GameRunState;
+(function (GamePlayState) {
+    GamePlayState[GamePlayState["PlayerMove"] = 0] = "PlayerMove";
+    GamePlayState[GamePlayState["MoveApproval"] = 1] = "MoveApproval";
+})(exports.GamePlayState || (exports.GamePlayState = {}));
+var GamePlayState = exports.GamePlayState;
 var GameState = (function () {
     function GameState() {
         this.currentPlayerIndex = 0;
@@ -222,15 +228,18 @@ var GameState = (function () {
         });
         state.remainingLetters = new Array();
         state.remainingLetters.concat(json.remainingLetters);
+        state.currentMove = json.currentMove;
         return state;
     };
     GameState.prototype.toJSON = function () {
         var json = {
             gameId: this.gameId,
             runState: this.runState,
+            playState: this.playState,
             currentPlayerIndex: this.currentPlayerIndex,
             players: new Array(),
             remainingLetters: new Array(),
+            currentMove: this.currentMove
         };
         this.players.forEach(function (p) {
             var player = p.toJSON();
@@ -328,6 +337,9 @@ var GameRun = (function () {
     };
     GameRun.prototype.isCurrentPlayer = function () {
         return this.getCurrentPlayer().userId == this.currentUserId;
+    };
+    GameRun.prototype.isNextPlayer = function () {
+        return this.getNextPlayer().userId == this.currentUserId;
     };
     GameRun.prototype.renderState = function () {
         var _this = this;
@@ -428,7 +440,7 @@ var GameRun = (function () {
         return words;
     };
     GameRun.prototype.getActualMove = function () {
-        return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters() };
+        return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters().concat(this.state.currentMove.freeLetters) };
     };
     GameRun.prototype.createGameWord = function (word, x, y, direction) {
         var points = this.countPoints(x, y, word.length, direction);

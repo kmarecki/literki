@@ -112,8 +112,13 @@ app.get('/game/start', auth, function (req, res) { return simpleGameMethodCall(r
 app.get('/game/pause', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.pause(); }); });
 app.get('/game/fold', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.fold(); }); });
 app.get('/game/exchange', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.exchange(req.query.exchangeLetters); }); });
-function simpleGameMethodCall(req, res, call) {
-    var gameId = req.query.gameId;
+app.get('/game/approve', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.exchange(req.query.approve); }); });
+app.post('/game/move', auth, function (req, res) {
+    var move = req.body;
+    simpleGameMethodCall(req, res, function (game, req) { return game.makeMove(move); }, move.gameId);
+});
+function simpleGameMethodCall(req, res, call, gameId) {
+    if (gameId === void 0) { gameId = req.query.gameId; }
     repo.loadState(gameId, function (err, state) {
         var errorMessages = '';
         if (err != null) {
@@ -139,28 +144,27 @@ function simpleGameMethodCall(req, res, call) {
         }
     });
 }
-app.post('/game/move', auth, function (req, res) {
-    var move = req.body;
-    repo.loadState(move.gameId, function (err, state) {
-        var errorMessages = '';
-        if (err != null) {
-            errorMessages = util.formatError(err);
-            res.json({ errorMessage: errorMessages });
-        }
-        else {
-            var game = new literki_server.GameRun_Server(req.user.userId);
-            game.runState(state);
-            game.makeMove(move);
-            state = game.getState();
-            repo.saveState(state, function (err) {
-                if (err != null) {
-                    errorMessages = errorMessages.concat(util.formatError(err));
-                }
-                res.json({ state: state, errorMessage: errorMessages });
-            });
-        }
-    });
-});
+//app.post('/game/move', auth, (req, res) => {
+//    var move: literki.GameMove = req.body;
+//    repo.loadState(move.gameId,(err, state) => {
+//        var errorMessages = '';
+//        if (err != null) {
+//            errorMessages = util.formatError(err);
+//            res.json({ errorMessage: errorMessages });
+//        } else {
+//            var game = new literki_server.GameRun_Server(req.user.userId);
+//            game.runState(state);
+//            game.makeMove(move);
+//            state = game.getState();
+//            repo.saveState(state,(err) => {
+//                if (err != null) {
+//                    errorMessages = errorMessages.concat(util.formatError(err));
+//                }
+//                res.json({ state: state, errorMessage: errorMessages });
+//            });
+//        }
+//    });
+//});
 app.post('/game/alive', auth, function (req, res) {
     var gameId = req.body.gameId;
     var currentPlayerId = req.body.currentPlayerId;
@@ -175,7 +179,7 @@ app.post('/game/alive', auth, function (req, res) {
             var currentPlayer = state.players[state.currentPlayerIndex];
             var forceRefresh = currentPlayer.userId != currentPlayerId;
             var remainingTime = currentPlayer.remainingTime;
-            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running) {
+            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running && state.playState == literki.GamePlayState.PlayerMove) {
                 if (remainingTime > 0) {
                     remainingTime--;
                     state.players[state.currentPlayerIndex].remainingTime = remainingTime;
