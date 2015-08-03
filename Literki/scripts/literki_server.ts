@@ -125,7 +125,7 @@ export class GameRun_Server extends literki.GameRun {
         this.getNewWords().forEach(p => move.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)));
         this.getCurrentPlayer().moves.push(move);    
         this.pickLetters(this.state.currentPlayerIndex);
-        this.state.currentPlayerIndex = (this.state.currentPlayerIndex + 1) % this.state.players.length;
+        this.state.currentPlayerIndex = this.getNextPlayerIndex();
         return this.state;
     }
 }

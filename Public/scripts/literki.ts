@@ -370,6 +370,16 @@ export class GameRun {
         return this.state.players[this.state.currentPlayerIndex];
     }
 
+    getNextPlayer(): IGamePlayer {
+        var nextPlayerIndex = this.getNextPlayerIndex();
+        return this.state.players[nextPlayerIndex];
+    }
+
+    protected getNextPlayerIndex(): number {
+        return (this.state.currentPlayerIndex + 1) % this.state.players.length;
+    }
+        
+
     getCurrentUser(): IGamePlayer {
         return _.find(this.state.players, p => p.userId == this.currentUserId);
     }

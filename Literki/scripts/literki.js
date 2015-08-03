@@ -301,6 +301,13 @@ var GameRun = (function () {
     GameRun.prototype.getCurrentPlayer = function () {
         return this.state.players[this.state.currentPlayerIndex];
     };
+    GameRun.prototype.getNextPlayer = function () {
+        var nextPlayerIndex = this.getNextPlayerIndex();
+        return this.state.players[nextPlayerIndex];
+    };
+    GameRun.prototype.getNextPlayerIndex = function () {
+        return (this.state.currentPlayerIndex + 1) % this.state.players.length;
+    };
     GameRun.prototype.getCurrentUser = function () {
         var _this = this;
         return _.find(this.state.players, function (p) { return p.userId == _this.currentUserId; });
