@@ -175,7 +175,8 @@ export enum MoveType {
     Move,
     Fold,
     Exchange,
-    WrongMove
+    WrongMove,
+    CheckMoveFailed
 }
 
 export interface IGameMoveHistory {

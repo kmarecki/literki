@@ -144,27 +144,6 @@ function simpleGameMethodCall(req, res, call, gameId) {
         }
     });
 }
-//app.post('/game/move', auth, (req, res) => {
-//    var move: literki.GameMove = req.body;
-//    repo.loadState(move.gameId,(err, state) => {
-//        var errorMessages = '';
-//        if (err != null) {
-//            errorMessages = util.formatError(err);
-//            res.json({ errorMessage: errorMessages });
-//        } else {
-//            var game = new literki_server.GameRun_Server(req.user.userId);
-//            game.runState(state);
-//            game.makeMove(move);
-//            state = game.getState();
-//            repo.saveState(state,(err) => {
-//                if (err != null) {
-//                    errorMessages = errorMessages.concat(util.formatError(err));
-//                }
-//                res.json({ state: state, errorMessage: errorMessages });
-//            });
-//        }
-//    });
-//});
 app.post('/game/alive', auth, function (req, res) {
     var gameId = req.body.gameId;
     var currentPlayerId = req.body.currentPlayerId;

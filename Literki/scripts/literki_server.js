@@ -172,7 +172,7 @@ var GameRun_Server = (function (_super) {
                     //Good Move
                     this.updateStateAfterMove(literki.MoveType.Move);
                     //Player must be skipped because the validation was correct
-                    this.nextPlayer();
+                    this.updateStateAfterMove(literki.MoveType.CheckMoveFailed);
                 }
                 break;
             }

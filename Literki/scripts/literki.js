@@ -152,6 +152,7 @@ exports.GameWord = GameWord;
     MoveType[MoveType["Fold"] = 1] = "Fold";
     MoveType[MoveType["Exchange"] = 2] = "Exchange";
     MoveType[MoveType["WrongMove"] = 3] = "WrongMove";
+    MoveType[MoveType["CheckMoveFailed"] = 4] = "CheckMoveFailed";
 })(exports.MoveType || (exports.MoveType = {}));
 var MoveType = exports.MoveType;
 var GameMoveHistory = (function () {
