@@ -1,11 +1,13 @@
 /// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
+/// <reference path=".\typings\jqueryui\jqueryui.d.ts" />
+/// <amd-dependency path="./scripts/jquery-ui" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './app', './scripts/literki', './scripts/system', 'knockout', 'jquery', 'Kinetic'], function (require, exports, App, Literki, System, ko, $, Kinetic) {
+define(["require", "exports", './app', './scripts/literki', './scripts/system', 'knockout', 'jquery', 'Kinetic', "./scripts/jquery-ui"], function (require, exports, App, Literki, System, ko, $, Kinetic) {
     var FIELD_SIZE;
     var LINE_WIDTH;
     var BOARD_MARGIN;
