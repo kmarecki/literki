@@ -1,4 +1,6 @@
 ﻿/// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
+/// <reference path=".\typings\jqueryui\jqueryui.d.ts" />
+/// <amd-dependency path="./scripts/jquery-ui" />
 
 import App = require('./app');
 import Literki = require('./scripts/literki');

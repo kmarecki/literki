@@ -2,14 +2,18 @@
     baseUrl: "",
     paths: {
         knockout: "./scripts/knockout-3.2.0.debug",
-        jquery: "./scripts/jquery-1.11.2",
+        jquery: "./scripts/jquery",
+        jqueryui: "./scripts/jquery-ui",
         moment: "./scripts/moment",
         underscore: "./scripts/underscore",
         Kinetic: "./scripts/kinetic-v5.1.0",
         board: "board"
+    },
+    shim: {
+        jqueryui: ["jquery"]
     }
 });
 
-define(["require", "exports", 'board'], function (require, exports, board) {
+define(["require", "exports", "board"], function (require, exports, board) {
     board.init();
 });

@@ -45,7 +45,8 @@
   <ItemGroup>
     <Content Include="board-conf.js" />
     <Content Include="main-conf.js" />
-    <Content Include="scripts\jquery-1.11.2.js" />
+    <Content Include="scripts\jquery-ui.js" />
+    <Content Include="scripts\jquery.js" />
     <Content Include="scripts\kinetic-v5.1.0.js" />
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
     <Content Include="scripts\knockout-3.2.0.debug.js" />
@@ -60,6 +61,7 @@
     <TypeScriptCompile Include="scripts\system.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\kineticjs\kineticjs.d.ts" />
     <TypeScriptCompile Include="typings\knockout\knockout.d.ts" />

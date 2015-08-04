@@ -1,4 +1,7 @@
-﻿import ko = require('knockout');
+﻿/// <reference path="./typings/jqueryui/jqueryui.d.ts" />
+
+import ko = require("knockout");
+import $ = require("jquery");
 
 export class BaseViewModel {
 
@@ -14,20 +17,25 @@ export class BaseViewModel {
     private showErrorMessage(errorMessage: string): void {
         var winW = window.innerWidth;
         var winH = window.innerHeight;
-        var dialogoverlay = document.getElementById('dialogoverlay');
-        var dialogbox = document.getElementById('dialogbox');
+        var dialogoverlay = document.getElementById("dialogoverlay");
+        var dialogbox = document.getElementById("dialogbox");
 
         dialogoverlay.style.height = winH + "px";
         dialogbox.style.left = (winW / 2) - (550 * .5) + "px";
         dialogbox.style.top = "100px";
-        dialogbox.style.display = "block";
-        document.getElementById('dialogboxhead').innerHTML = "Wystąpił błąd";
-        document.getElementById('dialogboxbody').innerHTML = errorMessage;
-        dialogoverlay.style.display = "block";
+        document.getElementById("dialogboxhead").innerHTML = "Wystąpił błąd";
+        document.getElementById("dialogboxbody").innerHTML = errorMessage;
+
+        $("#dialogoverlay").show();
+
+        $("#dialogbox").show();
+        $("#dialogbox").draggable();
+
+        
     }
 
     private closeMessageBoxClick(): void {
-        document.getElementById('dialogbox').style.display = "none";
-        document.getElementById('dialogoverlay').style.display = "none";
+        $("#dialogbox").hide();
+        $("#dialogoverlay").hide();
     }
 } 

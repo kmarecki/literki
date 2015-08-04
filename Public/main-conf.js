@@ -2,7 +2,7 @@
     baseUrl: "",
     paths: {
         knockout: "./scripts/knockout-3.2.0.debug",
-        jquery: "./scripts/jquery-1.11.2",
+        jquery: "./scripts/jquery",
         underscore: "./scripts/underscore",
         main: "main"
     }
