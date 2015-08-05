@@ -221,6 +221,7 @@ var GameState = (function () {
         var state = new GameState();
         state.gameId = json.gameId;
         state.runState = json.runState;
+        state.playState = json.playState;
         state.currentPlayerIndex = json.currentPlayerIndex;
         state.players = new Array();
         json.players.forEach(function (p) {
@@ -442,6 +443,11 @@ var GameRun = (function () {
     };
     GameRun.prototype.getActualMove = function () {
         return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters().concat(this.state.currentMove.freeLetters) };
+    };
+    GameRun.prototype.canApproveMove = function () {
+        return (this.isNextPlayer() &&
+            this.state.runState == GameRunState.Running &&
+            this.state.playState == GamePlayState.MoveApproval);
     };
     GameRun.prototype.createGameWord = function (word, x, y, direction) {
         var points = this.countPoints(x, y, word.length, direction);

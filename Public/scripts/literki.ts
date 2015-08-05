@@ -275,6 +275,7 @@ export class GameState implements IGameState {
         var state = new GameState();
         state.gameId = json.gameId;
         state.runState = json.runState;
+        state.playState = json.playState;
         state.currentPlayerIndex = json.currentPlayerIndex;
         state.players = new Array<GamePlayer>();
         json.players.forEach(p => {
@@ -529,6 +530,15 @@ export class GameRun {
     public getActualMove(): GameMove {
         return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters().concat(this.state.currentMove.freeLetters) };
     }
+
+    public canApproveMove(): boolean {
+        return (
+            this.isNextPlayer() &&
+            this.state.runState == GameRunState.Running &&
+            this.state.playState == GamePlayState.MoveApproval
+        );
+    }
+
 
     private createGameWord(word: string, x: number, y: number, direction: GameMoveDirection): GameWord {
         var points = this.countPoints(x, y, word.length, direction);

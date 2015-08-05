@@ -142,7 +142,7 @@ app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game,
 app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.pause()));
 app.get('/game/fold', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.fold()));
 app.get('/game/exchange', auth,(req, res) => simpleGameMethodCall(req, res, (game, req) => game.exchange(req.query.exchangeLetters)));
-app.get('/game/approve', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.exchange(req.query.approve)));
+app.get('/game/approve', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.approveMove(req.query.approve)));
 app.post('/game/move', auth,(req, res) => {
     var move = <literki.GameMove> req.body;
     simpleGameMethodCall(req, res, (game, req) => game.makeMove(move), move.gameId);

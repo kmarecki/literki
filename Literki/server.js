@@ -112,7 +112,7 @@ app.get('/game/start', auth, function (req, res) { return simpleGameMethodCall(r
 app.get('/game/pause', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.pause(); }); });
 app.get('/game/fold', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.fold(); }); });
 app.get('/game/exchange', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.exchange(req.query.exchangeLetters); }); });
-app.get('/game/approve', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.exchange(req.query.approve); }); });
+app.get('/game/approve', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.approveMove(req.query.approve); }); });
 app.post('/game/move', auth, function (req, res) {
     var move = req.body;
     simpleGameMethodCall(req, res, function (game, req) { return game.makeMove(move); }, move.gameId);

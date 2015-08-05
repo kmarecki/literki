@@ -557,13 +557,20 @@ class BoardViewModel extends App.BaseViewModel {
     protected refreshModel(result: any): void {
         super.refreshModel(result);
 
+        this.refreshPlayerModels();
         if (result.state != null) {
             var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
             game.runState(state);
             this.cleanNewWords();
             this.cleanChangeLetters();
+
+            if (game.canApproveMove()) {
+                this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`,(result) => {
+                    this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
+                });
+            }
         }
-        this.refreshPlayerModels();
+        
     }
 
     private refreshPlayerModels(): void {

@@ -480,14 +480,20 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.setChangeLetters(changeLetters);
         };
         BoardViewModel.prototype.refreshModel = function (result) {
+            var _this = this;
             _super.prototype.refreshModel.call(this, result);
+            this.refreshPlayerModels();
             if (result.state != null) {
                 var state = Literki.GameState.fromJSON(result.state);
                 game.runState(state);
                 this.cleanNewWords();
                 this.cleanChangeLetters();
+                if (game.canApproveMove()) {
+                    this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
+                        _this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
+                    });
+                }
             }
-            this.refreshPlayerModels();
         };
         BoardViewModel.prototype.refreshPlayerModels = function () {
             if (game != null) {

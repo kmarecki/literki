@@ -7,30 +7,75 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
         BaseViewModel.prototype.refreshModel = function (result) {
             this.errorMessage(result.errorMessage);
             if (result.errorMessage) {
-                this.showErrorMessage(result.errorMessage);
+                this.showErrorDialogBox(result.errorMessage);
             }
         };
-        BaseViewModel.prototype.showErrorMessage = function (errorMessage) {
+        BaseViewModel.prototype.showAskDialogBox = function (message, callback) {
+            this.showDialogBox(message, "Pytanie", callback, {
+                showCancelButton: true,
+                cancelButtonText: "Nie",
+                okButtonText: "Tak"
+            });
+        };
+        BaseViewModel.prototype.showErrorDialogBox = function (message) {
+            this.showDialogBox(message, "Wystąpił błąd", null, {
+                showDialogOverlay: true
+            });
+        };
+        BaseViewModel.prototype.showDialogBox = function (message, title, callback, options) {
+            if (callback === void 0) { callback = null; }
+            if (options === void 0) { options = null; }
             var winW = window.innerWidth;
             var winH = window.innerHeight;
-            var dialogoverlay = document.getElementById("dialogoverlay");
-            var dialogbox = document.getElementById("dialogbox");
-            dialogoverlay.style.height = winH + "px";
-            dialogbox.style.left = (winW / 2) - (550 * .5) + "px";
-            dialogbox.style.top = "100px";
-            document.getElementById("dialogboxhead").innerHTML = "Wystąpił błąd";
-            document.getElementById("dialogboxbody").innerHTML = errorMessage;
-            $("#dialogoverlay").show();
-            $("#dialogbox").show();
-            $("#dialogbox").draggable();
+            var dialogoverlay = $("#dialogoverlay");
+            var dialogbox = $("#dialogbox");
+            var dialogboxhead = $("#dialogboxhead");
+            var dialogboxbody = $("#dialogboxbody");
+            var cancelButton = dialogbox.find("#cancelButton");
+            var okButton = dialogbox.find("#okButton");
+            dialogoverlay.css({ height: winH + "px" });
+            dialogbox.css({
+                left: (winW / 2) - (550 * .5) + "px",
+                top: "100px"
+            });
+            dialogboxhead.html(title);
+            dialogboxbody.html(message);
+            cancelButton.hide();
+            if (options) {
+                if (options.showCancelButton) {
+                    cancelButton.show();
+                }
+                if (options.cancelButtonText) {
+                    cancelButton.text(options.cancelButtonText);
+                }
+                if (options.okButtonText) {
+                    okButton.text(options.okButtonText);
+                }
+                if (options.showDialogOverlay) {
+                    dialogoverlay.show();
+                }
+            }
+            dialogbox.show();
+            dialogbox.draggable();
+            this.dialogBoxCallback = callback;
         };
         BaseViewModel.prototype.cancelClick = function () {
-            $("#dialogbox").hide();
-            $("#dialogoverlay").hide();
+            this.hideDialogBox();
+            if (this.dialogBoxCallback) {
+                this.dialogBoxCallback(false);
+            }
         };
         BaseViewModel.prototype.okClick = function () {
-            $("#dialogbox").hide();
-            $("#dialogoverlay").hide();
+            this.hideDialogBox();
+            if (this.dialogBoxCallback) {
+                this.dialogBoxCallback(true);
+            }
+        };
+        BaseViewModel.prototype.hideDialogBox = function () {
+            var dialogoverlay = $("#dialogoverlay");
+            var dialogbox = $("#dialogbox");
+            dialogbox.hide();
+            dialogoverlay.hide();
         };
         return BaseViewModel;
     })();
