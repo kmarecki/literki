@@ -24,7 +24,11 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
             $("#dialogbox").show();
             $("#dialogbox").draggable();
         };
-        BaseViewModel.prototype.closeMessageBoxClick = function () {
+        BaseViewModel.prototype.cancelClick = function () {
+            $("#dialogbox").hide();
+            $("#dialogoverlay").hide();
+        };
+        BaseViewModel.prototype.okClick = function () {
             $("#dialogbox").hide();
             $("#dialogoverlay").hide();
         };

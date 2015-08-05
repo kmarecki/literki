@@ -30,11 +30,17 @@ export class BaseViewModel {
 
         $("#dialogbox").show();
         $("#dialogbox").draggable();
+        
 
         
     }
 
-    private closeMessageBoxClick(): void {
+    private cancelClick(): void {
+        $("#dialogbox").hide();
+        $("#dialogoverlay").hide();
+    }
+
+    private okClick(): void {
         $("#dialogbox").hide();
         $("#dialogoverlay").hide();
     }

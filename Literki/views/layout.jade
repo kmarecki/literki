@@ -12,5 +12,6 @@ html(xmlns='http://www.w3.org/1999/xhtml')
         #dialogboxhead
         #dialogboxbody
         #dialogboxfoot
-          button.commandButton(data-bind='click:closeMessageBoxClick') OK
+          button.commandButton.cancelBackground(data-bind='click:cancelClick') Anuluj
+          button.commandButton(data-bind='click:okClick') OK
     #dialogoverlay
