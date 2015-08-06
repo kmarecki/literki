@@ -489,6 +489,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 game.runState(state);
                 this.cleanNewWords();
                 this.cleanChangeLetters();
+                this.hideDialogBox();
                 if (game.canApproveMove()) {
                     this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
                         _this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });

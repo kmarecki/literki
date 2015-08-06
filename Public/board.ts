@@ -565,6 +565,7 @@ class BoardViewModel extends App.BaseViewModel {
             this.cleanNewWords();
             this.cleanChangeLetters();
 
+            this.hideDialogBox();
             if (game.canApproveMove()) {
                 this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`,(result) => {
                     this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });

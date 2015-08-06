@@ -92,21 +92,21 @@ export class BaseViewModel {
         this.dialogBoxCallback = callback;
     }
 
-    private cancelClick(): void {
+    protected cancelClick(): void {
         this.hideDialogBox();
         if (this.dialogBoxCallback) {
             this.dialogBoxCallback(false);
         }
     }
 
-    private okClick(): void {
+    protected okClick(): void {
         this.hideDialogBox();
         if (this.dialogBoxCallback) {
             this.dialogBoxCallback(true);
         }
     }
 
-    private hideDialogBox(): void {
+    protected hideDialogBox(): void {
         var dialogoverlay = $("#dialogoverlay");
         var dialogbox = $("#dialogbox");
 
