@@ -478,7 +478,8 @@ class BoardViewModel extends App.BaseViewModel {
             contentType: 'application/json',
             data: JSON.stringify({
                 gameId: game.getState().gameId,
-                currentPlayerId: game.getCurrentPlayer().userId
+                currentPlayerId: game.getCurrentPlayer().userId,
+                playState: game.getState().playState
             }),
             dataType: "json",
             success: (result) => {
@@ -569,8 +570,11 @@ class BoardViewModel extends App.BaseViewModel {
                     this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
                 });
             }
+
+            if (game.isWaitingForMoveApproval()) {
+                this.showPersistentInfoDialogBox(`Oczekiwanie na akceptację ruchu przez gracza ${game.getNextPlayer().playerName}.`);
+            }
         }
-        
     }
 
     private refreshPlayerModels(): void {

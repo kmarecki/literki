@@ -479,10 +479,17 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             return words;
         };
         GameRun.prototype.getActualMove = function () {
-            return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters().concat(this.state.currentMove.freeLetters) };
+            var freeLetters = this.freeLetters.getAllLetters();
+            if (this.state.currentMove) {
+                freeLetters = freeLetters.concat(this.state.currentMove.freeLetters);
+            }
+            return { gameId: this.state.gameId, freeLetters: freeLetters };
         };
         GameRun.prototype.canApproveMove = function () {
             return (this.isNextPlayer() && this.state.runState == 1 /* Running */ && this.state.playState == 1 /* MoveApproval */);
+        };
+        GameRun.prototype.isWaitingForMoveApproval = function () {
+            return (this.isCurrentPlayer() && this.state.runState == 1 /* Running */ && this.state.playState == 1 /* MoveApproval */);
         };
         GameRun.prototype.createGameWord = function (word, x, y, direction) {
             var points = this.countPoints(x, y, word.length, direction);

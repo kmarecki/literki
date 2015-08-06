@@ -528,12 +528,24 @@ export class GameRun {
     }
 
     public getActualMove(): GameMove {
-        return { gameId: this.state.gameId, freeLetters: this.freeLetters.getAllLetters().concat(this.state.currentMove.freeLetters) };
+        var freeLetters = this.freeLetters.getAllLetters();
+        if (this.state.currentMove) {
+            freeLetters = freeLetters.concat(this.state.currentMove.freeLetters);
+        }
+        return { gameId: this.state.gameId, freeLetters: freeLetters };
     }
 
     public canApproveMove(): boolean {
         return (
             this.isNextPlayer() &&
+            this.state.runState == GameRunState.Running &&
+            this.state.playState == GamePlayState.MoveApproval
+        );
+    }
+
+    public isWaitingForMoveApproval(): boolean {
+        return (
+            this.isCurrentPlayer() &&
             this.state.runState == GameRunState.Running &&
             this.state.playState == GamePlayState.MoveApproval
         );

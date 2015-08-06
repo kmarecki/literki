@@ -12,6 +12,7 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
         };
         BaseViewModel.prototype.showAskDialogBox = function (message, callback) {
             this.showDialogBox(message, "Pytanie", callback, {
+                showOkButton: true,
                 showCancelButton: true,
                 cancelButtonText: "Nie",
                 okButtonText: "Tak"
@@ -19,6 +20,12 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
         };
         BaseViewModel.prototype.showErrorDialogBox = function (message) {
             this.showDialogBox(message, "Wystąpił błąd", null, {
+                showOkButton: true,
+                showDialogOverlay: true
+            });
+        };
+        BaseViewModel.prototype.showPersistentInfoDialogBox = function (message) {
+            this.showDialogBox(message, "Uwaga", null, {
                 showDialogOverlay: true
             });
         };
@@ -41,9 +48,13 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
             dialogboxhead.html(title);
             dialogboxbody.html(message);
             cancelButton.hide();
+            okButton.hide();
             if (options) {
                 if (options.showCancelButton) {
                     cancelButton.show();
+                }
+                if (options.showOkButton) {
+                    okButton.show();
                 }
                 if (options.cancelButtonText) {
                     cancelButton.text(options.cancelButtonText);

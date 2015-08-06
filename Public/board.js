@@ -411,7 +411,8 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 contentType: 'application/json',
                 data: JSON.stringify({
                     gameId: game.getState().gameId,
-                    currentPlayerId: game.getCurrentPlayer().userId
+                    currentPlayerId: game.getCurrentPlayer().userId,
+                    playState: game.getState().playState
                 }),
                 dataType: "json",
                 success: function (result) {
@@ -492,6 +493,9 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                     this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
                         _this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
                     });
+                }
+                if (game.isWaitingForMoveApproval()) {
+                    this.showPersistentInfoDialogBox("Oczekiwanie na akceptację ruchu przez gracza " + game.getNextPlayer().playerName + ".");
                 }
             }
         };

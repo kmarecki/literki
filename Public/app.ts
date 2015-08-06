@@ -18,6 +18,7 @@ export class BaseViewModel {
 
     protected showAskDialogBox(message: string, callback: (boolean) => void): void {
         this.showDialogBox(message, "Pytanie", callback, {
+            showOkButton: true,
             showCancelButton: true,
             cancelButtonText: "Nie",
             okButtonText: "Tak"
@@ -25,7 +26,14 @@ export class BaseViewModel {
     }
 
     protected showErrorDialogBox(message: string): void {
-        this.showDialogBox(message, "Wystąpił błąd", null , {
+        this.showDialogBox(message, "Wystąpił błąd", null, {
+            showOkButton: true,
+            showDialogOverlay: true
+        });
+    }
+
+    protected showPersistentInfoDialogBox(message: string): void {
+        this.showDialogBox(message, "Uwaga", null, {
             showDialogOverlay: true
         });
     }
@@ -35,6 +43,7 @@ export class BaseViewModel {
                             callback: (boolean) => void = null, 
                             options: {
                                 showCancelButton?: boolean; 
+                                showOkButton?: boolean;
                                 showDialogOverlay?: boolean;
                                 cancelButtonText?: string;
                                 okButtonText?: string
@@ -58,9 +67,13 @@ export class BaseViewModel {
         dialogboxbody.html(message);
 
         cancelButton.hide();
+        okButton.hide();
         if (options) {
             if (options.showCancelButton) {
                 cancelButton.show();
+            }
+            if (options.showOkButton) {
+                okButton.show();
             }
             if (options.cancelButtonText) {
                 cancelButton.text(options.cancelButtonText);

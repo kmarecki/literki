@@ -36,11 +36,17 @@ export class GameRun_Server extends literki.GameRun {
     }
 
     approveMove(approve: Boolean): string {
+        var move = this.getActualMove();
+
         if (this.isNextPlayer()) {
+            move.freeLetters.forEach(fl => {
+                this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
+            });
+
             if (approve) {
-                this.updateStateAfterPlayerAction(this.getActualMove(), PlayerActionType.MoveApproval);
+                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveApproval);
             } else {
-                this.updateStateAfterPlayerAction(this.getActualMove(), PlayerActionType.MoveCheck);
+                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck);
             }
             return null;
         }
@@ -155,21 +161,22 @@ export class GameRun_Server extends literki.GameRun {
                 break;
             }
             case PlayerActionType.MoveApproval: {
-                this.state.currentMove = null;
                 this.state.playState = literki.GamePlayState.PlayerMove;
                 this.updateStateAfterMove(literki.MoveType.Move);
+                this.state.currentMove = null;
                 break;
             }
             case PlayerActionType.MoveCheck: {
-                this.state.currentMove = null;
                 this.state.playState = literki.GamePlayState.PlayerMove;
                 if (_.any(this.getNewWords(), w => !this.isValidWord(w.word))) {
                     //False Move
                     move.freeLetters.forEach(l => this.getCurrentPlayer().freeLetters.push(l.letter));
                     this.updateStateAfterMove(literki.MoveType.WrongMove);
+                    this.state.currentMove = null;
                 } else {
                     //Good Move
                     this.updateStateAfterMove(literki.MoveType.Move);
+                    this.state.currentMove = null;
                     //Player must be skipped because the validation was correct
                     this.updateStateAfterMove(literki.MoveType.CheckMoveFailed);
                 }

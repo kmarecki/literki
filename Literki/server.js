@@ -147,6 +147,7 @@ function simpleGameMethodCall(req, res, call, gameId) {
 app.post('/game/alive', auth, function (req, res) {
     var gameId = req.body.gameId;
     var currentPlayerId = req.body.currentPlayerId;
+    var playState = req.body.playState;
     var userId = req.user.id;
     repo.loadState(gameId, function (err, state) {
         var errorMessages = '';
@@ -156,9 +157,9 @@ app.post('/game/alive', auth, function (req, res) {
         }
         else {
             var currentPlayer = state.players[state.currentPlayerIndex];
-            var forceRefresh = currentPlayer.userId != currentPlayerId;
+            var forceRefresh = currentPlayer.userId != currentPlayerId || state.playState != playState;
             var remainingTime = currentPlayer.remainingTime;
-            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running && state.playState == literki.GamePlayState.PlayerMove) {
+            if (currentPlayer.userId == userId && state.runState == 1 /* Running */ && state.playState == 0 /* PlayerMove */) {
                 if (remainingTime > 0) {
                     remainingTime--;
                     state.players[state.currentPlayerIndex].remainingTime = remainingTime;
