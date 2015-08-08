@@ -52,6 +52,20 @@ block body
                           td(colspan='2')
                             label.center(data-bind='text: points')
                   // /ko
+            #historyDiv
+              table.tableBorders
+                thead
+                  tr
+                    th(data-bind='attr: { colspan: getAllPlayers().length }') Historia
+                  tr(data-bind='foreach:  getAllPlayers()')
+                    th.tableBorders
+                      label(data-bind='text: playerName')
+                tbody
+                  // ko foreach: historyMoves
+                  tr(data-bind='foreach: playerMoves')
+                    td.tableBorders
+                      label(data-bind='text: $data')
+                  // /ko
             #messageDiv
               p(data-bind='text: errorMessage') Test
             #buttonsDiv

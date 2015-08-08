@@ -377,6 +377,15 @@ class PlayerViewModel {
 
 }
 
+class MoveHistoryViewModel {
+
+    playerMoves = ko.observableArray();
+
+    constructor(moves: string[]) {
+        moves.forEach(m => this.playerMoves.push(m));
+    }
+}
+
 class BoardViewModel extends App.BaseViewModel {
 
     private self = this;
@@ -386,6 +395,7 @@ class BoardViewModel extends App.BaseViewModel {
 
     board: Board;
     errorMessage = ko.observable("");
+    historyMoves = ko.observableArray<MoveHistoryViewModel>();
 
 
     setNewWords(newWords: BoardViewModelWord[]): void {
@@ -403,6 +413,10 @@ class BoardViewModel extends App.BaseViewModel {
     }
     private cleanChangeLetters(): void {
         this.changeLetters("");
+    }
+
+    getAllPlayers(): PlayerViewModel[]{
+        return this.getPlayers(0, game.getPlayers().length);
     }
         
     getPlayers(start: number, end: number): PlayerViewModel[] {
@@ -564,16 +578,19 @@ class BoardViewModel extends App.BaseViewModel {
             game.runState(state);
             this.cleanNewWords();
             this.cleanChangeLetters();
+            this.refreshHistoryMoves();
 
-            this.hideDialogBox();
-            if (game.canApproveMove()) {
-                this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`,(result) => {
-                    this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
-                });
-            }
+            if (!result.errorMessage) {
+                this.hideDialogBox();
+                if (game.canApproveMove()) {
+                    this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`, (result) => {
+                        this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
+                    });
+                }
 
-            if (game.isWaitingForMoveApproval()) {
-                this.showPersistentInfoDialogBox(`Oczekiwanie na akceptację ruchu przez gracza ${game.getNextPlayer().playerName}.`);
+                if (game.isWaitingForMoveApproval()) {
+                    this.showPersistentInfoDialogBox(`Oczekiwanie na akceptację ruchu przez gracza ${game.getNextPlayer().playerName}.`);
+                }
             }
         }
     }
@@ -581,6 +598,43 @@ class BoardViewModel extends App.BaseViewModel {
     private refreshPlayerModels(): void {
         if (game != null) {
             this.allPlayers.forEach(p => p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()));
+        }
+    }
+
+    private refreshHistoryMoves(): void {
+        this.historyMoves.removeAll();
+        var players = game.getPlayers();
+        var moves = new Array<MoveHistoryViewModel>();
+        var moveIndex = 0;
+        var lastMove = _.max(players, p => p.moves.length).moves.length;
+        while (moveIndex < lastMove) {
+            var playerMoves = new Array<string>();
+            players.forEach(p => {
+                var moveDesc = ""
+                var move = p.moves.length > moveIndex ?
+                    p.moves[moveIndex] :
+                    null;
+                if (move) {
+                    switch (move.moveType) {
+                        case Literki.MoveType.Exchange: moveDesc = "Wymiana"; break;
+                        case Literki.MoveType.Fold: moveDesc = "Pas"; break;
+                        case Literki.MoveType.WrongMove: moveDesc = "Błędny ruch"; break;
+                        case Literki.MoveType.CheckMoveFailed: moveDesc = "Błędne sprawdzenie"; break;
+                        case Literki.MoveType.Move: {
+                            var sum = move.words.length > 0 ?
+                                move.words.map(w => w.points).reduce((total, x) => total += x) :
+                                0;
+                            moveDesc = `${sum} `;
+                            break;
+                        }
+                    }
+                }
+
+                playerMoves.push(moveDesc);
+            });
+            var moveModel = new MoveHistoryViewModel(playerMoves);
+            this.historyMoves.push(moveModel);
+            moveIndex++;
         }
     }
 }

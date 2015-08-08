@@ -317,6 +317,14 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         };
         return PlayerViewModel;
     })();
+    var MoveHistoryViewModel = (function () {
+        function MoveHistoryViewModel(moves) {
+            var _this = this;
+            this.playerMoves = ko.observableArray();
+            moves.forEach(function (m) { return _this.playerMoves.push(m); });
+        }
+        return MoveHistoryViewModel;
+    })();
     var BoardViewModel = (function (_super) {
         __extends(BoardViewModel, _super);
         function BoardViewModel() {
@@ -326,6 +334,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.changeLetters = ko.observable("");
             this.allPlayers = new Array();
             this.errorMessage = ko.observable("");
+            this.historyMoves = ko.observableArray();
         }
         BoardViewModel.prototype.setNewWords = function (newWords) {
             var _this = this;
@@ -341,6 +350,9 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         };
         BoardViewModel.prototype.cleanChangeLetters = function () {
             this.changeLetters("");
+        };
+        BoardViewModel.prototype.getAllPlayers = function () {
+            return this.getPlayers(0, game.getPlayers().length);
         };
         BoardViewModel.prototype.getPlayers = function (start, end) {
             var _this = this;
@@ -489,20 +501,62 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 game.runState(state);
                 this.cleanNewWords();
                 this.cleanChangeLetters();
-                this.hideDialogBox();
-                if (game.canApproveMove()) {
-                    this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
-                        _this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
-                    });
-                }
-                if (game.isWaitingForMoveApproval()) {
-                    this.showPersistentInfoDialogBox("Oczekiwanie na akceptację ruchu przez gracza " + game.getNextPlayer().playerName + ".");
+                this.refreshHistoryMoves();
+                if (!result.errorMessage) {
+                    this.hideDialogBox();
+                    if (game.canApproveMove()) {
+                        this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
+                            _this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
+                        });
+                    }
+                    if (game.isWaitingForMoveApproval()) {
+                        this.showPersistentInfoDialogBox("Oczekiwanie na akceptację ruchu przez gracza " + game.getNextPlayer().playerName + ".");
+                    }
                 }
             }
         };
         BoardViewModel.prototype.refreshPlayerModels = function () {
             if (game != null) {
                 this.allPlayers.forEach(function (p) { return p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()); });
+            }
+        };
+        BoardViewModel.prototype.refreshHistoryMoves = function () {
+            this.historyMoves.removeAll();
+            var players = game.getPlayers();
+            var moves = new Array();
+            var moveIndex = 0;
+            var lastMove = _.max(players, function (p) { return p.moves.length; }).moves.length;
+            while (moveIndex < lastMove) {
+                var playerMoves = new Array();
+                players.forEach(function (p) {
+                    var moveDesc = "";
+                    var move = p.moves.length > moveIndex ? p.moves[moveIndex] : null;
+                    if (move) {
+                        switch (move.moveType) {
+                            case 2 /* Exchange */:
+                                moveDesc = "Wymiana";
+                                break;
+                            case 1 /* Fold */:
+                                moveDesc = "Pas";
+                                break;
+                            case 3 /* WrongMove */:
+                                moveDesc = "Błędny ruch";
+                                break;
+                            case 4 /* CheckMoveFailed */:
+                                moveDesc = "Błędne sprawdzenie";
+                                break;
+                            case 0 /* Move */: {
+                                var sum = move.words.length > 0 ? move.words.map(function (w) { return w.points; }).reduce(function (total, x) { return total += x; }) : 0;
+                                moveDesc = "" + sum + " ";
+                                break;
+                            }
+                        }
+                    }
+                    playerMoves.push(moveDesc);
+                });
+                var moveModel = new MoveHistoryViewModel(playerMoves);
+                this.historyMoves.push(moveModel);
+                moveIndex++;
             }
         };
         return BoardViewModel;

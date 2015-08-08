@@ -196,7 +196,7 @@ export class GameRun_Server extends literki.GameRun {
 
     private isValidWord(word: string): boolean {
         //Dummy validation for tests
-        return true;
+        return false;
     }
 
     private nextPlayer(): void {

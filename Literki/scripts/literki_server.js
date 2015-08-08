@@ -1,5 +1,5 @@
 ///<reference path="..\typings\underscore\underscore.d.ts"/>
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -36,7 +36,7 @@ var GameRun_Server = (function (_super) {
                 var index = playersFreeLetters.indexOf(fl.letter);
                 playersFreeLetters.splice(index, 1);
             });
-            this.updateStateAfterPlayerAction(move, 0 /* Move */);
+            this.updateStateAfterPlayerAction(move, PlayerActionType.Move);
             return null;
         }
         return this.UNATHORIZED_ACCESS;
@@ -49,17 +49,17 @@ var GameRun_Server = (function (_super) {
                 _this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
             });
             if (approve) {
-                this.updateStateAfterPlayerAction(move, 1 /* MoveApproval */);
+                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveApproval);
             }
             else {
-                this.updateStateAfterPlayerAction(move, 2 /* MoveCheck */);
+                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck);
             }
             return null;
         }
         return this.UNATHORIZED_ACCESS;
     };
     GameRun_Server.prototype.addPlayer = function (player) {
-        if (this.state.runState == 0 /* Created */) {
+        if (this.state.runState == literki.GameRunState.Created) {
             var res = _.find(this.state.players, function (p) { return p.userId == player.userId; });
             if (res == null) {
                 this.state.players.push(player);
@@ -71,7 +71,7 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.join = function () {
         var _this = this;
-        if (this.state.runState == 0 /* Created */) {
+        if (this.state.runState == literki.GameRunState.Created) {
             var res = _.find(this.state.players, function (p) { return p.userId == _this.currentUserId; });
             if (res == null) {
                 var newPlayer = new literki.GamePlayer();
@@ -88,9 +88,9 @@ var GameRun_Server = (function (_super) {
             if (this.state.players.length < 2) {
                 return "Za mało graczy do rozpoczęcia gry";
             }
-            if (this.state.runState == 0 /* Created */ || 2 /* Paused */) {
-                this.state.runState = 1 /* Running */;
-                this.state.playState = 0 /* PlayerMove */;
+            if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
+                this.state.runState = literki.GameRunState.Running;
+                this.state.playState = literki.GamePlayState.PlayerMove;
             }
             else {
                 return "Nie można rozpocząć gry";
@@ -101,8 +101,8 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.pause = function () {
         if (this.isGameOwner()) {
-            if (this.state.runState == 1 /* Running */) {
-                this.state.runState = 2 /* Paused */;
+            if (this.state.runState == literki.GameRunState.Running) {
+                this.state.runState = literki.GameRunState.Paused;
             }
             else {
                 return "Nie można zatrzymać gry";
@@ -113,7 +113,7 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.fold = function () {
         if (this.isCurrentPlayer()) {
-            this.updateStateAfterMove(1 /* Fold */);
+            this.updateStateAfterMove(literki.MoveType.Fold);
             return null;
         }
         return this.UNATHORIZED_ACCESS;
@@ -126,7 +126,7 @@ var GameRun_Server = (function (_super) {
             var freeLetters = this.getCurrentPlayer().freeLetters;
             exchangeLetters.forEach(function (letter) { return freeLetters = _.filter(freeLetters, function (l) { return l == letter; }); });
             this.getCurrentPlayer().freeLetters = freeLetters;
-            this.updateStateAfterMove(2 /* Exchange */);
+            this.updateStateAfterMove(literki.MoveType.Exchange);
             return null;
         }
         return this.UNATHORIZED_ACCESS;
@@ -154,31 +154,31 @@ var GameRun_Server = (function (_super) {
     GameRun_Server.prototype.updateStateAfterPlayerAction = function (move, actionType) {
         var _this = this;
         switch (actionType) {
-            case 0 /* Move */: {
+            case PlayerActionType.Move: {
                 this.state.currentMove = move;
-                this.state.playState = 1 /* MoveApproval */;
+                this.state.playState = literki.GamePlayState.MoveApproval;
                 break;
             }
-            case 1 /* MoveApproval */: {
-                this.state.playState = 0 /* PlayerMove */;
-                this.updateStateAfterMove(0 /* Move */);
+            case PlayerActionType.MoveApproval: {
+                this.state.playState = literki.GamePlayState.PlayerMove;
+                this.updateStateAfterMove(literki.MoveType.Move);
                 this.state.currentMove = null;
                 break;
             }
-            case 2 /* MoveCheck */: {
-                this.state.playState = 0 /* PlayerMove */;
+            case PlayerActionType.MoveCheck: {
+                this.state.playState = literki.GamePlayState.PlayerMove;
                 if (_.any(this.getNewWords(), function (w) { return !_this.isValidWord(w.word); })) {
                     //False Move
                     move.freeLetters.forEach(function (l) { return _this.getCurrentPlayer().freeLetters.push(l.letter); });
-                    this.updateStateAfterMove(3 /* WrongMove */);
+                    this.updateStateAfterMove(literki.MoveType.WrongMove);
                     this.state.currentMove = null;
                 }
                 else {
                     //Good Move
-                    this.updateStateAfterMove(0 /* Move */);
+                    this.updateStateAfterMove(literki.MoveType.Move);
                     this.state.currentMove = null;
                     //Player must be skipped because the validation was correct
-                    this.updateStateAfterMove(4 /* CheckMoveFailed */);
+                    this.updateStateAfterMove(literki.MoveType.CheckMoveFailed);
                 }
                 break;
             }
@@ -194,7 +194,7 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.isValidWord = function (word) {
         //Dummy validation for tests
-        return true;
+        return false;
     };
     GameRun_Server.prototype.nextPlayer = function () {
         this.pickLetters(this.state.currentPlayerIndex);
