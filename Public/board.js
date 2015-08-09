@@ -563,12 +563,6 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
     })(App.BaseViewModel);
     function init() {
         $.ajaxSetup({ cache: false });
-        var boardDiv = document.getElementById("boardDiv");
-        boardDiv.style.width = screen.availWidth / 2 + "px";
-        boardDiv.style.height = screen.availHeight * 0.85 + "px";
-        var infoDiv = document.getElementById("infoDiv");
-        infoDiv.style.width = screen.availWidth / 2 - 50 + "px";
-        infoDiv.style.height = boardDiv.style.height;
         var debugLabel = document.getElementById("debugLabel");
         setupDisplay(screen.availHeight / 20);
         viewModel = new BoardViewModel();

@@ -643,14 +643,6 @@ export function init(): void {
 
     $.ajaxSetup({ cache: false });
 
-    var boardDiv = <HTMLElement>document.getElementById("boardDiv");
-    boardDiv.style.width = screen.availWidth / 2 + "px";
-    boardDiv.style.height = screen.availHeight * 0.85 + "px";
-
-    var infoDiv = <HTMLElement>document.getElementById("infoDiv");
-    infoDiv.style.width = screen.availWidth / 2 - 50 + "px";
-    infoDiv.style.height = boardDiv.style.height;
-
     var debugLabel = <HTMLLabelElement>document.getElementById("debugLabel");
 
     setupDisplay(screen.availHeight / 20);

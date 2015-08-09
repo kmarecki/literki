@@ -8,70 +8,67 @@ block scripts
     script(src='scripts/require.js', data-main='board-conf')
 
 block body
+
+  #boardDiv
+  #infoDiv
+    h1.center Literki
+    br
+    label#debugLabel
     table
-      tr
-        td
-          #boardDiv
-        td
-          #infoDiv
-            h1.center Literki
-            br
-            label#debugLabel
-            table
-              thead
-                tr
-                  th Słowo
-                  th Punkty
-              tbody(data-bind='foreach: newWords')
+      thead
+        tr
+          th Słowo
+          th Punkty
+      tbody(data-bind='foreach: newWords')
+        tr
+          td
+            label(data-bind='text: word')
+          td
+            label(data-bind='text: points')
+    table
+      thead
+        tr
+          th Literki do wymiany
+      tbody
+        tr
+          td
+            label(data-bind='text: changeLetters')
+    table
+      tbody(data-bind='foreach: getPlayersRow()')
+        tr
+          // ko foreach: $parent.getPlayers($data * 2, ($data + 1) * 2)
+          td
+            div(data-bind="css: isCurrentUser() ? 'activeplayerDiv' : 'playerDiv'")
+              table
                 tr
                   td
-                    label(data-bind='text: word')
+                    label(data-bind="css: isCurrentPlayer() ? 'left underline' : 'left', text: playerName")
                   td
-                    label(data-bind='text: points')
-            table
-              thead
+                    label(data-bind="css: isCurrentPlayer() ? 'left underline' : 'left', text: remainingTime")
                 tr
-                  th Literki do wymiany
-              tbody
-                tr
-                  td
-                    label(data-bind='text: changeLetters')
-            table
-              tbody(data-bind='foreach: getPlayersRow()')
-                tr
-                  // ko foreach: $parent.getPlayers($data * 2, ($data + 1) * 2)
-                  td
-                    div(data-bind="css: isCurrentUser() ? 'activeplayerDiv' : 'playerDiv'")
-                      table
-                        tr
-                          td
-                            label(data-bind="css: isCurrentPlayer() ? 'left underline' : 'left', text: playerName")
-                          td
-                            label(data-bind="css: isCurrentPlayer() ? 'left underline' : 'left', text: remainingTime")
-                        tr
-                          td(colspan='2')
-                            label.center(data-bind='text: points')
-                  // /ko
-            #historyDiv
-              table.tableBorders
-                thead
-                  tr
-                    th(data-bind='attr: { colspan: getAllPlayers().length }') Historia
-                  tr(data-bind='foreach:  getAllPlayers()')
-                    th.tableBorders
-                      label(data-bind='text: playerName')
-                tbody
-                  // ko foreach: historyMoves
-                  tr(data-bind='foreach: playerMoves')
-                    td.tableBorders
-                      label(data-bind='text: $data')
-                  // /ko
-            #messageDiv
-              p(data-bind='text: errorMessage') Test
-            #buttonsDiv
-              button.commandButton(data-bind='click: refreshClick') Odśwież
-              button.commandButton(data-bind='click: startClick') Start
-              button.commandButton(data-bind='click: pauseClick') Pauza
-              button.commandButton(data-bind='click: foldClick') Pas
-              button.commandButton(data-bind='click: exchangeClick') Wymień literki
-              button.commandButton(data-bind='click: moveClick') Połóż literki
+                  td(colspan='2')
+                    label.center(data-bind='text: points')
+          // /ko
+    #historyDiv
+      table.tableBorders
+        thead
+          tr
+            th(data-bind='attr: { colspan: getAllPlayers().length }') Historia
+          tr(data-bind='foreach:  getAllPlayers()')
+            th.tableBorders
+              label(data-bind='text: playerName')
+        tbody
+          // ko foreach: historyMoves
+          tr(data-bind='foreach: playerMoves')
+            td.tableBorders
+              label(data-bind='text: $data')
+          // /ko
+    #messageDiv
+      p(data-bind='text: errorMessage') Test
+    #buttonsDiv
+      button.commandButton(data-bind='click: refreshClick') Odśwież
+      button.commandButton(data-bind='click: startClick') Start
+      button.commandButton(data-bind='click: pauseClick') Pauza
+      button.commandButton(data-bind='click: foldClick') Pas
+      button.commandButton(data-bind='click: exchangeClick') Wymień literki
+      button.commandButton(data-bind='click: moveClick') Połóż literki
