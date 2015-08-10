@@ -68,76 +68,34 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                 this.fields[i] = new Array(exports.ROW_SIZE);
             }
             this.addFieldBonus([
-                { x: 3, y: 0 },
-                { x: 11, y: 0 },
-                { x: 6, y: 2 },
-                { x: 8, y: 2 },
-                { x: 0, y: 3 },
-                { x: 7, y: 3 },
-                { x: 14, y: 3 },
-                { x: 2, y: 6 },
-                { x: 6, y: 6 },
-                { x: 8, y: 6 },
-                { x: 12, y: 6 },
-                { x: 3, y: 7 },
-                { x: 11, y: 7 },
-                { x: 2, y: 8 },
-                { x: 6, y: 8 },
-                { x: 8, y: 8 },
-                { x: 12, y: 8 },
-                { x: 0, y: 11 },
-                { x: 7, y: 11 },
-                { x: 14, y: 11 },
-                { x: 3, y: 14 },
-                { x: 11, y: 14 },
-                { x: 6, y: 12 },
-                { x: 8, y: 12 }
-            ], 1 /* DoubleLetter */);
+                { x: 3, y: 0 }, { x: 11, y: 0 }, { x: 6, y: 2 }, { x: 8, y: 2 },
+                { x: 0, y: 3 }, { x: 7, y: 3 }, { x: 14, y: 3 },
+                { x: 2, y: 6 }, { x: 6, y: 6 }, { x: 8, y: 6 }, { x: 12, y: 6 },
+                { x: 3, y: 7 }, { x: 11, y: 7 },
+                { x: 2, y: 8 }, { x: 6, y: 8 }, { x: 8, y: 8 }, { x: 12, y: 8 },
+                { x: 0, y: 11 }, { x: 7, y: 11 }, { x: 14, y: 11 },
+                { x: 3, y: 14 }, { x: 11, y: 14 }, { x: 6, y: 12 }, { x: 8, y: 12 }
+            ], BoardFieldBonus.DoubleLetter);
             this.addFieldBonus([
-                { x: 5, y: 1 },
-                { x: 9, y: 1 },
-                { x: 1, y: 5 },
-                { x: 5, y: 5 },
-                { x: 9, y: 5 },
-                { x: 13, y: 5 },
-                { x: 1, y: 9 },
-                { x: 5, y: 9 },
-                { x: 9, y: 9 },
-                { x: 13, y: 9 },
-                { x: 5, y: 13 },
-                { x: 9, y: 13 },
-            ], 2 /* TripleLetter */);
+                { x: 5, y: 1 }, { x: 9, y: 1 },
+                { x: 1, y: 5 }, { x: 5, y: 5 }, { x: 9, y: 5 }, { x: 13, y: 5 },
+                { x: 1, y: 9 }, { x: 5, y: 9 }, { x: 9, y: 9 }, { x: 13, y: 9 },
+                { x: 5, y: 13 }, { x: 9, y: 13 },
+            ], BoardFieldBonus.TripleLetter);
             this.addFieldBonus([
-                { x: 1, y: 1 },
-                { x: 13, y: 1 },
-                { x: 2, y: 2 },
-                { x: 12, y: 2 },
-                { x: 3, y: 3 },
-                { x: 11, y: 3 },
-                { x: 4, y: 4 },
-                { x: 10, y: 4 },
-                { x: 4, y: 10 },
-                { x: 10, y: 10 },
-                { x: 3, y: 11 },
-                { x: 11, y: 11 },
-                { x: 2, y: 12 },
-                { x: 12, y: 12 },
-                { x: 1, y: 13 },
-                { x: 13, y: 13 }
-            ], 3 /* DoubleWord */);
+                { x: 1, y: 1 }, { x: 13, y: 1 }, { x: 2, y: 2 }, { x: 12, y: 2 },
+                { x: 3, y: 3 }, { x: 11, y: 3 }, { x: 4, y: 4 }, { x: 10, y: 4 },
+                { x: 4, y: 10 }, { x: 10, y: 10 }, { x: 3, y: 11 }, { x: 11, y: 11 },
+                { x: 2, y: 12 }, { x: 12, y: 12 }, { x: 1, y: 13 }, { x: 13, y: 13 }
+            ], BoardFieldBonus.DoubleWord);
             this.addFieldBonus([
-                { x: 0, y: 0 },
-                { x: 7, y: 0 },
-                { x: 14, y: 0 },
-                { x: 0, y: 7 },
-                { x: 14, y: 7 },
-                { x: 0, y: 14 },
-                { x: 7, y: 14 },
-                { x: 14, y: 14 }
-            ], 4 /* TripleWord */);
+                { x: 0, y: 0 }, { x: 7, y: 0 }, { x: 14, y: 0 },
+                { x: 0, y: 7 }, { x: 14, y: 7 },
+                { x: 0, y: 14 }, { x: 7, y: 14 }, { x: 14, y: 14 }
+            ], BoardFieldBonus.TripleWord);
             this.addFieldBonus([
                 { x: 7, y: 7 }
-            ], 5 /* Start */);
+            ], BoardFieldBonus.Start);
         }
         BoardFields.prototype.addFieldBonus = function (fields, bonus) {
             var _this = this;
@@ -149,7 +107,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             return this.fields[x][y] != null ? this.fields[x][y] : (this.fields[x][y] = new BoardField());
         };
         BoardFields.prototype.getFieldBonus = function (x, y) {
-            return this.fields[x][y] != null ? this.fields[x][y].fieldBonus : 0 /* None */;
+            return this.fields[x][y] != null ? this.fields[x][y].fieldBonus : BoardFieldBonus.None;
         };
         BoardFields.prototype.getFieldValue = function (x, y) {
             return this.fields[x][y] != null ? this.fields[x][y].value : null;
@@ -160,8 +118,8 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
         };
         BoardFields.prototype.addWord = function (word, x, y, direction) {
             for (var i = 0; i < word.length; i++) {
-                var fieldX = x + (direction == 1 /* Horizontal */ ? i : 0);
-                var fieldY = y + (direction == 0 /* Vertical */ ? i : 0);
+                var fieldX = x + (direction == GameMoveDirection.Horizontal ? i : 0);
+                var fieldY = y + (direction == GameMoveDirection.Vertical ? i : 0);
                 this.setFieldValue(fieldX, fieldY, word.charAt(i));
             }
         };
@@ -180,7 +138,10 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             if (word == null) {
                 return false;
             }
-            var result = this.word == word.word && this.x == word.x && this.y == word.y && this.direction == word.direction;
+            var result = this.word == word.word &&
+                this.x == word.x &&
+                this.y == word.y &&
+                this.direction == word.direction;
             return result;
         };
         return GameWord;
@@ -325,7 +286,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             position.positionType = positionType;
         };
         FreeLetters.prototype.getAllLetters = function (positionType) {
-            if (positionType === void 0) { positionType = 0 /* BoardField */; }
+            if (positionType === void 0) { positionType = LetterPositionType.BoardField; }
             return this.freeLetters.filter(function (letter) { return letter.positionType == positionType; });
         };
         FreeLetters.prototype.removeLetter = function (letter, index) {
@@ -391,11 +352,11 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
         GameRun.prototype.putLetterOnBoard = function (letter, index, x, y) {
             this.cleanLetterOnBoard(letter, index);
             this.board.setFieldValue(x, y, letter);
-            this.freeLetters.setLetter(letter, index, x, y, 0 /* BoardField */);
+            this.freeLetters.setLetter(letter, index, x, y, LetterPositionType.BoardField);
         };
         GameRun.prototype.addLetterToExchange = function (letter, index) {
             this.cleanLetterOnBoard(letter, index);
-            this.freeLetters.setLetter(letter, index, -1, -1, 1 /* ExchangeLetter */);
+            this.freeLetters.setLetter(letter, index, -1, -1, LetterPositionType.ExchangeLetter);
         };
         GameRun.prototype.removeLetter = function (letter, index) {
             this.cleanLetterOnBoard(letter, index);
@@ -403,12 +364,12 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
         };
         GameRun.prototype.cleanLetterOnBoard = function (letter, index) {
             var oldPosition = this.freeLetters.getLetter(letter, index);
-            if (oldPosition != null && oldPosition.positionType == 0 /* BoardField */) {
+            if (oldPosition != null && oldPosition.positionType == LetterPositionType.BoardField) {
                 this.board.setFieldValue(oldPosition.x, oldPosition.y, null);
             }
         };
         GameRun.prototype.getExchangeLetters = function () {
-            return this.freeLetters.getAllLetters(1 /* ExchangeLetter */).map(function (pos) { return pos.letter; });
+            return this.freeLetters.getAllLetters(LetterPositionType.ExchangeLetter).map(function (pos) { return pos.letter; });
         };
         GameRun.prototype.getNewWords = function () {
             var _this = this;
@@ -421,6 +382,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                 var y = letter.y;
                 var xWord = letter.x - 1;
                 var yWord = letter.y;
+                //search left
                 while (x > 0) {
                     searchLetter = _this.board.getFieldValue(x, y);
                     if (searchLetter != null) {
@@ -443,13 +405,14 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                         break;
                 }
                 if (word.length > 1) {
-                    gameWord = _this.createGameWord(word, xWord, y, 1 /* Horizontal */);
+                    gameWord = _this.createGameWord(word, xWord, y, GameMoveDirection.Horizontal);
                     _this.addGameWord(words, gameWord);
                 }
                 //check vertical
                 word = letter.letter;
                 var x = letter.x;
                 var y = letter.y - 1;
+                //search up
                 while (y > 0) {
                     searchLetter = _this.board.getFieldValue(x, y);
                     if (searchLetter != null) {
@@ -472,7 +435,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                         break;
                 }
                 if (word.length > 1) {
-                    var gameWord = _this.createGameWord(word, x, yWord, 0 /* Vertical */);
+                    var gameWord = _this.createGameWord(word, x, yWord, GameMoveDirection.Vertical);
                     _this.addGameWord(words, gameWord);
                 }
             });
@@ -486,10 +449,14 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             return { gameId: this.state.gameId, freeLetters: freeLetters };
         };
         GameRun.prototype.canApproveMove = function () {
-            return (this.isNextPlayer() && this.state.runState == 1 /* Running */ && this.state.playState == 1 /* MoveApproval */);
+            return (this.isNextPlayer() &&
+                this.state.runState == GameRunState.Running &&
+                this.state.playState == GamePlayState.MoveApproval);
         };
         GameRun.prototype.isWaitingForMoveApproval = function () {
-            return (this.isCurrentPlayer() && this.state.runState == 1 /* Running */ && this.state.playState == 1 /* MoveApproval */);
+            return (this.isCurrentPlayer() &&
+                this.state.runState == GameRunState.Running &&
+                this.state.playState == GamePlayState.MoveApproval);
         };
         GameRun.prototype.createGameWord = function (word, x, y, direction) {
             var points = this.countPoints(x, y, word.length, direction);
@@ -506,24 +473,24 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             var points = 0;
             var wordBonus = 1;
             for (var i = 0; i < length; i++) {
-                var fieldx = x + (direction == 1 /* Horizontal */ ? i : 0);
-                var fieldy = y + (direction == 0 /* Vertical */ ? i : 0);
+                var fieldx = x + (direction == GameMoveDirection.Horizontal ? i : 0);
+                var fieldy = y + (direction == GameMoveDirection.Vertical ? i : 0);
                 var letter = this.board.getFieldValue(fieldx, fieldy);
                 var basePoints = exports.LETTERS[letter].points;
                 if (this.freeLetters.exists(fieldx, fieldy)) {
                     var bonus = this.board.getFieldBonus(fieldx, fieldy);
                     switch (bonus) {
-                        case 1 /* DoubleLetter */:
+                        case BoardFieldBonus.DoubleLetter:
                             basePoints *= 2;
                             break;
-                        case 2 /* TripleLetter */:
+                        case BoardFieldBonus.TripleLetter:
                             basePoints *= 3;
                             break;
-                        case 5 /* Start */:
-                        case 3 /* DoubleWord */:
+                        case BoardFieldBonus.Start:
+                        case BoardFieldBonus.DoubleWord:
                             wordBonus *= 2;
                             break;
-                        case 4 /* TripleWord */:
+                        case BoardFieldBonus.TripleWord:
                             wordBonus *= 3;
                             break;
                     }

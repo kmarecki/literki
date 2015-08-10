@@ -50,6 +50,13 @@ class Board {
     }
 
     private setupDisplay(): void {
+        var containerElem = $("#" + this.container);
+        var padding = containerElem.outerWidth() - containerElem.innerWidth();
+        this.stage.setSize({
+            width: containerElem.width() - padding,
+            height: containerElem.height() - padding
+        });
+
         this.FIELD_SIZE = this.stage.width() / (Literki.ROW_SIZE + 1);
         this.LINE_WIDTH = this.FIELD_SIZE / 15;
         this.BOARD_SIZE = this.FIELD_SIZE * Literki.ROW_SIZE;
@@ -64,11 +71,6 @@ class Board {
             return;
         }
 
-        var containerElem = document.getElementById(this.container);
-        this.stage.setSize({
-            width: containerElem.clientWidth,
-            height: containerElem.clientHeight
-        });
         this.setupDisplay();
 
         //For drawing star on start field
@@ -616,6 +618,7 @@ class BoardViewModel extends App.BaseViewModel {
         this.historyMoves.removeAll();
         var players = game.getPlayers();
         var moves = new Array<MoveHistoryViewModel>();
+        var movesTotals: { [id: string]: number } = {};
         var moveIndex = 0;
         var lastMove = _.max(players, p => p.moves.length).moves.length;
         while (moveIndex < lastMove) {
@@ -626,21 +629,20 @@ class BoardViewModel extends App.BaseViewModel {
                     p.moves[moveIndex] :
                     null;
                 if (move) {
+                    var total = (p.userId in movesTotals) ? movesTotals[p.userId] : 0;
+                    var sum = move.words.length > 0 ?
+                        move.words.map(w => w.points).reduce((total, x) => total += x) :
+                        0;
+                    total += sum;
+                    movesTotals[p.userId] = total;
                     switch (move.moveType) {
-                        case Literki.MoveType.Exchange: moveDesc = "Wymiana"; break;
-                        case Literki.MoveType.Fold: moveDesc = "Pas"; break;
-                        case Literki.MoveType.WrongMove: moveDesc = "Błędny ruch"; break;
-                        case Literki.MoveType.CheckMoveFailed: moveDesc = "Błędne sprawdzenie"; break;
-                        case Literki.MoveType.Move: {
-                            var sum = move.words.length > 0 ?
-                                move.words.map(w => w.points).reduce((total, x) => total += x) :
-                                0;
-                            moveDesc = `${sum} `;
-                            break;
-                        }
+                        case Literki.MoveType.Exchange: moveDesc = `${total} (Wymiana)`; break;
+                        case Literki.MoveType.Fold: moveDesc = `${total } (Pas)`; break;
+                        case Literki.MoveType.WrongMove: moveDesc = `${total} (Błędny ruch)`; break;
+                        case Literki.MoveType.CheckMoveFailed: moveDesc = `${total} (Błędne sprawdzenie)`; break;
+                        case Literki.MoveType.Move: moveDesc = `${total} (${sum})`; break;
                     }
                 }
-
                 playerMoves.push(moveDesc);
             });
             var moveModel = new MoveHistoryViewModel(playerMoves);
