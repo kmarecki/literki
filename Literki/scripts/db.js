@@ -9,7 +9,7 @@ var GameRepository = (function () {
         this.connect();
     };
     GameRepository.prototype.allGames = function (callback) {
-        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, _id: 0 }, function (err, result) {
+        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, creationDate: 1, _id: 0 }, function (err, result) {
             if (err != null) {
                 console.log(err);
             }
@@ -22,6 +22,7 @@ var GameRepository = (function () {
             if (result != null) {
                 var newGameId = result != -1 ? result + 1 : 1;
                 state.gameId = newGameId;
+                state.creationDate = new Date();
                 state.runState = literki.GameRunState.Created;
                 _this.saveState(state, function (err) {
                     if (err == null) {
@@ -93,6 +94,7 @@ var GameRepository = (function () {
                 unique: true,
                 index: true
             },
+            creationDate: Date,
             runState: Number,
             playState: Number,
             currentPlayerIndex: Number,

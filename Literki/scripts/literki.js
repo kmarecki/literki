@@ -220,6 +220,7 @@ var GameState = (function () {
     GameState.fromJSON = function (json) {
         var state = new GameState();
         state.gameId = json.gameId;
+        state.creationDate = json.creationDate;
         state.runState = json.runState;
         state.playState = json.playState;
         state.currentPlayerIndex = json.currentPlayerIndex;
@@ -236,6 +237,7 @@ var GameState = (function () {
     GameState.prototype.toJSON = function () {
         var json = {
             gameId: this.gameId,
+            creationDate: this.creationDate,
             runState: this.runState,
             playState: this.playState,
             currentPlayerIndex: this.currentPlayerIndex,

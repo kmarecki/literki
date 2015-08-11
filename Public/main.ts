@@ -2,10 +2,12 @@
 import Literki = require('./scripts/literki');
 import ko = require('knockout');
 import $ = require('jquery');
+import moment = require('moment');
 
 class GameViewModel {
     gameId: number;
     runState: Literki.GameRunState;
+    creationDate: string;
     joinAction(): string {
         return this.runState == Literki.GameRunState.Created ? "Dołącz" : "Obserwuj";
     }
@@ -36,6 +38,7 @@ class MainViewModel extends App.BaseViewModel {
         games.forEach(g => {
             var gameModel = new GameViewModel();
             gameModel.gameId = g.gameId;
+            gameModel.creationDate = g.creationDate ? moment(g.creationDate).format("DD.MM.YYYY hh:mm") : "";
             gameModel.runState = g.runState;
             this.games.push(gameModel);
         });

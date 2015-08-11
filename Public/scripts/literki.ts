@@ -246,6 +246,7 @@ export enum GamePlayState {
 
 export interface IGameState {
     gameId: number;
+    creationDate: Date;
     runState: GameRunState;
     playState: GamePlayState;
     players: Array<IGamePlayer>;
@@ -256,6 +257,7 @@ export interface IGameState {
 
 export class GameState implements IGameState {
     gameId: number;
+    creationDate: Date;
     runState: GameRunState;
     playState: GamePlayState;
     players: Array<GamePlayer>;
@@ -274,6 +276,7 @@ export class GameState implements IGameState {
     static fromJSON(json: IGameState): GameState {
         var state = new GameState();
         state.gameId = json.gameId;
+        state.creationDate = json.creationDate;
         state.runState = json.runState;
         state.playState = json.playState;
         state.currentPlayerIndex = json.currentPlayerIndex;
@@ -292,6 +295,7 @@ export class GameState implements IGameState {
     toJSON(): IGameState {
         var json: IGameState = {
             gameId: this.gameId,
+            creationDate: this.creationDate,
             runState: this.runState,
             playState: this.playState,
             currentPlayerIndex: this.currentPlayerIndex,

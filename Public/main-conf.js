@@ -3,6 +3,7 @@
     paths: {
         knockout: "./scripts/knockout-3.2.0.debug",
         jquery: "./scripts/jquery",
+        moment: "./scripts/moment",
         underscore: "./scripts/underscore",
         main: "main"
     }

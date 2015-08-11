@@ -23,7 +23,7 @@ export class GameRepository {
     }
 
     allGames(callback: (err: Error, games: any) => any): void {
-        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, _id: 0 }, (err, result) => {
+        this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, creationDate: 1, _id: 0 }, (err, result) => {
             if (err != null) {
                 console.log(err);
             }
@@ -36,6 +36,7 @@ export class GameRepository {
             if (result != null) {
                 var newGameId = result != -1 ? result + 1 : 1;
                 state.gameId = newGameId;
+                state.creationDate = new Date();
                 state.runState = literki.GameRunState.Created;
                 this.saveState(state, (err) => {
                     if (err == null) {
@@ -109,6 +110,7 @@ export class GameRepository {
                 unique: true,
                 index: true
             },
+            creationDate: Date,
             runState: Number,
             playState: Number,
             currentPlayerIndex: Number,

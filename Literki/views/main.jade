@@ -7,14 +7,25 @@ block scripts
     script(src='scripts/require.js', data-main='main-conf',)
 
 block body
+    h3 Lista Gier
     table
       thead
         tr
-          th Lista gier
-      tbody(data-bind='foreach: games')
+          th Gra
+          th Data utworzenia
+          th 
+      tbody()
+        // ko foreach: games
         tr
           td
             a(data-bind="attr: { href: 'board.html?gameId=' + gameId }, text: gameId")
           td
-            a(data-bind="attr: { href: 'board.html?gameId=' + gameId + '&join=1'}, text: joinAction()")
-    a(href='board.html') Nowa gra
+            label(data-bind='text: creationDate')
+          td
+            a.button(data-bind="attr: { href: 'board.html?gameId=' + gameId + '&join=1'}, text: joinAction()")
+        // /ko
+        tr
+          td
+          td
+          td
+            a.button(href='board.html') Nowa gra

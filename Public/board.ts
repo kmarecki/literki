@@ -51,16 +51,15 @@ class Board {
 
     private setupDisplay(): void {
         var containerElem = $("#" + this.container);
-        var padding = containerElem.outerWidth() - containerElem.innerWidth();
         this.stage.setSize({
-            width: containerElem.width() - padding,
-            height: containerElem.height() - padding
+            width: containerElem.width(),
+            height: containerElem.height()
         });
 
-        this.FIELD_SIZE = this.stage.width() / (Literki.ROW_SIZE + 1);
+        this.FIELD_SIZE = this.stage.width() / (Literki.ROW_SIZE + 0.5);
         this.LINE_WIDTH = this.FIELD_SIZE / 15;
         this.BOARD_SIZE = this.FIELD_SIZE * Literki.ROW_SIZE;
-        this.BOARD_MARGIN = this.FIELD_SIZE / 2;
+        this.BOARD_MARGIN = this.FIELD_SIZE / 4;
         this.MAX_LINES = this.BOARD_MARGIN + this.BOARD_SIZE;
         this.LETTERS_TOP = this.MAX_LINES + 2 * this.BOARD_MARGIN;
         this.CHANGE_LETTERS_LEFT = this.BOARD_MARGIN + (Literki.MAX_LETTERS + 1) * this.FIELD_SIZE;
