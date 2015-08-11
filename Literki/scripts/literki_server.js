@@ -13,11 +13,20 @@ var PlayerActionType;
     PlayerActionType[PlayerActionType["MoveApproval"] = 1] = "MoveApproval";
     PlayerActionType[PlayerActionType["MoveCheck"] = 2] = "MoveCheck";
 })(PlayerActionType || (PlayerActionType = {}));
+var GameMethodResult = (function () {
+    function GameMethodResult(errorMessage) {
+        if (errorMessage === void 0) { errorMessage = null; }
+        this.errorMessage = errorMessage;
+    }
+    GameMethodResult.EMPTY = new GameMethodResult();
+    return GameMethodResult;
+})();
+exports.GameMethodResult = GameMethodResult;
 var GameRun_Server = (function (_super) {
     __extends(GameRun_Server, _super);
     function GameRun_Server() {
         _super.apply(this, arguments);
-        this.UNATHORIZED_ACCESS = "Gracz jest nieuprawniony do wykonania operacji";
+        this.UNATHORIZED_ACCESS = new GameMethodResult("Gracz jest nieuprawniony do wykonania operacji");
     }
     GameRun_Server.prototype.newGame = function (players) {
         var _this = this;
@@ -26,6 +35,17 @@ var GameRun_Server = (function (_super) {
         this.state.players = players.slice();
         this.state.remainingLetters = this.allLetters();
         this.state.players.forEach(function (p) { return _this.pickLetters(_this.state.players.indexOf(p)); });
+    };
+    GameRun_Server.prototype.alive = function () {
+        if (this.isCurrentPlayer() && this.state.runState == literki.GameRunState.Running && this.state.playState == literki.GamePlayState.PlayerMove) {
+            var remainingTime = this.getCurrentPlayer().remainingTime;
+            if (remainingTime > 0) {
+                remainingTime--;
+                this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+            }
+        }
+        this.getCurrentPlayer().lastSeen = new Date();
+        return GameMethodResult.EMPTY;
     };
     GameRun_Server.prototype.makeMove = function (move) {
         var _this = this;
@@ -37,7 +57,7 @@ var GameRun_Server = (function (_super) {
                 playersFreeLetters.splice(index, 1);
             });
             this.updateStateAfterPlayerAction(move, PlayerActionType.Move);
-            return null;
+            return GameMethodResult.EMPTY;
         }
         return this.UNATHORIZED_ACCESS;
     };
@@ -81,19 +101,19 @@ var GameRun_Server = (function (_super) {
                 this.addPlayer(newPlayer);
             }
         }
-        return null;
+        return GameMethodResult.EMPTY;
     };
     GameRun_Server.prototype.start = function () {
         if (this.isGameOwner()) {
             if (this.state.players.length < 2) {
-                return "Za mało graczy do rozpoczęcia gry";
+                return new GameMethodResult("Za mało graczy do rozpoczęcia gry");
             }
             if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
                 this.state.runState = literki.GameRunState.Running;
                 this.state.playState = literki.GamePlayState.PlayerMove;
             }
             else {
-                return "Nie można rozpocząć gry";
+                return new GameMethodResult("Nie można rozpocząć gry");
             }
             return null;
         }
@@ -105,7 +125,7 @@ var GameRun_Server = (function (_super) {
                 this.state.runState = literki.GameRunState.Paused;
             }
             else {
-                return "Nie można zatrzymać gry";
+                return new GameMethodResult("Nie można zatrzymać gry");
             }
             return null;
         }
@@ -121,7 +141,7 @@ var GameRun_Server = (function (_super) {
     GameRun_Server.prototype.exchange = function (exchangeLetters) {
         if (this.isCurrentPlayer()) {
             if (exchangeLetters == null || exchangeLetters.length == 0) {
-                return "Nie ma żadnych literek do wymiany";
+                return new GameMethodResult("Nie ma żadnych literek do wymiany");
             }
             var freeLetters = this.getCurrentPlayer().freeLetters;
             exchangeLetters.forEach(function (letter) { return freeLetters = _.filter(freeLetters, function (l) { return l == letter; }); });

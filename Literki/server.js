@@ -117,6 +117,14 @@ app.post('/game/move', auth, function (req, res) {
     var move = req.body;
     simpleGameMethodCall(req, res, function (game, req) { return game.makeMove(move); }, move.gameId);
 });
+app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) {
+    var gameId = req.body.gameId;
+    var currentPlayerId = req.body.currentPlayerId;
+    var playState = req.body.playState;
+    var result = game.alive();
+    result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.getState().playState != playState;
+    return result;
+}); });
 function simpleGameMethodCall(req, res, call, gameId) {
     if (gameId === void 0) { gameId = req.query.gameId; }
     repo.loadState(gameId, function (err, state) {
@@ -128,7 +136,8 @@ function simpleGameMethodCall(req, res, call, gameId) {
         else {
             var game = new literki_server.GameRun_Server(req.user.id);
             game.runState(state);
-            var errMsg = call(game, req);
+            var result = call(game, req);
+            var errMsg = result.errorMessage;
             if (errMsg != null) {
                 res.json({ state: state, errorMessage: errMsg });
             }
@@ -138,43 +147,40 @@ function simpleGameMethodCall(req, res, call, gameId) {
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));
                     }
-                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
+                    res.json({ state: state, userId: req.user.id, forceRefresh: result.forceRefresh, errorMessage: errorMessages });
                 });
             }
         }
     });
 }
-app.post('/game/alive', auth, function (req, res) {
-    var gameId = req.body.gameId;
-    var currentPlayerId = req.body.currentPlayerId;
-    var playState = req.body.playState;
-    var userId = req.user.id;
-    repo.loadState(gameId, function (err, state) {
-        var errorMessages = '';
-        if (err != null) {
-            errorMessages = util.formatError(err);
-            res.json({ state: state, errorMessage: errorMessages });
-        }
-        else {
-            var currentPlayer = state.players[state.currentPlayerIndex];
-            var forceRefresh = currentPlayer.userId != currentPlayerId || state.playState != playState;
-            var remainingTime = currentPlayer.remainingTime;
-            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running && state.playState == literki.GamePlayState.PlayerMove) {
-                if (remainingTime > 0) {
-                    remainingTime--;
-                    state.players[state.currentPlayerIndex].remainingTime = remainingTime;
-                }
-                repo.saveState(state, function (err) {
-                    if (err != null) {
-                        errorMessages = errorMessages.concat(util.formatError(err));
-                    }
-                    res.json({ remainingTime: remainingTime, forceRefresh: forceRefresh, errorMessage: errorMessages });
-                });
-            }
-            else {
-                res.json({ remainingTime: remainingTime, forceRefresh: forceRefresh, errorMessage: errorMessages });
-            }
-        }
-    });
-});
+//app.post('/game/alive', auth, (req, res) => {
+//    var gameId: number = req.body.gameId;
+//    var currentPlayerId = req.body.currentPlayerId;
+//    var playState = req.body.playState;
+//    var userId = req.user.id;
+//    repo.loadState(gameId,(err, state) => {
+//        var errorMessages = '';
+//        if (err != null) {
+//            errorMessages = util.formatError(err);
+//            res.json({ state: state, errorMessage: errorMessages });
+//        } else {
+//            var currentPlayer = state.players[state.currentPlayerIndex];
+//            var forceRefresh = currentPlayer.userId != currentPlayerId || state.playState != playState;
+//            var remainingTime = currentPlayer.remainingTime;
+//            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running && state.playState == literki.GamePlayState.PlayerMove) {
+//                if (remainingTime > 0) {
+//                    remainingTime--;
+//                    state.players[state.currentPlayerIndex].remainingTime = remainingTime;
+//                }
+//            }
+//            currentPlayer.lastSeen = new Date();
+//            repo.saveState(state, (err) => {
+//                if (err != null) {
+//                    errorMessages = errorMessages.concat(util.formatError(err));
+//                }
+//                res.json({ remainingTime: remainingTime, forceRefresh: forceRefresh, errorMessage: errorMessages });
+//            });
+//        }
+//    });
+//});
 //# sourceMappingURL=server.js.map

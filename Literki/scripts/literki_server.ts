@@ -9,9 +9,20 @@ enum PlayerActionType {
     MoveCheck,
 }
 
+export class GameMethodResult {
+    errorMessage: string;
+    forceRefresh: boolean;
+
+    constructor(errorMessage: string = null) {
+        this.errorMessage = errorMessage;
+    }
+
+    static EMPTY = new GameMethodResult();
+}
+
 export class GameRun_Server extends literki.GameRun {
 
-    private UNATHORIZED_ACCESS = "Gracz jest nieuprawniony do wykonania operacji";
+    private UNATHORIZED_ACCESS = new GameMethodResult("Gracz jest nieuprawniony do wykonania operacji");
 
     newGame(players: Array<literki.GamePlayer>): void {
         this.state = new literki.GameState();
@@ -21,7 +32,19 @@ export class GameRun_Server extends literki.GameRun {
         this.state.players.forEach(p => this.pickLetters(this.state.players.indexOf(p)));
     }
 
-    makeMove(move: literki.GameMove): string {
+    alive(): GameMethodResult {
+        if (this.isCurrentPlayer() && this.state.runState == literki.GameRunState.Running && this.state.playState == literki.GamePlayState.PlayerMove) {
+            var remainingTime = this.getCurrentPlayer().remainingTime;
+            if (remainingTime > 0) {
+                remainingTime--;
+                this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+            }
+        }
+        this.getCurrentPlayer().lastSeen = new Date();
+        return GameMethodResult.EMPTY;
+    }
+
+    makeMove(move: literki.GameMove): GameMethodResult {
         if (this.isCurrentPlayer()) {
             move.freeLetters.forEach(fl => {
                 this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
@@ -30,12 +53,12 @@ export class GameRun_Server extends literki.GameRun {
                 playersFreeLetters.splice(index, 1);
             });
             this.updateStateAfterPlayerAction(move, PlayerActionType.Move);
-            return null;
+            return GameMethodResult.EMPTY;
         }
         return this.UNATHORIZED_ACCESS;
     }
 
-    approveMove(approve: Boolean): string {
+    approveMove(approve: Boolean): GameMethodResult {
         var move = this.getActualMove();
 
         if (this.isNextPlayer()) {
@@ -65,7 +88,7 @@ export class GameRun_Server extends literki.GameRun {
         return false;
     }
 
-    join(): string {
+    join(): GameMethodResult {
         if (this.state.runState == literki.GameRunState.Created) {
             var res = _.find(this.state.players, p => p.userId == this.currentUserId);
             if (res == null) {
@@ -76,39 +99,39 @@ export class GameRun_Server extends literki.GameRun {
                 this.addPlayer(newPlayer);
             }
         }
-        return null;
+        return GameMethodResult.EMPTY;
     }
 
-    start(): string {
+    start(): GameMethodResult {
         if (this.isGameOwner()) {
 
             if (this.state.players.length < 2) {
-                return "Za mało graczy do rozpoczęcia gry";
+                return new GameMethodResult("Za mało graczy do rozpoczęcia gry");
             }
             if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
                 this.state.runState = literki.GameRunState.Running;
                 this.state.playState = literki.GamePlayState.PlayerMove;
             } else {
-                return "Nie można rozpocząć gry";
+                return new GameMethodResult("Nie można rozpocząć gry");
             }
             return null;
         }
         return this.UNATHORIZED_ACCESS;
     }
 
-    pause(): string {
+    pause(): GameMethodResult {
         if (this.isGameOwner()) {
             if (this.state.runState == literki.GameRunState.Running) {
                 this.state.runState = literki.GameRunState.Paused;
             } else {
-                return "Nie można zatrzymać gry";
+                return new GameMethodResult("Nie można zatrzymać gry");
             }
             return null;
         }
         return this.UNATHORIZED_ACCESS;
     }
 
-    fold(): string {
+    fold(): GameMethodResult {
         if (this.isCurrentPlayer()) {
             this.updateStateAfterMove(literki.MoveType.Fold);
             return null;
@@ -116,11 +139,11 @@ export class GameRun_Server extends literki.GameRun {
         return this.UNATHORIZED_ACCESS;
     }
 
-    exchange(exchangeLetters: string[]): string {
+    exchange(exchangeLetters: string[]): GameMethodResult {
         if (this.isCurrentPlayer()) {
             
             if (exchangeLetters == null || exchangeLetters.length == 0) {
-                return "Nie ma żadnych literek do wymiany";
+                return new GameMethodResult("Nie ma żadnych literek do wymiany");
             }
             var freeLetters = this.getCurrentPlayer().freeLetters;
             exchangeLetters.forEach(letter => freeLetters = _.filter(freeLetters, l => l == letter));

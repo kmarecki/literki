@@ -194,6 +194,7 @@ export interface IGamePlayer {
     playerName: string;
     freeLetters: Array<string>;
     remainingTime: number;
+    lastSeen: Date;
     moves: Array<IGameMoveHistory>;
 }
 
@@ -202,6 +203,7 @@ export class GamePlayer implements IGamePlayer {
     playerName: string;
     freeLetters: Array<string> = [];
     remainingTime: number;
+    lastSeen: Date;
     moves: Array<IGameMoveHistory> = [];
 
     getPoints(): number {
@@ -217,6 +219,7 @@ export class GamePlayer implements IGamePlayer {
         player.userId = json.userId;
         player.playerName = json.playerName;
         player.remainingTime = json.remainingTime;
+        player.lastSeen = json.lastSeen;
         return player;
     }
 
@@ -226,7 +229,8 @@ export class GamePlayer implements IGamePlayer {
             moves: this.moves,
             userId: this.userId,
             playerName: this.playerName,
-            remainingTime: this.remainingTime
+            remainingTime: this.remainingTime,
+            lastSeen : this.lastSeen
         }
         return json;
     }

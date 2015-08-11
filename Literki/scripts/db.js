@@ -102,6 +102,7 @@ var GameRepository = (function () {
                     userId: mongoose.Schema.Types.ObjectId,
                     playerName: String,
                     remainingTime: Number,
+                    lastSeen: Date,
                     freeLetters: [String],
                     moves: [{
                             words: [{

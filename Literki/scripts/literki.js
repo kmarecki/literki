@@ -179,6 +179,7 @@ var GamePlayer = (function () {
         player.userId = json.userId;
         player.playerName = json.playerName;
         player.remainingTime = json.remainingTime;
+        player.lastSeen = json.lastSeen;
         return player;
     };
     GamePlayer.prototype.toJSON = function () {
@@ -187,7 +188,8 @@ var GamePlayer = (function () {
             moves: this.moves,
             userId: this.userId,
             playerName: this.playerName,
-            remainingTime: this.remainingTime
+            remainingTime: this.remainingTime,
+            lastSeen: this.lastSeen
         };
         return json;
     };

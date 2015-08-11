@@ -417,59 +417,71 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.refreshBoard();
             ko.applyBindings(this);
         };
-        BoardViewModel.prototype.alive = function () {
-            var _this = this;
-            $.ajax({
-                type: "POST",
-                url: "/game/alive",
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    gameId: game.getState().gameId,
-                    currentPlayerId: game.getCurrentPlayer().userId,
-                    playState: game.getState().playState
-                }),
-                dataType: "json",
-                success: function (result) {
-                    //To refresh errorMessage
-                    _super.prototype.refreshModel.call(_this, result);
-                    if (!result.forceRefresh) {
-                        if (result.remainingTime != null) {
-                            game.getCurrentPlayer().remainingTime = result.remainingTime;
-                        }
-                        _this.refreshPlayerModels();
-                    }
-                    else {
-                        _this.refreshClick();
-                    }
-                }
-            });
-        };
+        //alive(): void {
+        //    $.ajax({
+        //        type: "POST",
+        //        url: "/game/alive",
+        //        contentType: 'application/json',
+        //        data: JSON.stringify({
+        //            gameId: game.getState().gameId,
+        //            currentPlayerId: game.getCurrentPlayer().userId,
+        //            playState: game.getState().playState
+        //        }),
+        //        dataType: "json",
+        //        success: (result) => {
+        //            //To refresh errorMessage
+        //            super.refreshModel(result);
+        //            if (!result.forceRefresh) {
+        //                if (result.remainingTime != null) {
+        //                    game.getCurrentPlayer().remainingTime = result.remainingTime;
+        //                }
+        //                this.refreshPlayerModels();
+        //            } else {
+        //                this.refreshClick();
+        //            }
+        //        }
+        //    });
+        //}
         BoardViewModel.prototype.refreshClick = function () {
-            this.callGameMethod("get");
+            this.callGameMethod("/game/get");
         };
         BoardViewModel.prototype.startClick = function () {
-            this.callGameMethod("start");
+            this.callGameMethod("/game/start");
         };
         BoardViewModel.prototype.pauseClick = function () {
-            this.callGameMethod("pause");
+            this.callGameMethod("/game/pause");
         };
         BoardViewModel.prototype.foldClick = function () {
-            this.callGameMethod("fold");
+            this.callGameMethod("/game/fold");
         };
         BoardViewModel.prototype.exchangeClick = function () {
-            this.callGameMethod("exchange", { gameId: game.getState().gameId, exchangeLetters: game.getExchangeLetters() });
+            this.callGameMethod("/game/exchange", "GET", true, {
+                gameId: game.getState().gameId,
+                exchangeLetters: game.getExchangeLetters()
+            });
         };
-        BoardViewModel.prototype.callGameMethod = function (name, data) {
+        BoardViewModel.prototype.alive = function () {
+            this.callGameMethod("/player/alive", "POST", false, {
+                gameId: game.getState().gameId,
+                currentPlayerId: game.getCurrentPlayer().userId,
+                playState: game.getState().playState
+            });
+        };
+        BoardViewModel.prototype.callGameMethod = function (name, htmlMethod, refreshBoard, data) {
             var _this = this;
+            if (htmlMethod === void 0) { htmlMethod = "GET"; }
+            if (refreshBoard === void 0) { refreshBoard = true; }
             if (data === void 0) { data = { gameId: game.getState().gameId }; }
             $.ajax({
-                type: "GET",
-                url: "/game/" + name,
+                type: htmlMethod,
+                url: name,
                 data: data,
                 dataType: "json",
                 success: function (result) {
                     _this.refreshModel(result);
-                    _this.refreshBoard();
+                    if (refreshBoard) {
+                        _this.refreshBoard();
+                    }
                 }
             });
         };
@@ -508,7 +520,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                     this.hideDialogBox();
                     if (game.canApproveMove()) {
                         this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
-                            _this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
+                            _this.callGameMethod("approve", "GET", true, { gameId: game.getState().gameId, approve: result });
                         });
                     }
                     if (game.isWaitingForMoveApproval()) {

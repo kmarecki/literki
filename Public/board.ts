@@ -497,63 +497,77 @@ class BoardViewModel extends App.BaseViewModel {
         ko.applyBindings(this);
     }
 
-    alive(): void {
-        $.ajax({
-            type: "POST",
-            url: "/game/alive",
-            contentType: 'application/json',
-            data: JSON.stringify({
-                gameId: game.getState().gameId,
-                currentPlayerId: game.getCurrentPlayer().userId,
-                playState: game.getState().playState
-            }),
-            dataType: "json",
-            success: (result) => {
-                //To refresh errorMessage
-                super.refreshModel(result);
+    //alive(): void {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/game/alive",
+    //        contentType: 'application/json',
+    //        data: JSON.stringify({
+    //            gameId: game.getState().gameId,
+    //            currentPlayerId: game.getCurrentPlayer().userId,
+    //            playState: game.getState().playState
+    //        }),
+    //        dataType: "json",
+    //        success: (result) => {
+    //            //To refresh errorMessage
+    //            super.refreshModel(result);
 
-                if (!result.forceRefresh) {
-                    if (result.remainingTime != null) {
-                        game.getCurrentPlayer().remainingTime = result.remainingTime;
-                    }
-                    this.refreshPlayerModels();
-                } else {
-                    this.refreshClick();
-                }
-            }
+    //            if (!result.forceRefresh) {
+    //                if (result.remainingTime != null) {
+    //                    game.getCurrentPlayer().remainingTime = result.remainingTime;
+    //                }
+    //                this.refreshPlayerModels();
+    //            } else {
+    //                this.refreshClick();
+    //            }
+    //        }
+    //    });
+    //}
+
+
+    refreshClick(): void {
+        this.callGameMethod("/game/get");
+    }
+
+    startClick(): void {
+        this.callGameMethod("/game/start");
+    }
+
+    pauseClick(): void {
+        this.callGameMethod("/game/pause");
+    }
+
+    foldClick(): void {
+        this.callGameMethod("/game/fold");
+    }
+
+    exchangeClick(): void {
+        this.callGameMethod("/game/exchange", "GET", true, {
+            gameId: game.getState().gameId,
+            exchangeLetters: game.getExchangeLetters()
+        });
+    }
+
+    alive(): void {
+        this.callGameMethod("/player/alive", "POST", false, {
+            gameId: game.getState().gameId,
+            currentPlayerId: game.getCurrentPlayer().userId,
+            playState: game.getState().playState
         });
     }
 
 
-    refreshClick(): void {
-        this.callGameMethod("get");
-    }
-
-    startClick(): void {
-        this.callGameMethod("start");
-    }
-
-    pauseClick(): void {
-        this.callGameMethod("pause");
-    }
-
-    foldClick(): void {
-        this.callGameMethod("fold");
-    }
-
-    exchangeClick(): void {
-        this.callGameMethod("exchange", { gameId: game.getState().gameId, exchangeLetters: game.getExchangeLetters() });
-    }
-
-    private callGameMethod(name: string, data: any = { gameId: game.getState().gameId } ): void {
+    private callGameMethod(name: string, htmlMethod: string = "GET",  refreshBoard: boolean = true, data: any = { gameId: game.getState().gameId } ): void {
         $.ajax({
-            type: "GET",
-            url: "/game/" + name,
+            type: htmlMethod,
+            url: name,
             data: data,
             dataType: "json",
             success: (result) => {
                 this.refreshModel(result);
-                this.refreshBoard();
+                if (refreshBoard) {
+                    this.refreshBoard();
+                }
             }
         });
     }
@@ -596,7 +610,7 @@ class BoardViewModel extends App.BaseViewModel {
                 this.hideDialogBox();
                 if (game.canApproveMove()) {
                     this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`, (result) => {
-                        this.callGameMethod("approve", { gameId: game.getState().gameId, approve: result });
+                        this.callGameMethod("approve", "GET", true,  { gameId: game.getState().gameId, approve: result });
                     });
                 }
 

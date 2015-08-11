@@ -142,13 +142,22 @@ app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game,
 app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.pause()));
 app.get('/game/fold', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.fold()));
 app.get('/game/exchange', auth,(req, res) => simpleGameMethodCall(req, res, (game, req) => game.exchange(req.query.exchangeLetters)));
-app.get('/game/approve', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.approveMove(req.query.approve)));
-app.post('/game/move', auth,(req, res) => {
+app.get('/game/approve', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.approveMove(req.query.approve)));
+app.post('/game/move', auth, (req, res) => {
     var move = <literki.GameMove> req.body;
     simpleGameMethodCall(req, res, (game, req) => game.makeMove(move), move.gameId);
 });
-  
-function simpleGameMethodCall(req: express.Request, res: express.Response, call: (game: literki_server.GameRun_Server, req: express.Request) => string, gameId: number = req.query.gameId): void {
+app.post('/player/alive', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => {
+    var gameId: number = req.body.gameId;
+    var currentPlayerId = req.body.currentPlayerId;
+    var playState = req.body.playState;
+    var result = game.alive();
+    result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.getState().playState != playState;
+    return result;
+}));
+
+type gameMethodCallback = (game: literki_server.GameRun_Server, req: express.Request) => literki_server.GameMethodResult;
+function simpleGameMethodCall(req: express.Request, res: express.Response, call: gameMethodCallback, gameId: number = req.query.gameId): void {
 
     repo.loadState(gameId,(err, state) => {
         var errorMessages = '';
@@ -158,7 +167,8 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
         } else {
             var game = new literki_server.GameRun_Server(req.user.id);
             game.runState(state);
-            var errMsg = call(game, req);
+            var result = call(game, req);
+            var errMsg = result.errorMessage;
             if (errMsg != null) {
                 res.json({ state: state, errorMessage: errMsg });
             } else {
@@ -167,45 +177,44 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));
                     }
-                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
+                    res.json({ state: state, userId: req.user.id, forceRefresh: result.forceRefresh, errorMessage: errorMessages });
                 });
             }
         }
     });
 }
 
-app.post('/game/alive', auth, (req, res) => {
-    var gameId: number = req.body.gameId;
-    var currentPlayerId = req.body.currentPlayerId;
-    var playState = req.body.playState;
-    var userId = req.user.id;
+//app.post('/game/alive', auth, (req, res) => {
+//    var gameId: number = req.body.gameId;
+//    var currentPlayerId = req.body.currentPlayerId;
+//    var playState = req.body.playState;
+//    var userId = req.user.id;
 
-    repo.loadState(gameId,(err, state) => {
-        var errorMessages = '';
-        if (err != null) {
-            errorMessages = util.formatError(err);
-            res.json({ state: state, errorMessage: errorMessages });
-        } else {
-            var currentPlayer = state.players[state.currentPlayerIndex];
-            var forceRefresh = currentPlayer.userId != currentPlayerId || state.playState != playState;
-            var remainingTime = currentPlayer.remainingTime; 
-            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running && state.playState == literki.GamePlayState.PlayerMove) {
-                if (remainingTime > 0) {
-                    remainingTime--;
-                    state.players[state.currentPlayerIndex].remainingTime = remainingTime;
-                }
-                repo.saveState(state,(err) => {
-                    if (err != null) {
-                        errorMessages = errorMessages.concat(util.formatError(err));
-                    }
-                    res.json({ remainingTime: remainingTime, forceRefresh: forceRefresh, errorMessage: errorMessages });
-                });
-            } else {
-                res.json({ remainingTime: remainingTime, forceRefresh: forceRefresh, errorMessage: errorMessages });
-            }
-        }
-    });
-});
+//    repo.loadState(gameId,(err, state) => {
+//        var errorMessages = '';
+//        if (err != null) {
+//            errorMessages = util.formatError(err);
+//            res.json({ state: state, errorMessage: errorMessages });
+//        } else {
+//            var currentPlayer = state.players[state.currentPlayerIndex];
+//            var forceRefresh = currentPlayer.userId != currentPlayerId || state.playState != playState;
+//            var remainingTime = currentPlayer.remainingTime;
+//            if (currentPlayer.userId == userId && state.runState == literki.GameRunState.Running && state.playState == literki.GamePlayState.PlayerMove) {
+//                if (remainingTime > 0) {
+//                    remainingTime--;
+//                    state.players[state.currentPlayerIndex].remainingTime = remainingTime;
+//                }
+//            }
+//            currentPlayer.lastSeen = new Date();
+//            repo.saveState(state, (err) => {
+//                if (err != null) {
+//                    errorMessages = errorMessages.concat(util.formatError(err));
+//                }
+//                res.json({ remainingTime: remainingTime, forceRefresh: forceRefresh, errorMessage: errorMessages });
+//            });
+//        }
+//    });
+//});
 
 
 
