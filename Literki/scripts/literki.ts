@@ -2,6 +2,7 @@
 
 export var ROW_SIZE = 15;
 export var MAX_LETTERS = 7;
+export var CLIENT_TIMEOUT = 5000;
 
 export class LetterDefinition {
     points: number;
@@ -210,6 +211,11 @@ export class GamePlayer implements IGamePlayer {
         var points = 0;
         this.moves.forEach(gm => gm.words.forEach(w => points += w.points));
         return points;
+    }
+
+    isAlive(): boolean {
+        var now = new Date();
+        return now.getTime() - this.lastSeen.getTime() < CLIENT_TIMEOUT;
     }
 
     static fromJSON(json: IGamePlayer): GamePlayer {

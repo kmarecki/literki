@@ -1,6 +1,7 @@
 define(["require", "exports", 'underscore'], function (require, exports, _) {
     exports.ROW_SIZE = 15;
     exports.MAX_LETTERS = 7;
+    exports.CLIENT_TIMEOUT = 5000;
     var LetterDefinition = (function () {
         function LetterDefinition() {
         }
@@ -210,6 +211,10 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             var points = 0;
             this.moves.forEach(function (gm) { return gm.words.forEach(function (w) { return points += w.points; }); });
             return points;
+        };
+        GamePlayer.prototype.isAlive = function () {
+            var now = new Date();
+            return now.getTime() - this.lastSeen.getTime() < exports.CLIENT_TIMEOUT;
         };
         GamePlayer.fromJSON = function (json) {
             var player = new GamePlayer();

@@ -297,6 +297,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         function PlayerViewModel(parent) {
             this.isCurrentPlayer = ko.observable(false);
             this.isCurrentUser = ko.observable(false);
+            this.isAlive = ko.observable(false);
             this.playerName = ko.observable("");
             this.points = ko.observable(0);
             this.remainingTime = ko.observable('');
@@ -316,6 +317,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
             this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
             this.isCurrentUser(player.userId == game.currentUserId);
+            this.isAlive(player.isAlive());
         };
         return PlayerViewModel;
     })();
@@ -534,9 +536,10 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                     this.cleanChangeLetters();
                     this.refreshHistoryMoves();
                     if (!result.errorMessage) {
+                        this.hideDialogBox();
                         if (game.canApproveMove()) {
                             this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
-                                _this.callGETMethod("approve", true, { gameId: game.state.gameId, approve: result });
+                                _this.callGETMethod("/game/approve", true, { gameId: game.state.gameId, approve: result });
                             });
                         }
                         if (game.isWaitingForMoveApproval()) {

@@ -17,7 +17,7 @@ export class GameMethodResult {
         this.errorMessage = errorMessage;
     }
 
-    static EMPTY = new GameMethodResult();
+    static Undefined = new GameMethodResult();
 }
 
 export class GameRun_Server extends literki.GameRun {
@@ -40,8 +40,8 @@ export class GameRun_Server extends literki.GameRun {
                 this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
             }
         }
-        this.getCurrentPlayer().lastSeen = new Date();
-        return GameMethodResult.EMPTY;
+        this.getCurrentUser().lastSeen = new Date();
+        return GameMethodResult.Undefined;
     }
 
     makeMove(move: literki.GameMove): GameMethodResult {
@@ -53,7 +53,7 @@ export class GameRun_Server extends literki.GameRun {
                 playersFreeLetters.splice(index, 1);
             });
             this.updateStateAfterPlayerAction(move, PlayerActionType.Move);
-            return GameMethodResult.EMPTY;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     }
@@ -71,7 +71,7 @@ export class GameRun_Server extends literki.GameRun {
             } else {
                 this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck);
             }
-            return GameMethodResult.EMPTY;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     }
@@ -99,7 +99,7 @@ export class GameRun_Server extends literki.GameRun {
                 this.addPlayer(newPlayer);
             }
         }
-        return GameMethodResult.EMPTY;
+        return GameMethodResult.Undefined;
     }
 
     start(): GameMethodResult {
@@ -114,7 +114,7 @@ export class GameRun_Server extends literki.GameRun {
             } else {
                 return new GameMethodResult("Nie można rozpocząć gry");
             }
-            return GameMethodResult.EMPTY;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     }
@@ -126,7 +126,7 @@ export class GameRun_Server extends literki.GameRun {
             } else {
                 return new GameMethodResult("Nie można zatrzymać gry");
             }
-            return GameMethodResult.EMPTY;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     }
@@ -134,7 +134,7 @@ export class GameRun_Server extends literki.GameRun {
     fold(): GameMethodResult {
         if (this.isCurrentPlayer()) {
             this.updateStateAfterMove(literki.MoveType.Fold);
-            return null;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     }
@@ -149,7 +149,7 @@ export class GameRun_Server extends literki.GameRun {
             exchangeLetters.forEach(letter => freeLetters = _.filter(freeLetters, l => l == letter));
             this.getCurrentPlayer().freeLetters = freeLetters;
             this.updateStateAfterMove(literki.MoveType.Exchange);
-            return null;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     }

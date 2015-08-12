@@ -18,7 +18,7 @@ var GameMethodResult = (function () {
         if (errorMessage === void 0) { errorMessage = null; }
         this.errorMessage = errorMessage;
     }
-    GameMethodResult.EMPTY = new GameMethodResult();
+    GameMethodResult.Undefined = new GameMethodResult();
     return GameMethodResult;
 })();
 exports.GameMethodResult = GameMethodResult;
@@ -44,8 +44,8 @@ var GameRun_Server = (function (_super) {
                 this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
             }
         }
-        this.getCurrentPlayer().lastSeen = new Date();
-        return GameMethodResult.EMPTY;
+        this.getCurrentUser().lastSeen = new Date();
+        return GameMethodResult.Undefined;
     };
     GameRun_Server.prototype.makeMove = function (move) {
         var _this = this;
@@ -57,7 +57,7 @@ var GameRun_Server = (function (_super) {
                 playersFreeLetters.splice(index, 1);
             });
             this.updateStateAfterPlayerAction(move, PlayerActionType.Move);
-            return GameMethodResult.EMPTY;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     };
@@ -74,7 +74,7 @@ var GameRun_Server = (function (_super) {
             else {
                 this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck);
             }
-            return GameMethodResult.EMPTY;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     };
@@ -101,7 +101,7 @@ var GameRun_Server = (function (_super) {
                 this.addPlayer(newPlayer);
             }
         }
-        return GameMethodResult.EMPTY;
+        return GameMethodResult.Undefined;
     };
     GameRun_Server.prototype.start = function () {
         if (this.isGameOwner()) {
@@ -115,7 +115,7 @@ var GameRun_Server = (function (_super) {
             else {
                 return new GameMethodResult("Nie można rozpocząć gry");
             }
-            return GameMethodResult.EMPTY;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     };
@@ -127,14 +127,14 @@ var GameRun_Server = (function (_super) {
             else {
                 return new GameMethodResult("Nie można zatrzymać gry");
             }
-            return GameMethodResult.EMPTY;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     };
     GameRun_Server.prototype.fold = function () {
         if (this.isCurrentPlayer()) {
             this.updateStateAfterMove(literki.MoveType.Fold);
-            return null;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     };
@@ -147,7 +147,7 @@ var GameRun_Server = (function (_super) {
             exchangeLetters.forEach(function (letter) { return freeLetters = _.filter(freeLetters, function (l) { return l == letter; }); });
             this.getCurrentPlayer().freeLetters = freeLetters;
             this.updateStateAfterMove(literki.MoveType.Exchange);
-            return null;
+            return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
     };

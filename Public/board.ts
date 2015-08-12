@@ -362,6 +362,7 @@ class BoardViewModelWord {
 class PlayerViewModel {
     isCurrentPlayer = ko.observable(false);
     isCurrentUser = ko.observable(false);
+    isAlive = ko.observable(false);
     playerName = ko.observable("");
     points = ko.observable(0);
     remainingTime = ko.observable('');
@@ -371,7 +372,7 @@ class PlayerViewModel {
         this.parentModel = parent;
     }
 
-    findAndRefresh(players: Literki.IGamePlayer[], currentPlayer: Literki.IGamePlayer): void {
+    findAndRefresh(players: Literki.GamePlayer[], currentPlayer: Literki.IGamePlayer): void {
         players.forEach(p => {
             if (p.playerName == this.playerName()) {
                 this.refresh(p, currentPlayer);
@@ -379,12 +380,13 @@ class PlayerViewModel {
         });
     }
 
-    refresh(player: Literki.IGamePlayer, currentPlayer: Literki.IGamePlayer): void {
+    refresh(player: Literki.GamePlayer, currentPlayer: Literki.IGamePlayer): void {
         this.playerName(player.playerName);
         this.points((<Literki.GamePlayer>player).getPoints());
         this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
         this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
         this.isCurrentUser(player.userId == game.currentUserId);
+        this.isAlive(player.isAlive());
     }
 
 }
@@ -436,7 +438,7 @@ class BoardViewModel extends App.BaseViewModel {
 
         game.getPlayers().slice(start, end).forEach(p => {
             var playerModel = new PlayerViewModel(this);
-            playerModel.refresh(p, game.getCurrentPlayer());
+            playerModel.refresh(<Literki.GamePlayer>p, game.getCurrentPlayer());
             players.push(playerModel);
             this.allPlayers.push(playerModel);
         });
@@ -624,9 +626,10 @@ class BoardViewModel extends App.BaseViewModel {
                 this.refreshHistoryMoves();
 
                 if (!result.errorMessage) {
+                    this.hideDialogBox();
                     if (game.canApproveMove()) {
                         this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`, (result) => {
-                            this.callGETMethod("approve", true, { gameId: game.state.gameId, approve: result });
+                            this.callGETMethod("/game/approve", true, { gameId: game.state.gameId, approve: result });
                         });
                     }
 
@@ -640,7 +643,7 @@ class BoardViewModel extends App.BaseViewModel {
 
     private refreshPlayerModels(): void {
         if (game != null) {
-            this.allPlayers.forEach(p => p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()));
+            this.allPlayers.forEach(p => p.findAndRefresh(<Literki.GamePlayer[]>game.getPlayers(), game.getCurrentPlayer()));
         }
     }
 
