@@ -45,7 +45,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         };
         Board.prototype.drawGameState = function () {
             var _this = this;
-            if (game == null || game.getState() == null) {
+            if (!game || !game.state) {
                 return;
             }
             this.setupDisplay();
@@ -161,7 +161,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                     if (x < currentUser.freeLetters.length) {
                         var letter = currentUser.freeLetters[x];
                         var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
-                        var movable = game.isCurrentPlayer() && game.getState().playState == 0 /* PlayerMove */;
+                        var movable = game.isCurrentPlayer() && game.state.playState == 0 /* PlayerMove */;
                         var letterGroup = this.getLetterGroup(xpos, this.LETTERS_TOP, letter, x, movable);
                         foregroundLayer.add(letterGroup);
                     }
@@ -443,47 +443,61 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         //    });
         //}
         BoardViewModel.prototype.refreshClick = function () {
-            this.callGameMethod("/game/get");
+            this.callGETMethod("/game/get");
         };
         BoardViewModel.prototype.startClick = function () {
-            this.callGameMethod("/game/start");
+            this.callGETMethod("/game/start");
         };
         BoardViewModel.prototype.pauseClick = function () {
-            this.callGameMethod("/game/pause");
+            this.callGETMethod("/game/pause");
         };
         BoardViewModel.prototype.foldClick = function () {
-            this.callGameMethod("/game/fold");
+            this.callGETMethod("/game/fold");
         };
         BoardViewModel.prototype.exchangeClick = function () {
-            this.callGameMethod("/game/exchange", "GET", true, {
-                gameId: game.getState().gameId,
+            this.callGETMethod("/game/exchange", true, {
+                gameId: game.state.gameId,
                 exchangeLetters: game.getExchangeLetters()
             });
         };
         BoardViewModel.prototype.alive = function () {
-            this.callGameMethod("/player/alive", "POST", false, {
-                gameId: game.getState().gameId,
+            this.callPOSTMethod("/player/alive", false, {
+                gameId: game.state.gameId,
                 currentPlayerId: game.getCurrentPlayer().userId,
-                playState: game.getState().playState
+                playState: game.state.playState
             });
         };
-        BoardViewModel.prototype.callGameMethod = function (name, htmlMethod, refreshBoard, data) {
+        BoardViewModel.prototype.callGETMethod = function (name, refreshBoard, data) {
             var _this = this;
-            if (htmlMethod === void 0) { htmlMethod = "GET"; }
             if (refreshBoard === void 0) { refreshBoard = true; }
-            if (data === void 0) { data = { gameId: game.getState().gameId }; }
+            if (data === void 0) { data = { gameId: game.state.gameId }; }
             $.ajax({
-                type: htmlMethod,
+                type: "GET",
                 url: name,
                 data: data,
                 dataType: "json",
-                success: function (result) {
-                    _this.refreshModel(result);
-                    if (refreshBoard) {
-                        _this.refreshBoard();
-                    }
-                }
+                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard); }
             });
+        };
+        BoardViewModel.prototype.callPOSTMethod = function (name, refreshBoard, data) {
+            var _this = this;
+            if (refreshBoard === void 0) { refreshBoard = true; }
+            if (data === void 0) { data = { gameId: game.state.gameId }; }
+            $.ajax({
+                type: "POST",
+                url: name,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard); }
+            });
+        };
+        BoardViewModel.prototype.refreshAfterHTMLMethodCall = function (result, refreshBoard) {
+            var refresh = refreshBoard || result.forceRefresh;
+            this.refreshModel(result, refresh);
+            if (refresh) {
+                this.refreshBoard();
+            }
         };
         BoardViewModel.prototype.moveClick = function () {
             var _this = this;
@@ -506,25 +520,28 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             var changeLetters = game.getExchangeLetters();
             this.setChangeLetters(changeLetters);
         };
-        BoardViewModel.prototype.refreshModel = function (result) {
+        BoardViewModel.prototype.refreshModel = function (result, fullRefresh) {
             var _this = this;
+            if (fullRefresh === void 0) { fullRefresh = true; }
             _super.prototype.refreshModel.call(this, result);
-            this.refreshPlayerModels();
-            if (result.state != null) {
+            if (result.state) {
                 var state = Literki.GameState.fromJSON(result.state);
-                game.runState(state);
-                this.cleanNewWords();
-                this.cleanChangeLetters();
-                this.refreshHistoryMoves();
-                if (!result.errorMessage) {
-                    this.hideDialogBox();
-                    if (game.canApproveMove()) {
-                        this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
-                            _this.callGameMethod("approve", "GET", true, { gameId: game.getState().gameId, approve: result });
-                        });
-                    }
-                    if (game.isWaitingForMoveApproval()) {
-                        this.showPersistentInfoDialogBox("Oczekiwanie na akceptację ruchu przez gracza " + game.getNextPlayer().playerName + ".");
+                game.state = state;
+                this.refreshPlayerModels();
+                if (fullRefresh) {
+                    game.runState(state);
+                    this.cleanNewWords();
+                    this.cleanChangeLetters();
+                    this.refreshHistoryMoves();
+                    if (!result.errorMessage) {
+                        if (game.canApproveMove()) {
+                            this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
+                                _this.callGETMethod("approve", true, { gameId: game.state.gameId, approve: result });
+                            });
+                        }
+                        if (game.isWaitingForMoveApproval()) {
+                            this.showPersistentInfoDialogBox("Oczekiwanie na akceptację ruchu przez gracza " + game.getNextPlayer().playerName + ".");
+                        }
                     }
                 }
             }

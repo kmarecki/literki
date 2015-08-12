@@ -48,6 +48,8 @@ export class BaseViewModel {
                                 cancelButtonText?: string;
                                 okButtonText?: string
                             } = null): void {
+        this.hideDialogBox();
+
         var winW = window.innerWidth;
         var winH = window.innerHeight;
 

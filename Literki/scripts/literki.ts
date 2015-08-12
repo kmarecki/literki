@@ -376,8 +376,8 @@ export class FreeLetters {
 export class GameRun {
 
     board: BoardFields;
+    state: IGameState;
 
-    protected state: IGameState;
     protected freeLetters = new FreeLetters();
     currentUserId: string;
 
@@ -405,10 +405,6 @@ export class GameRun {
 
     getCurrentUser(): IGamePlayer {
         return _.find(this.state.players, p => p.userId == this.currentUserId);
-    }
-
-    getState(): IGameState {
-        return this.state;
     }
 
     runState(state: IGameState): void {

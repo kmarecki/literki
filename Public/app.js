@@ -32,6 +32,7 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
         BaseViewModel.prototype.showDialogBox = function (message, title, callback, options) {
             if (callback === void 0) { callback = null; }
             if (options === void 0) { options = null; }
+            this.hideDialogBox();
             var winW = window.innerWidth;
             var winH = window.innerHeight;
             var dialogoverlay = $("#dialogoverlay");

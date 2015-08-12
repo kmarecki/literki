@@ -66,7 +66,7 @@ class Board {
     }
 
     drawGameState(): void {
-        if (game == null || game.getState() == null) {
+        if (!game  || !game.state) {
             return;
         }
 
@@ -205,7 +205,7 @@ class Board {
                 if (x < currentUser.freeLetters.length) {
                     var letter = currentUser.freeLetters[x];
                     var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
-                    var movable = game.isCurrentPlayer() && game.getState().playState == Literki.GamePlayState.PlayerMove;
+                    var movable = game.isCurrentPlayer() && game.state.playState == Literki.GamePlayState.PlayerMove;
                     var letterGroup = this.getLetterGroup(xpos, this.LETTERS_TOP, letter, x, movable);
                     foregroundLayer.add(letterGroup);
                 }
@@ -526,51 +526,66 @@ class BoardViewModel extends App.BaseViewModel {
 
 
     refreshClick(): void {
-        this.callGameMethod("/game/get");
+        this.callGETMethod("/game/get");
     }
 
     startClick(): void {
-        this.callGameMethod("/game/start");
+        this.callGETMethod("/game/start");
     }
 
     pauseClick(): void {
-        this.callGameMethod("/game/pause");
+        this.callGETMethod("/game/pause");
     }
 
     foldClick(): void {
-        this.callGameMethod("/game/fold");
+        this.callGETMethod("/game/fold");
     }
 
     exchangeClick(): void {
-        this.callGameMethod("/game/exchange", "GET", true, {
-            gameId: game.getState().gameId,
+        this.callGETMethod("/game/exchange", true, {
+            gameId: game.state.gameId,
             exchangeLetters: game.getExchangeLetters()
         });
     }
 
     alive(): void {
-        this.callGameMethod("/player/alive", "POST", false, {
-            gameId: game.getState().gameId,
+        this.callPOSTMethod("/player/alive", false,{
+            gameId: game.state.gameId,
             currentPlayerId: game.getCurrentPlayer().userId,
-            playState: game.getState().playState
+            playState: game.state.playState
         });
     }
 
 
-    private callGameMethod(name: string, htmlMethod: string = "GET",  refreshBoard: boolean = true, data: any = { gameId: game.getState().gameId } ): void {
+    private callGETMethod(name: string,  refreshBoard: boolean = true, data: any = { gameId: game.state.gameId } ): void {
         $.ajax({
-            type: htmlMethod,
+            type: "GET",
             url: name,
             data: data,
             dataType: "json",
-            success: (result) => {
-                this.refreshModel(result);
-                if (refreshBoard) {
-                    this.refreshBoard();
-                }
-            }
+            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard)
         });
     }
+
+    private callPOSTMethod(name: string, refreshBoard: boolean = true, data: any = { gameId: game.state.gameId }): void {
+        $.ajax({
+            type: "POST",
+            url: name,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            dataType: "json",
+            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard)
+        });
+    }
+
+    private refreshAfterHTMLMethodCall(result: any, refreshBoard: boolean): void  {
+        var refresh = refreshBoard || result.forceRefresh;
+        this.refreshModel(result, refresh);
+        if (refresh) {
+            this.refreshBoard();
+        }
+    }
+
 
     moveClick(): void {
         var move = game.getActualMove();
@@ -595,27 +610,29 @@ class BoardViewModel extends App.BaseViewModel {
         this.setChangeLetters(changeLetters);
     }
 
-    protected refreshModel(result: any): void {
+    protected refreshModel(result: any, fullRefresh: boolean = true): void {
         super.refreshModel(result);
 
-        this.refreshPlayerModels();
-        if (result.state != null) {
+        if (result.state) {
             var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
-            game.runState(state);
-            this.cleanNewWords();
-            this.cleanChangeLetters();
-            this.refreshHistoryMoves();
+            game.state = state;
+            this.refreshPlayerModels();
+            if (fullRefresh) {
+                game.runState(state);
+                this.cleanNewWords();
+                this.cleanChangeLetters();
+                this.refreshHistoryMoves();
 
-            if (!result.errorMessage) {
-                this.hideDialogBox();
-                if (game.canApproveMove()) {
-                    this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`, (result) => {
-                        this.callGameMethod("approve", "GET", true,  { gameId: game.getState().gameId, approve: result });
-                    });
-                }
+                if (!result.errorMessage) {
+                    if (game.canApproveMove()) {
+                        this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`, (result) => {
+                            this.callGETMethod("approve", true, { gameId: game.state.gameId, approve: result });
+                        });
+                    }
 
-                if (game.isWaitingForMoveApproval()) {
-                    this.showPersistentInfoDialogBox(`Oczekiwanie na akceptację ruchu przez gracza ${game.getNextPlayer().playerName}.`);
+                    if (game.isWaitingForMoveApproval()) {
+                        this.showPersistentInfoDialogBox(`Oczekiwanie na akceptację ruchu przez gracza ${game.getNextPlayer().playerName}.`);
+                    }
                 }
             }
         }

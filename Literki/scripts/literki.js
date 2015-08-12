@@ -327,9 +327,6 @@ var GameRun = (function () {
         var _this = this;
         return _.find(this.state.players, function (p) { return p.userId == _this.currentUserId; });
     };
-    GameRun.prototype.getState = function () {
-        return this.state;
-    };
     GameRun.prototype.runState = function (state) {
         this.state = state;
         this.renderState();

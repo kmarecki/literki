@@ -74,7 +74,7 @@ app.get('/game/new', auth, function (req, res) {
     players.push(player);
     var game = new literki_server.GameRun_Server(req.user.googleId);
     game.newGame(players);
-    var state = game.getState();
+    var state = game.state;
     repo.newState(state, function (err, gameId) {
         var errorMessages = '';
         if (err != null) {
@@ -122,9 +122,9 @@ app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCal
     var currentPlayerId = req.body.currentPlayerId;
     var playState = req.body.playState;
     var result = game.alive();
-    result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.getState().playState != playState;
+    result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.state.playState != playState;
     return result;
-}); });
+}, req.body.gameId); });
 function simpleGameMethodCall(req, res, call, gameId) {
     if (gameId === void 0) { gameId = req.query.gameId; }
     repo.loadState(gameId, function (err, state) {
@@ -142,7 +142,7 @@ function simpleGameMethodCall(req, res, call, gameId) {
                 res.json({ state: state, errorMessage: errMsg });
             }
             else {
-                state = game.getState();
+                state = game.state;
                 repo.saveState(state, function (err) {
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));

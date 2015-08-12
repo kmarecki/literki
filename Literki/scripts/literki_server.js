@@ -74,7 +74,7 @@ var GameRun_Server = (function (_super) {
             else {
                 this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck);
             }
-            return null;
+            return GameMethodResult.EMPTY;
         }
         return this.UNATHORIZED_ACCESS;
     };
@@ -115,7 +115,7 @@ var GameRun_Server = (function (_super) {
             else {
                 return new GameMethodResult("Nie można rozpocząć gry");
             }
-            return null;
+            return GameMethodResult.EMPTY;
         }
         return this.UNATHORIZED_ACCESS;
     };
@@ -127,7 +127,7 @@ var GameRun_Server = (function (_super) {
             else {
                 return new GameMethodResult("Nie można zatrzymać gry");
             }
-            return null;
+            return GameMethodResult.EMPTY;
         }
         return this.UNATHORIZED_ACCESS;
     };

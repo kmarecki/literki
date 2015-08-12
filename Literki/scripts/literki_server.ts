@@ -71,7 +71,7 @@ export class GameRun_Server extends literki.GameRun {
             } else {
                 this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck);
             }
-            return null;
+            return GameMethodResult.EMPTY;
         }
         return this.UNATHORIZED_ACCESS;
     }
@@ -114,7 +114,7 @@ export class GameRun_Server extends literki.GameRun {
             } else {
                 return new GameMethodResult("Nie można rozpocząć gry");
             }
-            return null;
+            return GameMethodResult.EMPTY;
         }
         return this.UNATHORIZED_ACCESS;
     }
@@ -126,7 +126,7 @@ export class GameRun_Server extends literki.GameRun {
             } else {
                 return new GameMethodResult("Nie można zatrzymać gry");
             }
-            return null;
+            return GameMethodResult.EMPTY;
         }
         return this.UNATHORIZED_ACCESS;
     }

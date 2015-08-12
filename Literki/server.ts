@@ -98,7 +98,7 @@ app.get('/game/new', auth, (req, res) => {
    
     var game = new literki_server.GameRun_Server(req.user.googleId);
     game.newGame(players);
-    var state: literki.IGameState = game.getState();
+    var state: literki.IGameState = game.state;
 
     repo.newState(state,(err, gameId) => {
         var errorMessages = '';
@@ -152,9 +152,9 @@ app.post('/player/alive', auth, (req, res) => simpleGameMethodCall(req, res, (ga
     var currentPlayerId = req.body.currentPlayerId;
     var playState = req.body.playState;
     var result = game.alive();
-    result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.getState().playState != playState;
+    result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.state.playState != playState;
     return result;
-}));
+}, req.body.gameId));
 
 type gameMethodCallback = (game: literki_server.GameRun_Server, req: express.Request) => literki_server.GameMethodResult;
 function simpleGameMethodCall(req: express.Request, res: express.Response, call: gameMethodCallback, gameId: number = req.query.gameId): void {
@@ -172,7 +172,7 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
             if (errMsg != null) {
                 res.json({ state: state, errorMessage: errMsg });
             } else {
-                state = game.getState();
+                state = game.state;
                 repo.saveState(state,(err) => {
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));
