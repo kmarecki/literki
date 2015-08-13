@@ -601,7 +601,7 @@ class BoardViewModel extends App.BaseViewModel {
                     this.hideDialogBox();
                     if (game.canApproveMove()) {
                         this.showAskDialogBox(`Czy akceptujesz ruch gracza ${game.getCurrentPlayer().playerName}?`, (result) => {
-                            this.callGETMethod("/game/approve", true, { gameId: game.state.gameId, approve: result });
+                            this.callPOSTMethod("/game/approve", true, { gameId: game.state.gameId, approve: result });
                         });
                     }
 

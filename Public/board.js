@@ -514,7 +514,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                         this.hideDialogBox();
                         if (game.canApproveMove()) {
                             this.showAskDialogBox("Czy akceptujesz ruch gracza " + game.getCurrentPlayer().playerName + "?", function (result) {
-                                _this.callGETMethod("/game/approve", true, { gameId: game.state.gameId, approve: result });
+                                _this.callPOSTMethod("/game/approve", true, { gameId: game.state.gameId, approve: result });
                             });
                         }
                         if (game.isWaitingForMoveApproval()) {
