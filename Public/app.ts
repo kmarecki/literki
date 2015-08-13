@@ -115,4 +115,9 @@ export class BaseViewModel {
         dialogbox.hide();
         dialogoverlay.hide();
     }
+
+    protected ajaxErrorHandler(xhr: JQueryXHR, ajaxOptions, thrownError): void {
+        var message = xhr.responseText ? xhr.responseText : "Brak połączenia z serwerem gry.";
+        this.showErrorDialogBox(message);
+    }
 } 

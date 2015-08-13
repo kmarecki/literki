@@ -537,7 +537,8 @@ class BoardViewModel extends App.BaseViewModel {
             url: name,
             data: data,
             dataType: "json",
-            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard)
+            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard),
+            error: (xhr, ajaxOptions, thrownError) => this.ajaxErrorHandler(xhr, ajaxOptions, thrownError)
         });
     }
 
@@ -548,7 +549,8 @@ class BoardViewModel extends App.BaseViewModel {
             contentType: "application/json",
             data: JSON.stringify(data),
             dataType: "json",
-            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard)
+            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard),
+            error: (xhr, ajaxOptions, thrownError) => this.ajaxErrorHandler(xhr, ajaxOptions, thrownError)
         });
     }
 

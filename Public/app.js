@@ -89,6 +89,10 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
             dialogbox.hide();
             dialogoverlay.hide();
         };
+        BaseViewModel.prototype.ajaxErrorHandler = function (xhr, ajaxOptions, thrownError) {
+            var message = xhr.responseText ? xhr.responseText : "Brak połączenia z serwerem gry.";
+            this.showErrorDialogBox(message);
+        };
         return BaseViewModel;
     })();
     exports.BaseViewModel = BaseViewModel;

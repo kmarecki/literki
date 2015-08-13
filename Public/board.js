@@ -453,7 +453,8 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 url: name,
                 data: data,
                 dataType: "json",
-                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard); }
+                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard); },
+                error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
             });
         };
         BoardViewModel.prototype.callPOSTMethod = function (name, refreshBoard, data) {
@@ -466,7 +467,8 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
-                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard); }
+                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard); },
+                error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
             });
         };
         BoardViewModel.prototype.refreshAfterHTMLMethodCall = function (result, refreshBoard) {

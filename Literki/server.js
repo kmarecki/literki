@@ -63,7 +63,7 @@ var auth = function (req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.json({ errorMessage: "Not authenticated" });
+    res.json({ errorMessage: "Błąd uwierzytelnienia użytkownika." });
 };
 app.get('/game/new', auth, function (req, res) {
     var player = new literki.GamePlayer();

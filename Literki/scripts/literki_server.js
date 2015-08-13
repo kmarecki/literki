@@ -187,7 +187,7 @@ var GameRun_Server = (function (_super) {
             case PlayerActionType.MoveApproval: {
                 this.state.playState = literki.GamePlayState.PlayerMove;
                 this.updateStateAfterMove(literki.MoveType.Move);
-                this.state.currentMove = null;
+                this.clearMove();
                 break;
             }
             case PlayerActionType.MoveCheck: {
@@ -195,13 +195,13 @@ var GameRun_Server = (function (_super) {
                 if (_.any(this.getNewWords(), function (w) { return !_this.isValidWord(w.word); })) {
                     //False Move
                     move.freeLetters.forEach(function (l) { return _this.getCurrentPlayer().freeLetters.push(l.letter); });
+                    this.clearMove();
                     this.updateStateAfterMove(literki.MoveType.WrongMove);
-                    this.state.currentMove = null;
                 }
                 else {
                     //Good Move
                     this.updateStateAfterMove(literki.MoveType.Move);
-                    this.state.currentMove = null;
+                    this.clearMove();
                     //Player must be skipped because the validation was correct
                     this.updateStateAfterMove(literki.MoveType.CheckMoveFailed);
                 }
@@ -209,6 +209,10 @@ var GameRun_Server = (function (_super) {
             }
         }
         return this.state;
+    };
+    GameRun_Server.prototype.clearMove = function () {
+        this.state.currentMove = null;
+        this.freeLetters.clear();
     };
     GameRun_Server.prototype.updateStateAfterMove = function (moveType) {
         var moveHistory = new literki.GameMoveHistory();

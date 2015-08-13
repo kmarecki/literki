@@ -191,7 +191,7 @@ export class GameRun_Server extends literki.GameRun {
             case PlayerActionType.MoveApproval: {
                 this.state.playState = literki.GamePlayState.PlayerMove;
                 this.updateStateAfterMove(literki.MoveType.Move);
-                this.state.currentMove = null;
+                this.clearMove();
                 break;
             }
             case PlayerActionType.MoveCheck: {
@@ -199,12 +199,12 @@ export class GameRun_Server extends literki.GameRun {
                 if (_.any(this.getNewWords(), w => !this.isValidWord(w.word))) {
                     //False Move
                     move.freeLetters.forEach(l => this.getCurrentPlayer().freeLetters.push(l.letter));
+                    this.clearMove();
                     this.updateStateAfterMove(literki.MoveType.WrongMove);
-                    this.state.currentMove = null;
                 } else {
                     //Good Move
                     this.updateStateAfterMove(literki.MoveType.Move);
-                    this.state.currentMove = null;
+                    this.clearMove();
                     //Player must be skipped because the validation was correct
                     this.updateStateAfterMove(literki.MoveType.CheckMoveFailed);
                 }
@@ -212,6 +212,11 @@ export class GameRun_Server extends literki.GameRun {
             }
         }
         return this.state;
+    }
+
+    private clearMove(): void {
+        this.state.currentMove = null;
+        this.freeLetters.clear();
     }
 
     private updateStateAfterMove(moveType: literki.MoveType): void {
