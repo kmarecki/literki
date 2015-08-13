@@ -215,7 +215,7 @@ export class GamePlayer implements IGamePlayer {
 
     isAlive(): boolean {
         var now = new Date();
-        return now.getTime() - this.lastSeen.getTime() < CLIENT_TIMEOUT;
+        return this.lastSeen ? now.getTime() - this.lastSeen.getTime() < CLIENT_TIMEOUT : false;
     }
 
     static fromJSON(json: IGamePlayer): GamePlayer {
@@ -225,7 +225,9 @@ export class GamePlayer implements IGamePlayer {
         player.userId = json.userId;
         player.playerName = json.playerName;
         player.remainingTime = json.remainingTime;
-        player.lastSeen = json.lastSeen;
+        if (json.lastSeen) {
+            player.lastSeen = new Date(json.lastSeen.toString());
+        }
         return player;
     }
 

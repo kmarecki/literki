@@ -362,10 +362,10 @@ class BoardViewModelWord {
 class PlayerViewModel {
     isCurrentPlayer = ko.observable(false);
     isCurrentUser = ko.observable(false);
-    isAlive = ko.observable(false);
     playerName = ko.observable("");
     points = ko.observable(0);
-    remainingTime = ko.observable('');
+    remainingTime = ko.observable("");
+    playerCss = ko.observable("");
     parentModel: BoardViewModel;
 
     constructor(parent: BoardViewModel) {
@@ -386,7 +386,7 @@ class PlayerViewModel {
         this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
         this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
         this.isCurrentUser(player.userId == game.currentUserId);
-        this.isAlive(player.isAlive());
+        this.playerCss((this.isCurrentUser() ? "currentUser" : "player") + (!player.isAlive() ? " inactivePlayer" : ""));
     }
 
 }
@@ -498,34 +498,6 @@ class BoardViewModel extends App.BaseViewModel {
         this.refreshBoard();
         ko.applyBindings(this);
     }
-
-    //alive(): void {
-    //    $.ajax({
-    //        type: "POST",
-    //        url: "/game/alive",
-    //        contentType: 'application/json',
-    //        data: JSON.stringify({
-    //            gameId: game.getState().gameId,
-    //            currentPlayerId: game.getCurrentPlayer().userId,
-    //            playState: game.getState().playState
-    //        }),
-    //        dataType: "json",
-    //        success: (result) => {
-    //            //To refresh errorMessage
-    //            super.refreshModel(result);
-
-    //            if (!result.forceRefresh) {
-    //                if (result.remainingTime != null) {
-    //                    game.getCurrentPlayer().remainingTime = result.remainingTime;
-    //                }
-    //                this.refreshPlayerModels();
-    //            } else {
-    //                this.refreshClick();
-    //            }
-    //        }
-    //    });
-    //}
-
 
     refreshClick(): void {
         this.callGETMethod("/game/get");

@@ -214,7 +214,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
         };
         GamePlayer.prototype.isAlive = function () {
             var now = new Date();
-            return now.getTime() - this.lastSeen.getTime() < exports.CLIENT_TIMEOUT;
+            return this.lastSeen ? now.getTime() - this.lastSeen.getTime() < exports.CLIENT_TIMEOUT : false;
         };
         GamePlayer.fromJSON = function (json) {
             var player = new GamePlayer();
@@ -223,7 +223,9 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             player.userId = json.userId;
             player.playerName = json.playerName;
             player.remainingTime = json.remainingTime;
-            player.lastSeen = json.lastSeen;
+            if (json.lastSeen) {
+                player.lastSeen = new Date(json.lastSeen.toString());
+            }
             return player;
         };
         GamePlayer.prototype.toJSON = function () {

@@ -33,14 +33,19 @@ export class GameRun_Server extends literki.GameRun {
     }
 
     alive(): GameMethodResult {
+        var now = new Date();
         if (this.isCurrentPlayer() && this.state.runState == literki.GameRunState.Running && this.state.playState == literki.GamePlayState.PlayerMove) {
             var remainingTime = this.getCurrentPlayer().remainingTime;
             if (remainingTime > 0) {
-                remainingTime--;
-                this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+                var span = (now.getTime() - this.getCurrentPlayer().lastSeen.getTime());
+                //Otherwise remaingTime can be zeroed after reconect after game is paused
+                if (span < literki.CLIENT_TIMEOUT) {
+                    remainingTime -= (span / 1000);
+                    this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+                }
             }
         }
-        this.getCurrentUser().lastSeen = new Date();
+        this.getCurrentUser().lastSeen = now;
         return GameMethodResult.Undefined;
     }
 

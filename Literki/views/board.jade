@@ -39,7 +39,7 @@ block body
           tr
             // ko foreach: $parent.getPlayers($data * 2, ($data + 1) * 2)
             td
-              div(data-bind="css: isCurrentUser() ? 'activeplayerDiv' : 'playerDiv inactive'")
+              div(data-bind="css: playerCss")
                 table
                   tr
                     td

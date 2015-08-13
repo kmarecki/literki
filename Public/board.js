@@ -297,10 +297,10 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         function PlayerViewModel(parent) {
             this.isCurrentPlayer = ko.observable(false);
             this.isCurrentUser = ko.observable(false);
-            this.isAlive = ko.observable(false);
             this.playerName = ko.observable("");
             this.points = ko.observable(0);
-            this.remainingTime = ko.observable('');
+            this.remainingTime = ko.observable("");
+            this.playerCss = ko.observable("");
             this.parentModel = parent;
         }
         PlayerViewModel.prototype.findAndRefresh = function (players, currentPlayer) {
@@ -317,7 +317,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
             this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
             this.isCurrentUser(player.userId == game.currentUserId);
-            this.isAlive(player.isAlive());
+            this.playerCss((this.isCurrentUser() ? "currentUser" : "player") + (!player.isAlive() ? " inactivePlayer" : ""));
         };
         return PlayerViewModel;
     })();
@@ -419,31 +419,6 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.refreshBoard();
             ko.applyBindings(this);
         };
-        //alive(): void {
-        //    $.ajax({
-        //        type: "POST",
-        //        url: "/game/alive",
-        //        contentType: 'application/json',
-        //        data: JSON.stringify({
-        //            gameId: game.getState().gameId,
-        //            currentPlayerId: game.getCurrentPlayer().userId,
-        //            playState: game.getState().playState
-        //        }),
-        //        dataType: "json",
-        //        success: (result) => {
-        //            //To refresh errorMessage
-        //            super.refreshModel(result);
-        //            if (!result.forceRefresh) {
-        //                if (result.remainingTime != null) {
-        //                    game.getCurrentPlayer().remainingTime = result.remainingTime;
-        //                }
-        //                this.refreshPlayerModels();
-        //            } else {
-        //                this.refreshClick();
-        //            }
-        //        }
-        //    });
-        //}
         BoardViewModel.prototype.refreshClick = function () {
             this.callGETMethod("/game/get");
         };
