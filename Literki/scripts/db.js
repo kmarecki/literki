@@ -81,11 +81,15 @@ var GameRepository = (function () {
             callback(err, result);
         });
     };
+    //addWord(word: string, callback: (err: Error) => any): void {
+    //    this.
+    //}
     GameRepository.prototype.connect = function () {
         var uri = 'mongodb://localhost/literki';
         mongoose.connect(uri);
         this.addGameStateSchema();
         this.addUserProfileSchema();
+        this.addWordsDictionarySchema();
     };
     GameRepository.prototype.addGameStateSchema = function () {
         var schema = new mongoose.Schema({
@@ -134,6 +138,13 @@ var GameRepository = (function () {
             userName: String
         });
         this.User = mongoose.model("UserProfile", schema);
+    };
+    GameRepository.prototype.addWordsDictionarySchema = function () {
+        var schema = new mongoose.Schema({
+            language: String,
+            words: [String]
+        });
+        this.WordsDictionary = mongoose.model("WordsDictionary", schema);
     };
     GameRepository.prototype.getMaxGameId = function (callback) {
         this.GameState.findOne({}).sort({ gameId: -1 }).exec(function (err, result) {

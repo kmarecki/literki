@@ -1,4 +1,5 @@
-﻿import _ = require('underscore');
+﻿/// <reference path="..\typings\underscore\underscore.d.ts"/>
+import _ = require('underscore');
 
 export var ROW_SIZE = 15;
 export var MAX_LETTERS = 7;

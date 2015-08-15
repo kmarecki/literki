@@ -2,21 +2,25 @@
 /// <reference path=".\literki.ts"/>
 
 import mongoose = require('mongoose');
-import async = require('async');
 import literki = require('./literki');
 
-interface IUserProfile {
+interface UserProfile {
     googleId: string;
     userName: string;
 }
 
-interface IGameStateModel extends literki.IGameState, mongoose.Document { }
-interface IUserProfilModel extends IUserProfile, mongoose.Document { }
+interface WordsDictionary {
+}
+
+interface GameStateModel extends literki.IGameState, mongoose.Document { }
+interface UserProfilModel extends UserProfile, mongoose.Document { }
+interface WordsDictionaryModel extends WordsDictionary, mongoose.Document { }
 
 export class GameRepository {
     
-    GameState: mongoose.Model<IGameStateModel>;
-    User: mongoose.Model<IUserProfilModel>;
+    GameState: mongoose.Model<GameStateModel>;
+    User: mongoose.Model<UserProfilModel>;
+    WordsDictionary: mongoose.Model<WordsDictionaryModel>;
 
     open(): void {
         this.connect();
@@ -73,7 +77,7 @@ export class GameRepository {
         });
     }
 
-    loadOrCreateUser(googleId: number, userName: string, callback: (err: Error, user: IUserProfile) => any): void {
+    loadOrCreateUser(googleId: number, userName: string, callback: (err: Error, user: UserProfile) => any): void {
         this.User.findOne({ googleId: googleId }).exec((err, result) => {
             if (err != null) {
                 console.log(err);
@@ -86,7 +90,7 @@ export class GameRepository {
         });
     }
 
-    loadUser(id: number, callback: (err: Error, user: IUserProfile) => any): void {
+    loadUser(id: number, callback: (err: Error, user: UserProfile) => any): void {
         this.User.findOne({ _id: id }).exec((err, result) => {
             if (err != null) {
                 console.log(err);
@@ -95,12 +99,17 @@ export class GameRepository {
         });
     }
 
+    //addWord(word: string, callback: (err: Error) => any): void {
+    //    this.
+    //}
+
 
     private connect(): void {
         var uri = 'mongodb://localhost/literki';
         mongoose.connect(uri);
         this.addGameStateSchema();
         this.addUserProfileSchema();
+        this.addWordsDictionarySchema();
     }
 
     private addGameStateSchema(): void {
@@ -142,7 +151,7 @@ export class GameRepository {
                 }]
             }
         });
-        this.GameState = mongoose.model<IGameStateModel>("GameState", schema);
+        this.GameState = mongoose.model<GameStateModel>("GameState", schema);
     }
 
     private addUserProfileSchema(): void {
@@ -150,7 +159,15 @@ export class GameRepository {
             googleId: String,
             userName: String
         });
-        this.User = mongoose.model<IUserProfilModel>("UserProfile", schema);
+        this.User = mongoose.model<UserProfilModel>("UserProfile", schema);
+    }
+
+    private addWordsDictionarySchema(): void {
+        var schema = new mongoose.Schema({
+            language: String,
+            words: [String]
+        });
+        this.WordsDictionary = mongoose.model<WordsDictionaryModel>("WordsDictionary", schema);
     }
 
     private getMaxGameId(callback: (err: Error, gameId: number) => any): void {
