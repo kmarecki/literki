@@ -3,7 +3,6 @@ var async = require('async');
 var fs = require('fs');
 var db = require('../../literki/scripts/db');
 var util = require('../../literki/scripts/util');
-var count = 0;
 var fileName = process.argv[2];
 console.log("Importowanie pliku " + fileName);
 var repo = new db.GameRepository();

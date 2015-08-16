@@ -1,12 +1,9 @@
 ﻿/// <reference path="../../Literki/typings/async/async.d.ts"/> 
-
 import async = require('async');
 import fs = require('fs');
 import stream = require('stream');
 import db = require('../../literki/scripts/db');
 import util = require('../../literki/scripts/util');
-
-var count = 0;
 
 var fileName = process.argv[2];
 console.log(`Importowanie pliku ${fileName}`);
@@ -17,7 +14,6 @@ repo.open();
 repo.removeAllWords((err) => {
     if (!err) {
        
-
         var liner = util.createLiner();
         var source = fs.createReadStream(fileName);
         source.pipe(liner);

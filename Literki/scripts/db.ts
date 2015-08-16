@@ -118,6 +118,15 @@ export class GameRepository {
         });
     }
 
+    existWord(word: string, callback: (err: Error, exists: boolean) => any): void {
+        this.DictionaryWord.findOne({ word: word }, { _id: 1 }, undefined, (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            callback(err, result ? true : false);
+        });
+    }
+
     private connect(): void {
         var uri = 'mongodb://localhost/literki';
         mongoose.connect(uri);
