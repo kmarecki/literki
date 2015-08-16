@@ -19,7 +19,7 @@ var GameRepository = (function () {
     GameRepository.prototype.newState = function (state, callback) {
         var _this = this;
         var gameId = this.getMaxGameId(function (err, result) {
-            if (result != null) {
+            if (result) {
                 var newGameId = result != -1 ? result + 1 : 1;
                 state.gameId = newGameId;
                 state.creationDate = new Date();
@@ -53,7 +53,7 @@ var GameRepository = (function () {
     GameRepository.prototype.saveState = function (state, callback) {
         var modelState = new this.GameState(state);
         this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, function (err) {
-            if (err != null) {
+            if (err) {
                 console.log(err);
             }
             callback(err);
@@ -62,7 +62,7 @@ var GameRepository = (function () {
     GameRepository.prototype.loadOrCreateUser = function (googleId, userName, callback) {
         var _this = this;
         this.User.findOne({ googleId: googleId }).exec(function (err, result) {
-            if (err != null) {
+            if (err) {
                 console.log(err);
             }
             if (result == null && err == null) {
@@ -75,15 +75,28 @@ var GameRepository = (function () {
     };
     GameRepository.prototype.loadUser = function (id, callback) {
         this.User.findOne({ _id: id }).exec(function (err, result) {
-            if (err != null) {
+            if (err) {
                 console.log(err);
             }
             callback(err, result);
         });
     };
-    //addWord(word: string, callback: (err: Error) => any): void {
-    //    this.
-    //}
+    GameRepository.prototype.addWord = function (word, callback) {
+        this.DictionaryWord.create({ word: word }, function (err, result) {
+            if (err) {
+                console.log(err);
+            }
+            callback(err);
+        });
+    };
+    GameRepository.prototype.removeAllWords = function (callback) {
+        this.DictionaryWord.remove({}, function (err) {
+            if (err) {
+                console.log(err);
+            }
+            callback(err);
+        });
+    };
     GameRepository.prototype.connect = function () {
         var uri = 'mongodb://localhost/literki';
         mongoose.connect(uri);
@@ -141,10 +154,9 @@ var GameRepository = (function () {
     };
     GameRepository.prototype.addWordsDictionarySchema = function () {
         var schema = new mongoose.Schema({
-            language: String,
-            words: [String]
+            word: { type: String, index: true }
         });
-        this.WordsDictionary = mongoose.model("WordsDictionary", schema);
+        this.DictionaryWord = mongoose.model("DictionaryWord", schema);
     };
     GameRepository.prototype.getMaxGameId = function (callback) {
         this.GameState.findOne({}).sort({ gameId: -1 }).exec(function (err, result) {

@@ -176,7 +176,7 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
                 res.json({ state: state, errorMessage: errMsg });
             } else {
                 state = game.state;
-                repo.saveState(state,(err) => {
+                repo.saveState(state, (err) => {
                     if (err != null) {
                         errorMessages = errorMessages.concat(util.formatError(err));
                     }

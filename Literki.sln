@@ -13,6 +13,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{4AA8BF2C-7D12-4A9B-ACCA-227BCDB494D3}"
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "importer", "tools\importer\importer.njsproj", "{8EC5D231-6256-4EF4-878F-B5A6A5F6935A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4760D6B2-AD45-4848-A635-9343262F2874} = {4760D6B2-AD45-4848-A635-9343262F2874}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
