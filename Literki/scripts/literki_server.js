@@ -66,18 +66,14 @@ var GameRun_Server = (function (_super) {
         }
         return this.UNATHORIZED_ACCESS;
     };
-    GameRun_Server.prototype.approveMove = function (approve) {
-        var _this = this;
+    GameRun_Server.prototype.approveMove = function (approve, existsWord) {
         var move = this.getActualMove();
         if (this.isNextPlayer()) {
-            move.freeLetters.forEach(function (fl) {
-                _this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
-            });
             if (approve) {
                 this.updateStateAfterPlayerAction(move, PlayerActionType.MoveApproval);
             }
             else {
-                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck);
+                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck, { existsWord: true });
             }
             return GameMethodResult.Undefined;
         }
@@ -176,7 +172,7 @@ var GameRun_Server = (function (_super) {
             this.state.remainingLetters.splice(pickIndex, 1);
         }
     };
-    GameRun_Server.prototype.updateStateAfterPlayerAction = function (move, actionType) {
+    GameRun_Server.prototype.updateStateAfterPlayerAction = function (move, actionType, options) {
         var _this = this;
         switch (actionType) {
             case PlayerActionType.Move: {
@@ -192,7 +188,7 @@ var GameRun_Server = (function (_super) {
             }
             case PlayerActionType.MoveCheck: {
                 this.state.playState = literki.GamePlayState.PlayerMove;
-                if (_.any(this.getNewWords(), function (w) { return !_this.isValidWord(w.word); })) {
+                if (!options.existsWords) {
                     //False Move
                     move.freeLetters.forEach(function (l) { return _this.getCurrentPlayer().freeLetters.push(l.letter); });
                     this.clearMove();

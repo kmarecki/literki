@@ -107,26 +107,31 @@ app.get('/game/get', auth, function (req, res) {
         res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
     });
 });
-app.get('/game/join', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.join(); }); });
-app.get('/game/start', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.start(); }); });
-app.get('/game/pause', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.pause(); }); });
-app.get('/game/fold', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.fold(); }); });
-app.get('/game/exchange', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) { return game.exchange(req.query.exchangeLetters); }); });
+app.get('/game/join', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.join()); }); });
+app.get('/game/start', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.start()); }); });
+app.get('/game/pause', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.pause()); }); });
+app.get('/game/fold', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.fold()); }); });
+app.get('/game/exchange', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.exchange(req.query.exchangeLetters)); }); });
 app.post('/game/approve', auth, function (req, res) {
     var approve = req.body.approve;
-    simpleGameMethodCall(req, res, function (game, req) { return game.approveMove(approve); }, req.body.gameId);
+    simpleGameMethodCall(req, res, function (game, req, call) {
+        game.renderMove();
+        repo.existWords(game.getNewWords().map(function (w) { return w.word; }), function (err, exists) {
+            call(game.approveMove(approve, exists));
+        });
+    }, req.body.gameId);
 });
 app.post('/game/move', auth, function (req, res) {
     var move = req.body;
-    simpleGameMethodCall(req, res, function (game, req) { return game.makeMove(move); }, move.gameId);
+    simpleGameMethodCall(req, res, function (game, req, call) { return call(game.makeMove(move)); }, move.gameId);
 });
-app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req) {
+app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) {
     var gameId = req.body.gameId;
     var currentPlayerId = req.body.currentPlayerId;
     var playState = req.body.playState;
     var result = game.alive();
     result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.state.playState != playState;
-    return result;
+    return call(result);
 }, req.body.gameId); });
 function simpleGameMethodCall(req, res, call, gameId) {
     if (gameId === void 0) { gameId = req.query.gameId; }
@@ -139,20 +144,21 @@ function simpleGameMethodCall(req, res, call, gameId) {
         else {
             var game = new literki_server.GameRun_Server(req.user.id);
             game.runState(state);
-            var result = call(game, req);
-            var errMsg = result.errorMessage;
-            if (errMsg != null) {
-                res.json({ state: state, errorMessage: errMsg });
-            }
-            else {
-                state = game.state;
-                repo.saveState(state, function (err) {
-                    if (err != null) {
-                        errorMessages = errorMessages.concat(util.formatError(err));
-                    }
-                    res.json({ state: state, userId: req.user.id, forceRefresh: result.forceRefresh, errorMessage: errorMessages });
-                });
-            }
+            call(game, req, function (result) {
+                var errMsg = result.errorMessage;
+                if (errMsg != null) {
+                    res.json({ state: state, errorMessage: errMsg });
+                }
+                else {
+                    state = game.state;
+                    repo.saveState(state, function (err) {
+                        if (err != null) {
+                            errorMessages = errorMessages.concat(util.formatError(err));
+                        }
+                        res.json({ state: state, userId: req.user.id, forceRefresh: result.forceRefresh, errorMessage: errorMessages });
+                    });
+                }
+            });
         }
     });
 }

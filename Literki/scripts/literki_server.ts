@@ -63,18 +63,13 @@ export class GameRun_Server extends literki.GameRun {
         return this.UNATHORIZED_ACCESS;
     }
 
-    approveMove(approve: Boolean): GameMethodResult {
+    approveMove(approve: Boolean, existsWord?: Boolean): GameMethodResult {
         var move = this.getActualMove();
-
         if (this.isNextPlayer()) {
-            move.freeLetters.forEach(fl => {
-                this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
-            });
-
             if (approve) {
                 this.updateStateAfterPlayerAction(move, PlayerActionType.MoveApproval);
             } else {
-                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck);
+                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck, { existsWord: true });
             }
             return GameMethodResult.Undefined;
         }
@@ -181,7 +176,7 @@ export class GameRun_Server extends literki.GameRun {
         }
     }
 
-    private updateStateAfterPlayerAction(move: literki.GameMove, actionType: PlayerActionType): literki.IGameState {
+    private updateStateAfterPlayerAction(move: literki.GameMove, actionType: PlayerActionType, options?: { existsWords?: boolean }): literki.IGameState {
         switch (actionType) {
             case PlayerActionType.Move: {
                 this.state.currentMove = move;
@@ -196,7 +191,7 @@ export class GameRun_Server extends literki.GameRun {
             }
             case PlayerActionType.MoveCheck: {
                 this.state.playState = literki.GamePlayState.PlayerMove;
-                if (_.any(this.getNewWords(), w => !this.isValidWord(w.word))) {
+                if (!options.existsWords) {
                     //False Move
                     move.freeLetters.forEach(l => this.getCurrentPlayer().freeLetters.push(l.letter));
                     this.clearMove();

@@ -1,8 +1,8 @@
 /// <reference path="../../Literki/typings/async/async.d.ts"/> 
 var async = require('async');
 var fs = require('fs');
-var db = require('../../literki/scripts/db');
-var util = require('../../literki/scripts/util');
+var db = require('../../Literki/scripts/db');
+var util = require('../../Literki/scripts/util');
 var fileName = process.argv[2];
 console.log("Importowanie pliku " + fileName);
 var repo = new db.GameRepository();

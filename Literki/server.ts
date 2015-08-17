@@ -137,29 +137,34 @@ app.get('/game/get', auth, (req, res) => {
     });
 });
 
-app.get('/game/join', auth,(req, res) => simpleGameMethodCall(req, res,(game, req) => game.join()));
-app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.start()));
-app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.pause()));
-app.get('/game/fold', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => game.fold()));
-app.get('/game/exchange', auth,(req, res) => simpleGameMethodCall(req, res, (game, req) => game.exchange(req.query.exchangeLetters)));
+app.get('/game/join', auth,(req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.join())));
+app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.start())));
+app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.pause())));
+app.get('/game/fold', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.fold())));
+app.get('/game/exchange', auth,(req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.exchange(req.query.exchangeLetters))));
 app.post('/game/approve', auth, (req, res) => {
     var approve = req.body.approve;
-    simpleGameMethodCall(req, res, (game, req) => game.approveMove(approve), req.body.gameId);
+    simpleGameMethodCall(req, res, (game, req, call) => {
+        game.renderMove();
+        repo.existWords(game.getNewWords().map(w => w.word), (err, exists) => {
+            call(game.approveMove(approve, exists));
+        });
+    }, req.body.gameId);
 });
 app.post('/game/move', auth, (req, res) => {
     var move = <literki.GameMove> req.body;
-    simpleGameMethodCall(req, res, (game, req) => game.makeMove(move), move.gameId);
+    simpleGameMethodCall(req, res, (game, req, call) => call(game.makeMove(move)), move.gameId);
 });
-app.post('/player/alive', auth, (req, res) => simpleGameMethodCall(req, res, (game, req) => {
+app.post('/player/alive', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => {
     var gameId: number = req.body.gameId;
     var currentPlayerId = req.body.currentPlayerId;
     var playState = req.body.playState;
     var result = game.alive();
     result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.state.playState != playState;
-    return result;
+    return call(result);
 }, req.body.gameId));
 
-type gameMethodCallback = (game: literki_server.GameRun_Server, req: express.Request) => literki_server.GameMethodResult;
+type gameMethodCallback = (game: literki_server.GameRun_Server, req: express.Request, call: (result: literki_server.GameMethodResult) => any) => void;
 function simpleGameMethodCall(req: express.Request, res: express.Response, call: gameMethodCallback, gameId: number = req.query.gameId): void {
 
     repo.loadState(gameId,(err, state) => {
@@ -170,19 +175,20 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
         } else {
             var game = new literki_server.GameRun_Server(req.user.id);
             game.runState(state);
-            var result = call(game, req);
-            var errMsg = result.errorMessage;
-            if (errMsg != null) {
-                res.json({ state: state, errorMessage: errMsg });
-            } else {
-                state = game.state;
-                repo.saveState(state, (err) => {
-                    if (err != null) {
-                        errorMessages = errorMessages.concat(util.formatError(err));
-                    }
-                    res.json({ state: state, userId: req.user.id, forceRefresh: result.forceRefresh, errorMessage: errorMessages });
-                });
-            }
+            call(game, req, (result) => {
+                var errMsg = result.errorMessage;
+                if (errMsg != null) {
+                    res.json({ state: state, errorMessage: errMsg });
+                } else {
+                    state = game.state;
+                    repo.saveState(state, (err) => {
+                        if (err != null) {
+                            errorMessages = errorMessages.concat(util.formatError(err));
+                        }
+                        res.json({ state: state, userId: req.user.id, forceRefresh: result.forceRefresh, errorMessage: errorMessages });
+                    });
+                }
+            });
         }
     });
 }

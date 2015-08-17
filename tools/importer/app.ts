@@ -2,8 +2,8 @@
 import async = require('async');
 import fs = require('fs');
 import stream = require('stream');
-import db = require('../../literki/scripts/db');
-import util = require('../../literki/scripts/util');
+import db = require('../../Literki/scripts/db');
+import util = require('../../Literki/scripts/util');
 
 var fileName = process.argv[2];
 console.log(`Importowanie pliku ${fileName}`);
@@ -32,7 +32,7 @@ repo.removeAllWords((err) => {
                     }
                     process.exit(err ? 1 : 0);
                 }
-                );
+            );
         });
     }
 });

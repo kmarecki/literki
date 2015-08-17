@@ -548,6 +548,13 @@ export class GameRun {
         return { gameId: this.state.gameId, freeLetters: freeLetters };
     }
 
+    public renderMove(): void {
+        var move = this.getActualMove();
+        move.freeLetters.forEach(fl => {
+            this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
+        });
+    }
+
     public canApproveMove(): boolean {
         return (
             this.isNextPlayer() &&

@@ -97,12 +97,12 @@ var GameRepository = (function () {
             callback(err);
         });
     };
-    GameRepository.prototype.existWord = function (word, callback) {
-        this.DictionaryWord.findOne({ word: word }, { _id: 1 }, undefined, function (err, result) {
+    GameRepository.prototype.existWords = function (words, callback) {
+        this.DictionaryWord.find({ word: { $in: words } }, { _id: 1 }, undefined, function (err, result) {
             if (err) {
                 console.log(err);
             }
-            callback(err, result ? true : false);
+            callback(err, result.length == words.length ? true : false);
         });
     };
     GameRepository.prototype.connect = function () {

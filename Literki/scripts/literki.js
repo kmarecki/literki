@@ -457,6 +457,13 @@ var GameRun = (function () {
         }
         return { gameId: this.state.gameId, freeLetters: freeLetters };
     };
+    GameRun.prototype.renderMove = function () {
+        var _this = this;
+        var move = this.getActualMove();
+        move.freeLetters.forEach(function (fl) {
+            _this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
+        });
+    };
     GameRun.prototype.canApproveMove = function () {
         return (this.isNextPlayer() &&
             this.state.runState == GameRunState.Running &&
