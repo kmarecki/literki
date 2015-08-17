@@ -7,7 +7,7 @@ export function formatError(err: Error): string {
 export function createLiner(): stream.Transform {
     var liner = new stream.Transform({ objectMode: true })
 
-    liner._transform =  (chunk, encoding, done) => {
+    liner._transform =  function (chunk, encoding, done) {
         var data = chunk.toString();
         if (this._lastLineData) data = this._lastLineData + data;
 
@@ -18,7 +18,7 @@ export function createLiner(): stream.Transform {
         done();
     }
 
-    liner._flush = (done) => {
+    liner._flush = function (done) {
         if (this._lastLineData) {
             this.push(this._lastLineData);
         }
