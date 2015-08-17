@@ -188,27 +188,27 @@ class Board {
             move.freeLetters.forEach(l => {
                 var xpos = this.BOARD_MARGIN + l.x * this.FIELD_SIZE;
                 var ypos = this.BOARD_MARGIN + l.y * this.FIELD_SIZE;
-                var backgroundColor = "#FFFFCC";
+                var backgroundColor = !game.isNextPlayer() ? "#FFFFCC" : "silver";
                 var letterGroup = this.getLetterGroup(xpos, ypos, l.letter, -1, false, backgroundColor);
 
-                if (game.isNextPlayer()) {
-                    var duration = 1500; 
-                    var lighten = true;
-                    var tick = 0;
-                    var anim = new Kinetic.Animation((frame) => {
-                        var newTick = Math.ceil(frame.time / duration);
-                        if (newTick > tick) {
-                            lighten = !lighten;
-                            tick = newTick;
-                        }
-                        var opacity = lighten ?
-                            (frame.time % duration) / duration :
-                            1 - (frame.time % duration) / duration;
-                        letterGroup.setOpacity(opacity);
-                        console.log("opacity: %s, frame.time: %s, tick: %s", opacity, frame.time, tick);
-                    }, letterLayer);
-                    anim.start();
-                }
+                //if (game.isNextPlayer()) {
+                //    var duration = 1500; 
+                //    var lighten = true;
+                //    var tick = 0;
+                //    var anim = new Kinetic.Animation((frame) => {
+                //        var newTick = Math.ceil(frame.time / duration);
+                //        if (newTick > tick) {
+                //            lighten = !lighten;
+                //            tick = newTick;
+                //        }
+                //        var opacity = lighten ?
+                //            (frame.time % duration) / duration :
+                //            1 - (frame.time % duration) / duration;
+                //        letterGroup.setOpacity(opacity);
+                //        console.log("opacity: %s, frame.time: %s, tick: %s", opacity, frame.time, tick);
+                //    }, letterLayer);
+                //    anim.start();
+                //}
 
                 letterLayer.add(letterGroup);
             });

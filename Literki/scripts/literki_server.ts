@@ -63,13 +63,13 @@ export class GameRun_Server extends literki.GameRun {
         return this.UNATHORIZED_ACCESS;
     }
 
-    approveMove(approve: Boolean, existsWord?: Boolean): GameMethodResult {
+    approveMove(approve: boolean, existsWords?: boolean): GameMethodResult {
         var move = this.getActualMove();
         if (this.isNextPlayer()) {
             if (approve) {
                 this.updateStateAfterPlayerAction(move, PlayerActionType.MoveApproval);
             } else {
-                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck, { existsWord: true });
+                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck, { existsWords: existsWords });
             }
             return GameMethodResult.Undefined;
         }

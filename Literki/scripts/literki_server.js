@@ -66,14 +66,14 @@ var GameRun_Server = (function (_super) {
         }
         return this.UNATHORIZED_ACCESS;
     };
-    GameRun_Server.prototype.approveMove = function (approve, existsWord) {
+    GameRun_Server.prototype.approveMove = function (approve, existsWords) {
         var move = this.getActualMove();
         if (this.isNextPlayer()) {
             if (approve) {
                 this.updateStateAfterPlayerAction(move, PlayerActionType.MoveApproval);
             }
             else {
-                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck, { existsWord: true });
+                this.updateStateAfterPlayerAction(move, PlayerActionType.MoveCheck, { existsWords: existsWords });
             }
             return GameMethodResult.Undefined;
         }
