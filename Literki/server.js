@@ -143,6 +143,7 @@ function simpleGameMethodCall(req, res, call, gameId) {
         }
         else {
             var game = new literki_server.GameRun_Server(req.user.id);
+            state = literki.GameState.fromJSON(state);
             game.runState(state);
             call(game, req, function (result) {
                 var errMsg = result.errorMessage;

@@ -38,7 +38,10 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.alive = function () {
         var now = new Date();
-        if (this.isCurrentPlayer() && this.state.runState == literki.GameRunState.Running && this.state.playState == literki.GamePlayState.PlayerMove) {
+        if (this.isCurrentPlayer() &&
+            this.state.runState == literki.GameRunState.Running &&
+            this.state.playState == literki.GamePlayState.PlayerMove &&
+            _.every(this.state.players, function (player) { return player.isAlive(); })) {
             var remainingTime = this.getCurrentPlayer().remainingTime;
             if (remainingTime > 0) {
                 var span = (now.getTime() - this.getCurrentPlayer().lastSeen.getTime());

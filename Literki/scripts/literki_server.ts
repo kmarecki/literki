@@ -34,7 +34,10 @@ export class GameRun_Server extends literki.GameRun {
 
     alive(): GameMethodResult {
         var now = new Date();
-        if (this.isCurrentPlayer() && this.state.runState == literki.GameRunState.Running && this.state.playState == literki.GamePlayState.PlayerMove) {
+        if (this.isCurrentPlayer() &&
+            this.state.runState == literki.GameRunState.Running &&
+            this.state.playState == literki.GamePlayState.PlayerMove &&
+            _.every(this.state.players, player => (<literki.GamePlayer>player).isAlive())) {
             var remainingTime = this.getCurrentPlayer().remainingTime;
             if (remainingTime > 0) {
                 var span = (now.getTime() - this.getCurrentPlayer().lastSeen.getTime());
