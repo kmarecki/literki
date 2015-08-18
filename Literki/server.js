@@ -126,18 +126,18 @@ app.post('/game/move', auth, function (req, res) {
     simpleGameMethodCall(req, res, function (game, req, call) { return call(game.makeMove(move)); }, move.gameId);
 });
 app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) {
-    var gameId = req.body.gameId;
-    var currentPlayerId = req.body.currentPlayerId;
-    var playState = req.body.playState;
+    var forceRefresh = game.getCurrentPlayer().userId != req.body.currentPlayerId ||
+        game.state.playState != req.body.playState ||
+        game.getPlayers().length != req.body.playersCount;
     var result = game.alive();
-    result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.state.playState != playState;
+    result.forceRefresh = forceRefresh;
     return call(result);
 }, req.body.gameId); });
 function simpleGameMethodCall(req, res, call, gameId) {
     if (gameId === void 0) { gameId = req.query.gameId; }
     repo.loadState(gameId, function (err, state) {
         var errorMessages = '';
-        if (err != null) {
+        if (err != null || !state) {
             errorMessages = util.formatError(err);
             res.json({ state: state, errorMessage: errorMessages });
         }

@@ -354,8 +354,9 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.self = this;
             this.newWords = ko.observableArray();
             this.changeLetters = ko.observable("");
-            this.allPlayers = new Array();
             this.errorMessage = ko.observable("");
+            this.allPlayers = ko.observableArray();
+            this.playerCount = ko.observable(0);
             this.historyMoves = ko.observableArray();
         }
         BoardViewModel.prototype.setNewWords = function (newWords) {
@@ -373,9 +374,6 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         BoardViewModel.prototype.cleanChangeLetters = function () {
             this.changeLetters("");
         };
-        BoardViewModel.prototype.getAllPlayers = function () {
-            return this.getPlayers(0, game.getPlayers().length);
-        };
         BoardViewModel.prototype.getPlayers = function (start, end) {
             var _this = this;
             var players = new Array();
@@ -383,9 +381,12 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 var playerModel = new PlayerViewModel(_this);
                 playerModel.refresh(p, game.getCurrentPlayer());
                 players.push(playerModel);
-                _this.allPlayers.push(playerModel);
             });
-            return players;
+            this.allPlayers(players);
+            return this.allPlayers();
+        };
+        BoardViewModel.prototype.getAllPlayers = function () {
+            return this.getPlayers(0, game.getPlayers().length);
         };
         BoardViewModel.prototype.getPlayersRow = function () {
             return game.getPlayers().length > 2 ? [0, 1] : [0];
@@ -399,46 +400,22 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             viewModel.board.drawGameState();
         };
         BoardViewModel.prototype.init = function () {
-            var _this = this;
             var gameId = System.urlParam("gameId");
             var join = System.urlParam("join");
             if (join) {
-                $.ajax({
-                    type: "GET",
-                    url: "/game/join",
-                    data: { gameId: gameId },
-                    dataType: "json",
-                    success: function (result) { return _this.initRefresh(result); }
-                });
+                this.callGETMethod("/game/join", true, { gameId: gameId }, true);
             }
             else {
                 if (gameId != null) {
-                    $.ajax({
-                        type: "GET",
-                        url: "/game/get",
-                        data: { gameId: gameId },
-                        dataType: "json",
-                        success: function (result) { return _this.initRefresh(result); }
-                    });
+                    this.callGETMethod("/game/get", true, { gameId: gameId }, true);
                 }
                 else {
-                    $.ajax({
-                        type: "GET",
-                        url: "/game/new",
-                        dataType: "json",
-                        success: function (result) { return _this.initRefresh(result); }
-                    });
+                    console.log("Not enough parameters");
                 }
             }
         };
-        BoardViewModel.prototype.initRefresh = function (result) {
-            game = new Literki.GameRun(result.userId);
-            this.refreshModel(result);
-            this.refreshBoard();
-            ko.applyBindings(this);
-        };
         BoardViewModel.prototype.refreshClick = function () {
-            this.callGETMethod("/game/get");
+            this.callGETMethod("/game/get", true);
         };
         BoardViewModel.prototype.startClick = function () {
             this.callGETMethod("/game/start");
@@ -459,41 +436,47 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             this.callPOSTMethod("/player/alive", false, {
                 gameId: game.state.gameId,
                 currentPlayerId: game.getCurrentPlayer().userId,
-                playState: game.state.playState
+                playState: game.state.playState,
+                playersCount: game.getPlayers().length
             });
         };
-        BoardViewModel.prototype.callGETMethod = function (name, refreshBoard, data) {
+        BoardViewModel.prototype.callGETMethod = function (name, refreshBoard, data, applyBindings) {
             var _this = this;
             if (refreshBoard === void 0) { refreshBoard = true; }
             if (data === void 0) { data = { gameId: game.state.gameId }; }
+            if (applyBindings === void 0) { applyBindings = false; }
             $.ajax({
                 type: "GET",
                 url: name,
                 data: data,
                 dataType: "json",
-                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard); },
+                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings); },
                 error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
             });
         };
-        BoardViewModel.prototype.callPOSTMethod = function (name, refreshBoard, data) {
+        BoardViewModel.prototype.callPOSTMethod = function (name, refreshBoard, data, applyBindings) {
             var _this = this;
             if (refreshBoard === void 0) { refreshBoard = true; }
             if (data === void 0) { data = { gameId: game.state.gameId }; }
+            if (applyBindings === void 0) { applyBindings = false; }
             $.ajax({
                 type: "POST",
                 url: name,
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 dataType: "json",
-                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard); },
+                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings); },
                 error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
             });
         };
-        BoardViewModel.prototype.refreshAfterHTMLMethodCall = function (result, refreshBoard) {
+        BoardViewModel.prototype.refreshAfterHTMLMethodCall = function (result, refreshBoard, applyBindings) {
             var refresh = refreshBoard || result.forceRefresh;
             this.refreshModel(result, refresh);
             if (refresh) {
                 this.refreshBoard();
+            }
+            if (applyBindings) {
+                ko.applyBindings(this);
             }
         };
         BoardViewModel.prototype.moveClick = function () {
@@ -522,6 +505,9 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             if (fullRefresh === void 0) { fullRefresh = true; }
             _super.prototype.refreshModel.call(this, result);
             if (result.state) {
+                if (!game) {
+                    game = new Literki.GameRun(result.userId);
+                }
                 var state = Literki.GameState.fromJSON(result.state);
                 game.state = state;
                 this.refreshPlayerModels();
@@ -545,8 +531,13 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             }
         };
         BoardViewModel.prototype.refreshPlayerModels = function () {
-            if (game != null) {
-                this.allPlayers.forEach(function (p) { return p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()); });
+            if (this.allPlayers().length == game.getPlayers().length) {
+                this.allPlayers().forEach(function (p) { return p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()); });
+            }
+            else {
+                this.allPlayers.removeAll();
+                this.playerCount(game.getPlayers().length);
+                this.getAllPlayers();
             }
         };
         BoardViewModel.prototype.refreshHistoryMoves = function () {

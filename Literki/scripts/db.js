@@ -24,6 +24,7 @@ var GameRepository = (function () {
                 state.gameId = newGameId;
                 state.creationDate = new Date();
                 state.runState = literki.GameRunState.Created;
+                state.playState = literki.GamePlayState.None;
                 _this.saveState(state, function (err) {
                     if (err == null) {
                         callback(null, newGameId);

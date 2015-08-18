@@ -252,6 +252,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
     (function (GamePlayState) {
         GamePlayState[GamePlayState["PlayerMove"] = 0] = "PlayerMove";
         GamePlayState[GamePlayState["MoveApproval"] = 1] = "MoveApproval";
+        GamePlayState[GamePlayState["None"] = 2] = "None";
     })(exports.GamePlayState || (exports.GamePlayState = {}));
     var GamePlayState = exports.GamePlayState;
     var GameState = (function () {
@@ -277,8 +278,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                 var player = GamePlayer.fromJSON(p);
                 state.players.push(player);
             });
-            state.remainingLetters = new Array();
-            state.remainingLetters.concat(json.remainingLetters);
+            state.remainingLetters = json.remainingLetters;
             state.currentMove = json.currentMove;
             return state;
         };

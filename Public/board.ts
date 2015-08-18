@@ -425,12 +425,13 @@ class BoardViewModel extends App.BaseViewModel {
     private self = this;
     private newWords = ko.observableArray<BoardViewModelWord>();
     private changeLetters = ko.observable("");
-    private allPlayers = new Array<PlayerViewModel>();
 
     board: Board;
-    errorMessage = ko.observable("");
-    historyMoves = ko.observableArray<MoveHistoryViewModel>();
 
+    errorMessage = ko.observable("");
+    allPlayers = ko.observableArray<PlayerViewModel>();
+    playerCount = ko.observable(0);
+    historyMoves = ko.observableArray<MoveHistoryViewModel>();
 
     setNewWords(newWords: BoardViewModelWord[]): void {
         this.cleanNewWords();
@@ -448,10 +449,6 @@ class BoardViewModel extends App.BaseViewModel {
     private cleanChangeLetters(): void {
         this.changeLetters("");
     }
-
-    getAllPlayers(): PlayerViewModel[]{
-        return this.getPlayers(0, game.getPlayers().length);
-    }
         
     getPlayers(start: number, end: number): PlayerViewModel[] {
         var players = new Array<PlayerViewModel>();
@@ -460,10 +457,14 @@ class BoardViewModel extends App.BaseViewModel {
             var playerModel = new PlayerViewModel(this);
             playerModel.refresh(<Literki.GamePlayer>p, game.getCurrentPlayer());
             players.push(playerModel);
-            this.allPlayers.push(playerModel);
         });
 
-        return players;
+        this.allPlayers(players);
+        return this.allPlayers();
+    }
+
+    private getAllPlayers(): PlayerViewModel[] {
+        return this.getPlayers(0, game.getPlayers().length);
     }
 
     getPlayersRow(): Number[] {
@@ -485,42 +486,18 @@ class BoardViewModel extends App.BaseViewModel {
         var join = System.urlParam("join");
 
         if (join) {
-            $.ajax({
-                type: "GET",
-                url: "/game/join",
-                data: { gameId: gameId },
-                dataType: "json",
-                success: result => this.initRefresh(result)
-            });
+            this.callGETMethod("/game/join", true, { gameId: gameId }, true );
         } else {
             if (gameId != null) {
-                $.ajax({
-                    type: "GET",
-                    url: "/game/get",
-                    data: { gameId: gameId },
-                    dataType: "json",
-                    success: result => this.initRefresh(result)
-                });
+                this.callGETMethod("/game/get", true, { gameId: gameId }, true);
             } else {
-                $.ajax({
-                    type: "GET",
-                    url: "/game/new",
-                    dataType: "json",
-                    success: result => this.initRefresh(result)
-                });
+                console.log("Not enough parameters");
             }
         }
     }
 
-    private initRefresh(result: any): void {
-        game = new Literki.GameRun(result.userId);
-        this.refreshModel(result);
-        this.refreshBoard();
-        ko.applyBindings(this);
-    }
-
     refreshClick(): void {
-        this.callGETMethod("/game/get");
+        this.callGETMethod("/game/get", true);
     }
 
     startClick(): void {
@@ -546,39 +523,43 @@ class BoardViewModel extends App.BaseViewModel {
         this.callPOSTMethod("/player/alive", false,{
             gameId: game.state.gameId,
             currentPlayerId: game.getCurrentPlayer().userId,
-            playState: game.state.playState
+            playState: game.state.playState,
+            playersCount: game.getPlayers().length
         });
     }
 
 
-    private callGETMethod(name: string,  refreshBoard: boolean = true, data: any = { gameId: game.state.gameId } ): void {
+    private callGETMethod(name: string, refreshBoard: boolean = true, data: any = { gameId: game.state.gameId }, applyBindings: boolean = false): void {
         $.ajax({
             type: "GET",
             url: name,
             data: data,
             dataType: "json",
-            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard),
+            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings),
             error: (xhr, ajaxOptions, thrownError) => this.ajaxErrorHandler(xhr, ajaxOptions, thrownError)
         });
     }
 
-    private callPOSTMethod(name: string, refreshBoard: boolean = true, data: any = { gameId: game.state.gameId }): void {
+    private callPOSTMethod(name: string, refreshBoard: boolean = true, data: any = { gameId: game.state.gameId }, applyBindings: boolean = false): void {
         $.ajax({
             type: "POST",
             url: name,
             contentType: "application/json",
             data: JSON.stringify(data),
             dataType: "json",
-            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard),
+            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings),
             error: (xhr, ajaxOptions, thrownError) => this.ajaxErrorHandler(xhr, ajaxOptions, thrownError)
         });
     }
 
-    private refreshAfterHTMLMethodCall(result: any, refreshBoard: boolean): void  {
+    private refreshAfterHTMLMethodCall(result: any, refreshBoard: boolean, applyBindings: boolean): void  {
         var refresh = refreshBoard || result.forceRefresh;
         this.refreshModel(result, refresh);
         if (refresh) {
             this.refreshBoard();
+        }
+        if (applyBindings) {
+            ko.applyBindings(this);
         }
     }
 
@@ -610,6 +591,10 @@ class BoardViewModel extends App.BaseViewModel {
         super.refreshModel(result);
 
         if (result.state) {
+            if (!game) {
+                game = new Literki.GameRun(result.userId);
+            }
+
             var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
             game.state = state;
             this.refreshPlayerModels();
@@ -636,8 +621,12 @@ class BoardViewModel extends App.BaseViewModel {
     }
 
     private refreshPlayerModels(): void {
-        if (game != null) {
-            this.allPlayers.forEach(p => p.findAndRefresh(<Literki.GamePlayer[]>game.getPlayers(), game.getCurrentPlayer()));
+        if (this.allPlayers().length == game.getPlayers().length) {
+            this.allPlayers().forEach(p => p.findAndRefresh(<Literki.GamePlayer[]>game.getPlayers(), game.getCurrentPlayer()));
+        } else {
+            this.allPlayers.removeAll();
+            this.playerCount(game.getPlayers().length);
+            this.getAllPlayers();
         }
     }
 

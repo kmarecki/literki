@@ -156,20 +156,21 @@ app.post('/game/move', auth, (req, res) => {
     simpleGameMethodCall(req, res, (game, req, call) => call(game.makeMove(move)), move.gameId);
 });
 app.post('/player/alive', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => {
-    var gameId: number = req.body.gameId;
-    var currentPlayerId = req.body.currentPlayerId;
-    var playState = req.body.playState;
+    var forceRefresh =
+        game.getCurrentPlayer().userId != req.body.currentPlayerId ||
+        game.state.playState != req.body.playState ||
+        game.getPlayers().length != req.body.playersCount;
     var result = game.alive();
-    result.forceRefresh = game.getCurrentPlayer().userId != currentPlayerId || game.state.playState != playState;
+    result.forceRefresh = forceRefresh;
     return call(result);
 }, req.body.gameId));
 
 type gameMethodCallback = (game: literki_server.GameRun_Server, req: express.Request, call: (result: literki_server.GameMethodResult) => any) => void;
 function simpleGameMethodCall(req: express.Request, res: express.Response, call: gameMethodCallback, gameId: number = req.query.gameId): void {
 
-    repo.loadState(gameId,(err, state) => {
+    repo.loadState(gameId, (err, state) => {
         var errorMessages = '';
-        if (err != null) {
+        if (err != null || !state) {
             errorMessages = util.formatError(err);
             res.json({ state: state, errorMessage: errorMessages });
         } else {

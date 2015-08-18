@@ -254,7 +254,8 @@ export enum GameRunState {
 
 export enum GamePlayState {
     PlayerMove,
-    MoveApproval
+    MoveApproval,
+    None
 }
 
 export interface IGameState {
@@ -298,8 +299,7 @@ export class GameState implements IGameState {
             var player = GamePlayer.fromJSON(p);
             state.players.push(player);
         });
-        state.remainingLetters = new Array<string>();
-        state.remainingLetters.concat(json.remainingLetters);
+        state.remainingLetters = json.remainingLetters;
         state.currentMove = json.currentMove;
 
         return state;

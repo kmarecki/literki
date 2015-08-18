@@ -54,8 +54,8 @@ block body
         table.tableBorders
           thead
             tr
-              th(data-bind='attr: { colspan: getAllPlayers().length }') Historia
-            tr(data-bind='foreach:  getAllPlayers()')
+              th(data-bind='attr: { colspan: playerCount }') Historia
+            tr(data-bind='foreach:  allPlayers')
               th.tableBorders
                 label(data-bind='text: playerName')
           tbody

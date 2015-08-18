@@ -43,6 +43,7 @@ export class GameRepository {
                 state.gameId = newGameId;
                 state.creationDate = new Date();
                 state.runState = literki.GameRunState.Created;
+                state.playState = literki.GamePlayState.None;
                 this.saveState(state, (err) => {
                     if (err == null) {
                         callback(null, newGameId);

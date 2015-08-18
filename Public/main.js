@@ -45,6 +45,24 @@ define(["require", "exports", './app', './scripts/literki', 'knockout', 'jquery'
                 _this.games.push(gameModel);
             });
         };
+        MainViewModel.prototype.newGameClick = function () {
+            var _this = this;
+            $.ajax({
+                type: "GET",
+                url: "/game/new",
+                dataType: "json",
+                success: function (result) {
+                    if (result.state) {
+                        var gameId = result.state.gameId;
+                        var url = "board.html?gameId=" + gameId + "&join=1";
+                        location.href = url;
+                    }
+                    else {
+                        _this.showErrorDialogBox("Nie udało się utworzyć nowej gry");
+                    }
+                }
+            });
+        };
         return MainViewModel;
     })(App.BaseViewModel);
     function init() {

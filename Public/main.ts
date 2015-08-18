@@ -43,6 +43,23 @@ class MainViewModel extends App.BaseViewModel {
             this.games.push(gameModel);
         });
     }
+
+    newGameClick(): void {
+        $.ajax({
+            type: "GET",
+            url: "/game/new",
+            dataType: "json",
+            success: result => {
+                if (result.state) {
+                    var gameId = result.state.gameId;
+                    var url = `board.html?gameId=${gameId}&join=1`;
+                    location.href = url;
+                } else {
+                    this.showErrorDialogBox("Nie udało się utworzyć nowej gry");
+                }
+            }
+        });
+    }
 }
 
 export function init(): void  {
