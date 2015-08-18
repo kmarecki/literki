@@ -10,6 +10,11 @@ var __extends = this.__extends || function (d, b) {
 define(["require", "exports", './app', './scripts/literki', './scripts/system', 'knockout', 'jquery', 'Kinetic', "./scripts/jquery-ui"], function (require, exports, App, Literki, System, ko, $, Kinetic) {
     var game;
     var viewModel;
+    var BoardLetterPosition = (function () {
+        function BoardLetterPosition() {
+        }
+        return BoardLetterPosition;
+    })();
     var Board = (function () {
         function Board(container) {
             this.bonusColors = {};
@@ -227,11 +232,17 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                 draggable: foreground
             });
             if (foreground) {
+                var dragStart;
                 letterGroup.on('dragstart', function (e) {
                     letterGroup.moveToTop();
+                    dragStart = _this.getLetterPosition(letterGroup);
                 });
                 letterGroup.on('dragend', function (e) {
-                    var dragEnd = _this.getDragEnd(letterGroup);
+                    var dragEnd = _this.getLetterPosition(letterGroup);
+                    var isFieldFree = game.isFieldFree(dragEnd.fieldX, dragEnd.fieldY);
+                    if (!isFieldFree) {
+                        dragEnd = dragStart;
+                    }
                     var tween = new Kinetic.Tween({
                         node: letterGroup,
                         x: dragEnd.x,
@@ -239,20 +250,22 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
                         duration: 0.1
                     });
                     tween.play();
-                    switch (dragEnd.endType) {
-                        case 0 /* BoardField */: {
-                            game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
-                            viewModel.refreshBindings();
-                            break;
+                    if (isFieldFree) {
+                        switch (dragEnd.endType) {
+                            case 0 /* BoardField */: {
+                                game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
+                                viewModel.refreshBindings();
+                                break;
+                            }
+                            case 1 /* ExchangeLetter */:
+                                game.addLetterToExchange(letter, index);
+                                viewModel.refreshBindings();
+                                break;
+                            case 2 /* FreeLetter */:
+                                game.removeLetter(letter, index);
+                                viewModel.refreshBindings();
+                                break;
                         }
-                        case 1 /* ExchangeLetter */:
-                            game.addLetterToExchange(letter, index);
-                            viewModel.refreshBindings();
-                            break;
-                        case 2 /* FreeLetter */:
-                            game.removeLetter(letter, index);
-                            viewModel.refreshBindings();
-                            break;
                     }
                 });
             }
@@ -261,7 +274,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             letterGroup.add(pointsText);
             return letterGroup;
         };
-        Board.prototype.getDragEnd = function (letterGroup) {
+        Board.prototype.getLetterPosition = function (letterGroup) {
             var x = letterGroup.x() - this.BOARD_MARGIN;
             x = this.normalizeDragEndPositionX(x);
             var y = letterGroup.y() - this.BOARD_MARGIN;
@@ -291,6 +304,8 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             if (fieldY >= Literki.ROW_SIZE) {
                 endType = fieldX > Literki.ROW_SIZE / 2 ? 1 /* ExchangeLetter */ : 2 /* FreeLetter */;
             }
+            fieldX = Math.floor(x / this.FIELD_SIZE);
+            fieldY = Math.floor(y / this.FIELD_SIZE);
             return { x: x, y: y, fieldX: fieldX, fieldY: fieldY, endType: endType };
         };
         Board.prototype.normalizeDragEndPositionX = function (x) {

@@ -454,6 +454,10 @@ export class GameRun {
         this.freeLetters.setLetter(letter, index, x, y, LetterPositionType.BoardField);
     }
 
+    isFieldFree(x: number, y: number): boolean {
+        return this.board.getFieldValue(x, y) == null;
+    }
+
     addLetterToExchange(letter: string, index: number): void {
         this.cleanLetterOnBoard(letter, index);
         this.freeLetters.setLetter(letter, index, -1, -1, LetterPositionType.ExchangeLetter);

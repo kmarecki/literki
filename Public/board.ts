@@ -14,6 +14,13 @@ import Kinetic = require('Kinetic');
 var game: Literki.GameRun;
 var viewModel: BoardViewModel;
 
+class BoardLetterPosition {
+    x: number;
+    y: number; fieldX:
+    number; fieldY: number;
+    endType: Literki.LetterPositionType;
+}
+
 class Board {
     private stage: Kinetic.IStage;
     private bonusColors: { [id: number]: string; } = {};
@@ -278,12 +285,18 @@ class Board {
 
         if (foreground) {
 
+            var dragStart: BoardLetterPosition;
             letterGroup.on('dragstart',(e) => {
                 letterGroup.moveToTop();
+                dragStart = this.getLetterPosition(letterGroup);
             });
 
-            letterGroup.on('dragend',(e) => {
-                var dragEnd = this.getDragEnd(letterGroup);
+            letterGroup.on('dragend', (e) => {
+                var dragEnd = this.getLetterPosition(letterGroup);
+                var isFieldFree = game.isFieldFree(dragEnd.fieldX, dragEnd.fieldY);
+                if (!isFieldFree) {
+                    dragEnd = dragStart;
+                }
 
                 var tween = new Kinetic.Tween({
                     node: letterGroup,
@@ -293,20 +306,22 @@ class Board {
                 });
                 tween.play();
 
-                switch (dragEnd.endType) {
-                    case Literki.LetterPositionType.BoardField: {
-                        game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
-                        viewModel.refreshBindings();
-                        break;
+                if (isFieldFree) {
+                    switch (dragEnd.endType) {
+                        case Literki.LetterPositionType.BoardField: {
+                            game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
+                            viewModel.refreshBindings();
+                            break;
+                        }
+                        case Literki.LetterPositionType.ExchangeLetter:
+                            game.addLetterToExchange(letter, index);
+                            viewModel.refreshBindings();
+                            break;
+                        case Literki.LetterPositionType.FreeLetter:
+                            game.removeLetter(letter, index);
+                            viewModel.refreshBindings();
+                            break;
                     }
-                    case Literki.LetterPositionType.ExchangeLetter: 
-                        game.addLetterToExchange(letter, index);
-                        viewModel.refreshBindings();
-                        break;
-                    case Literki.LetterPositionType.FreeLetter: 
-                        game.removeLetter(letter, index);
-                        viewModel.refreshBindings();
-                        break;
                 }
             });
         }
@@ -318,13 +333,13 @@ class Board {
     }
 
         
-        
-    private getDragEnd(letterGroup: Kinetic.IGroup): { x: number; y: number; fieldX: number; fieldY: number; endType: Literki.LetterPositionType; } {
+
+    private getLetterPosition(letterGroup: Kinetic.IGroup): BoardLetterPosition {
+
         var x = letterGroup.x() - this.BOARD_MARGIN;
         x = this.normalizeDragEndPositionX(x);
         var y = letterGroup.y() - this.BOARD_MARGIN;
         y = this.normalizeDragEndPositionY(y);
-      
         var fieldX = Math.floor(x / this.FIELD_SIZE);
         var fieldY = Math.floor(y / this.FIELD_SIZE);
         var floorX = fieldX * this.FIELD_SIZE;
@@ -352,6 +367,8 @@ class Board {
             endType = fieldX > Literki.ROW_SIZE / 2 ? Literki.LetterPositionType.ExchangeLetter : Literki.LetterPositionType.FreeLetter;
         }
 
+        fieldX = Math.floor(x / this.FIELD_SIZE);
+        fieldY = Math.floor(y / this.FIELD_SIZE);
         return { x: x, y: y, fieldX: fieldX, fieldY: fieldY, endType: endType }
     }
 

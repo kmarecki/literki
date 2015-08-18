@@ -401,6 +401,9 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             this.board.setFieldValue(x, y, letter);
             this.freeLetters.setLetter(letter, index, x, y, 0 /* BoardField */);
         };
+        GameRun.prototype.isFieldFree = function (x, y) {
+            return this.board.getFieldValue(x, y) == null;
+        };
         GameRun.prototype.addLetterToExchange = function (letter, index) {
             this.cleanLetterOnBoard(letter, index);
             this.freeLetters.setLetter(letter, index, -1, -1, 1 /* ExchangeLetter */);
