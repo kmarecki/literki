@@ -285,9 +285,9 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             var floorY = Math.floor(y / this.FIELD_SIZE) * this.FIELD_SIZE;
             if (letterGroup.y() < this.LETTERS_TOP - 2 * this.BOARD_MARGIN) {
                 //board fields
-                x = x <= floorX + this.FIELD_SIZE / 3 * 2 ? floorX : floorX + this.FIELD_SIZE;
+                x = x <= floorX + this.FIELD_SIZE / 2 ? floorX : floorX + this.FIELD_SIZE;
                 x += this.BOARD_MARGIN;
-                y = floorY;
+                y = y <= floorY + this.FIELD_SIZE / 2 ? floorY : floorY + this.FIELD_SIZE;
                 y += this.BOARD_MARGIN;
             }
             else {

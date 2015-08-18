@@ -347,9 +347,9 @@ class Board {
 
         if (letterGroup.y() < this.LETTERS_TOP - 2 * this.BOARD_MARGIN) {
             //board fields
-            x = x <= floorX + this.FIELD_SIZE / 3 * 2 ? floorX : floorX + this.FIELD_SIZE;
+            x = x <= floorX + this.FIELD_SIZE /  2 ? floorX : floorX + this.FIELD_SIZE;
             x += this.BOARD_MARGIN;
-            y = floorY;
+            y = y <= floorY + this.FIELD_SIZE /  2 ? floorY : floorY + this.FIELD_SIZE;
             y += this.BOARD_MARGIN;
         } else {
             //free letters fields
