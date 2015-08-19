@@ -51,19 +51,28 @@
     <Content Include="config\production.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="tests\gametest.ts">
+      <SubType>Code</SubType>
+      <TestFramework>Mocha</TestFramework>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="typings\async\async.d.ts" />
     <TypeScriptCompile Include="typings\body-parser\body-parser.d.ts" />
     <TypeScriptCompile Include="typings\cookie-parser\cookie-parser.d.ts" />
     <TypeScriptCompile Include="typings\express-session\express-session.d.ts" />
     <TypeScriptCompile Include="typings\express\express.d.ts" />
+    <TypeScriptCompile Include="typings\mocha\mocha.d.ts" />
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="typings\passport\passport.d.ts" />
     <TypeScriptCompile Include="typings\underscore\underscore.d.ts" />
+    <TypeScriptCompile Include="typings\winston\winston.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="config\" />
+    <Folder Include="tests\" />
     <Folder Include="styles\" />
+    <Folder Include="typings\mocha\" />
+    <Folder Include="typings\winston\" />
     <Folder Include="views\" />
     <Folder Include="scripts\" />
     <Folder Include="typings\" />
