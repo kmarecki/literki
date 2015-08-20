@@ -1,0 +1,9 @@
+﻿{
+  "Passport": {
+    "strategy": "Http"
+  },
+
+  "MongoDb": {
+    "uri":  "mongodb://localhost/literki-test"
+  }
+}

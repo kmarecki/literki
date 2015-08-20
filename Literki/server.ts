@@ -6,6 +6,7 @@
 
 var config = require('config');
 
+import http = require('http');
 import express = require('express');
 import session = require('express-session');
 import bodyParser = require('body-parser');
@@ -13,7 +14,6 @@ import cookieParser = require('cookie-parser');
 var lessMiddleware = require('less-middleware');
 
 import passport = require('passport');
-var GoogleStrategy = require('passport-google-openidconnect').Strategy;
 
 import literki = require('./scripts/literki');
 import literki_server = require('./scripts/literki_server');
@@ -34,51 +34,76 @@ app.use(express.static(__dirname + '/../Public'));
 app.set('view engine', 'jade');
 app.locals.pretty = true;
 
-var port = process.env.port || 1337;
-console.log('Literki port: ' + port);
-app.listen(port, '0.0.0.0');
-
 var repo = new db.GameRepository();
-repo.open();
+var uri = config.MongoDb.uri;
+repo.open(uri);
 
-passport.use(
-    new GoogleStrategy({
-        clientID: config.GoogleAuthorization.clientID,
-        clientSecret: config.GoogleAuthorization.clientSecret,
-        callbackURL: config.GoogleAuthorization.callbackURL
-    },(iss, sub, profile, accessToken, refreshToken, done) => {
-            repo.loadOrCreateUser(profile.id, profile.displayName, (err, user) => {
-                return done(err, user)
-            });
-      })
-);
+var strategy = config.Passport.strategy;
 
-passport.serializeUser((user, done) => {
-    done(null, user.id)
-});
+switch (strategy) {
+    case 'Google': {
+        var GoogleStrategy = require('passport-google-openidconnect').Strategy;
+        passport.use(
+            new GoogleStrategy({
+                clientID: config.GoogleAuthorization.clientID,
+                clientSecret: config.GoogleAuthorization.clientSecret,
+                callbackURL: config.GoogleAuthorization.callbackURL
+            }, (iss, sub, profile, accessToken, refreshToken, done) => {
+                repo.loadOrCreateUser(profile.id, profile.displayName, (err, user) => {
+                    return done(err, user)
+                });
+            })
+        );
 
-passport.deserializeUser((id, done) => {
-    repo.loadUser(id,(err, user) => done(err, user));
-});
+        passport.serializeUser((user, done) => {
+            done(null, user.id)
+        });
 
+        passport.deserializeUser((id, done) => {
+            repo.loadUser(id, (err, user) => done(err, user));
+        });
 
-app.get('/:pageName.html',(req, res) => {
-    res.render(req.params.pageName, { title: req.params.pageName });
-});
+        app.get('/auth/google', passport.authenticate('google-openidconnect'));
 
-app.get('/auth/google', passport.authenticate('google-openidconnect'));
+        app.get('/auth/google/return',
+            passport.authenticate('google-openidconnect', {
+                successRedirect: '/main.html',
+                failureRedirect: '/login.html'
+            })
+        );
 
-app.get('/auth/google/return',
-    passport.authenticate('google-openidconnect', {
-        successRedirect: '/main.html',
-        failureRedirect: '/login.html'
-    })
-);
+        app.get('/auth/google/signout', (req, res) => {
+            req.logout();
+            res.redirect('/login.html');
+        });
+        break;
+    }
+    case 'Http': {
+        var HttpStrategy = require('passport-http').BasicStrategy;
+        passport.use(
+            new HttpStrategy({ }, (user, password, done) => {
+                done(null, { googleId: "1", userName: "Test user" });
+            })
+        );
 
-app.get('/auth/google/signout',(req, res) => {
-    req.logout();
-    res.redirect('/login.html');
-});
+        passport.serializeUser((user, done) => {
+            done(null, user.googleId)
+        });
+
+        passport.deserializeUser((id, done) => {
+            done(null, { googleId: "1", userName: "Test user" });
+        });
+
+        app.get('/auth/http', passport.authenticate('basic'), (req, res) => {
+            res.end("Autoryzacja użytkownika powiodła się");
+        });
+
+        break;
+    }
+    default: {
+        throw new Error(`Unknown passport strategy: ${strategy}`);
+    }
+}
 
 var auth = (req, res, next) => {
     if (req.isAuthenticated()) {
@@ -86,6 +111,10 @@ var auth = (req, res, next) => {
     }
     res.json({ errorMessage: "Błąd uwierzytelnienia użytkownika." });
 };
+
+app.get('/:pageName.html', (req, res) => {
+    res.render(req.params.pageName, { title: req.params.pageName });
+});
 
 app.get('/game/new', auth, (req, res) => {
     var player = new literki.GamePlayer();
@@ -195,6 +224,21 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
     });
 }
 
+var server: http.Server;
 
+export function start() {
+    var port = process.env.port || 1337;
+    console.log('Literki port: ' + port);
+    server = app.listen(port, '0.0.0.0');
+}
 
+export function stop() {
+    if (server) {
+        server.close();
+    }
+}
+
+export function getGameRepository() {
+    return repo;
+}
 

@@ -2,7 +2,7 @@
 /// <reference path=".\typings\jqueryui\jqueryui.d.ts" />
 /// <amd-dependency path="./scripts/jquery-ui" />
 
-import App = require('./app');
+import Core = require('./core');
 import Literki = require('./scripts/literki');
 import System = require('./scripts/system');
 import ko = require('knockout');
@@ -437,9 +437,8 @@ class MoveHistoryViewModel {
     }
 }
 
-class BoardViewModel extends App.BaseViewModel {
+class BoardViewModel extends Core.BaseViewModel {
 
-    private self = this;
     private newWords = ko.observableArray<BoardViewModelWord>();
     private changeLetters = ko.observable("");
 

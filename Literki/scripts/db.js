@@ -5,8 +5,8 @@ var literki = require('./literki');
 var GameRepository = (function () {
     function GameRepository() {
     }
-    GameRepository.prototype.open = function () {
-        this.connect();
+    GameRepository.prototype.open = function (uri) {
+        this.connect(uri);
     };
     GameRepository.prototype.allGames = function (callback) {
         this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, creationDate: 1, _id: 0 }, function (err, result) {
@@ -106,8 +106,7 @@ var GameRepository = (function () {
             callback(err, result.length == words.length ? true : false);
         });
     };
-    GameRepository.prototype.connect = function () {
-        var uri = 'mongodb://localhost/literki';
+    GameRepository.prototype.connect = function (uri) {
         mongoose.connect(uri);
         this.addGameStateSchema();
         this.addUserProfileSchema();

@@ -14,7 +14,7 @@
     <ProjectGuid>4760d6b2-ad45-4848-a635-9343262f2874</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>server.js</StartupFile>
+    <StartupFile>app.js</StartupFile>
     <StartWebBrowser>True</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -36,12 +36,14 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="config\test.json" />
     <Content Include="styles\app.less" />
     <Content Include="styles\board.less" />
     <Content Include="views\board.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\login.jade" />
     <Content Include="views\main.jade" />
+    <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
     <TypeScriptCompile Include="scripts\db.ts" />
     <TypeScriptCompile Include="scripts\literki_server.ts" />
@@ -60,10 +62,12 @@
     <TypeScriptCompile Include="typings\cookie-parser\cookie-parser.d.ts" />
     <TypeScriptCompile Include="typings\express-session\express-session.d.ts" />
     <TypeScriptCompile Include="typings\express\express.d.ts" />
+    <TypeScriptCompile Include="typings\form-data\form-data.d.ts" />
     <TypeScriptCompile Include="typings\mocha\mocha.d.ts" />
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="typings\passport\passport.d.ts" />
+    <TypeScriptCompile Include="typings\request\request.d.ts" />
     <TypeScriptCompile Include="typings\underscore\underscore.d.ts" />
     <TypeScriptCompile Include="typings\winston\winston.d.ts" />
   </ItemGroup>
@@ -71,7 +75,9 @@
     <Folder Include="config\" />
     <Folder Include="tests\" />
     <Folder Include="styles\" />
+    <Folder Include="typings\form-data\" />
     <Folder Include="typings\mocha\" />
+    <Folder Include="typings\request\" />
     <Folder Include="typings\winston\" />
     <Folder Include="views\" />
     <Folder Include="scripts\" />

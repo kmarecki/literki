@@ -4,7 +4,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './app', './scripts/literki', 'knockout', 'jquery', 'moment'], function (require, exports, App, Literki, ko, $, moment) {
+define(["require", "exports", './core', './scripts/literki', 'knockout', 'jquery', 'moment'], function (require, exports, Core, Literki, ko, $, moment) {
     var GameViewModel = (function () {
         function GameViewModel() {
         }
@@ -64,7 +64,7 @@ define(["require", "exports", './app', './scripts/literki', 'knockout', 'jquery'
             });
         };
         return MainViewModel;
-    })(App.BaseViewModel);
+    })(Core.BaseViewModel);
     function init() {
         $.ajaxSetup({ cache: false });
         var viewModel = new MainViewModel();

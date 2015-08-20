@@ -10,7 +10,6 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var lessMiddleware = require('less-middleware');
 var passport = require('passport');
-var GoogleStrategy = require('passport-google-openidconnect').Strategy;
 var literki = require('./scripts/literki');
 var literki_server = require('./scripts/literki_server');
 var db = require('./scripts/db');
@@ -27,44 +26,68 @@ app.use(lessMiddleware(__dirname, {
 app.use(express.static(__dirname + '/../Public'));
 app.set('view engine', 'jade');
 app.locals.pretty = true;
-var port = process.env.port || 1337;
-console.log('Literki port: ' + port);
-app.listen(port, '0.0.0.0');
 var repo = new db.GameRepository();
-repo.open();
-passport.use(new GoogleStrategy({
-    clientID: config.GoogleAuthorization.clientID,
-    clientSecret: config.GoogleAuthorization.clientSecret,
-    callbackURL: config.GoogleAuthorization.callbackURL
-}, function (iss, sub, profile, accessToken, refreshToken, done) {
-    repo.loadOrCreateUser(profile.id, profile.displayName, function (err, user) {
-        return done(err, user);
-    });
-}));
-passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
-passport.deserializeUser(function (id, done) {
-    repo.loadUser(id, function (err, user) { return done(err, user); });
-});
-app.get('/:pageName.html', function (req, res) {
-    res.render(req.params.pageName, { title: req.params.pageName });
-});
-app.get('/auth/google', passport.authenticate('google-openidconnect'));
-app.get('/auth/google/return', passport.authenticate('google-openidconnect', {
-    successRedirect: '/main.html',
-    failureRedirect: '/login.html'
-}));
-app.get('/auth/google/signout', function (req, res) {
-    req.logout();
-    res.redirect('/login.html');
-});
+var uri = config.MongoDb.uri;
+repo.open(uri);
+var strategy = config.Passport.strategy;
+switch (strategy) {
+    case 'Google': {
+        var GoogleStrategy = require('passport-google-openidconnect').Strategy;
+        passport.use(new GoogleStrategy({
+            clientID: config.GoogleAuthorization.clientID,
+            clientSecret: config.GoogleAuthorization.clientSecret,
+            callbackURL: config.GoogleAuthorization.callbackURL
+        }, function (iss, sub, profile, accessToken, refreshToken, done) {
+            repo.loadOrCreateUser(profile.id, profile.displayName, function (err, user) {
+                return done(err, user);
+            });
+        }));
+        passport.serializeUser(function (user, done) {
+            done(null, user.id);
+        });
+        passport.deserializeUser(function (id, done) {
+            repo.loadUser(id, function (err, user) { return done(err, user); });
+        });
+        app.get('/auth/google', passport.authenticate('google-openidconnect'));
+        app.get('/auth/google/return', passport.authenticate('google-openidconnect', {
+            successRedirect: '/main.html',
+            failureRedirect: '/login.html'
+        }));
+        app.get('/auth/google/signout', function (req, res) {
+            req.logout();
+            res.redirect('/login.html');
+        });
+        break;
+    }
+    case 'Http': {
+        var HttpStrategy = require('passport-http').BasicStrategy;
+        passport.use(new HttpStrategy({}, function (user, password, done) {
+            done(null, { googleId: "1", userName: "Test user" });
+        }));
+        passport.serializeUser(function (user, done) {
+            done(null, user.googleId);
+        });
+        passport.deserializeUser(function (id, done) {
+            done(null, { googleId: "1", userName: "Test user" });
+        });
+        app.get('/auth/http', passport.authenticate('basic'), function (req, res) {
+            res.end("Autoryzacja użytkownika powiodła się");
+        });
+        break;
+    }
+    default: {
+        throw new Error("Unknown passport strategy: " + strategy);
+    }
+}
 var auth = function (req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
     res.json({ errorMessage: "Błąd uwierzytelnienia użytkownika." });
 };
+app.get('/:pageName.html', function (req, res) {
+    res.render(req.params.pageName, { title: req.params.pageName });
+});
 app.get('/game/new', auth, function (req, res) {
     var player = new literki.GamePlayer();
     player.userId = req.user.id;
@@ -163,4 +186,21 @@ function simpleGameMethodCall(req, res, call, gameId) {
         }
     });
 }
+var server;
+function start() {
+    var port = process.env.port || 1337;
+    console.log('Literki port: ' + port);
+    server = app.listen(port, '0.0.0.0');
+}
+exports.start = start;
+function stop() {
+    if (server) {
+        server.close();
+    }
+}
+exports.stop = stop;
+function getGameRepository() {
+    return repo;
+}
+exports.getGameRepository = getGameRepository;
 //# sourceMappingURL=server.js.map

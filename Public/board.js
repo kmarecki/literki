@@ -7,7 +7,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './app', './scripts/literki', './scripts/system', 'knockout', 'jquery', 'Kinetic', "./scripts/jquery-ui"], function (require, exports, App, Literki, System, ko, $, Kinetic) {
+define(["require", "exports", './core', './scripts/literki', './scripts/system', 'knockout', 'jquery', 'Kinetic', "./scripts/jquery-ui"], function (require, exports, Core, Literki, System, ko, $, Kinetic) {
     var game;
     var viewModel;
     var BoardLetterPosition = (function () {
@@ -366,7 +366,6 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
         __extends(BoardViewModel, _super);
         function BoardViewModel() {
             _super.apply(this, arguments);
-            this.self = this;
             this.newWords = ko.observableArray();
             this.changeLetters = ko.observable("");
             this.errorMessage = ko.observable("");
@@ -598,7 +597,7 @@ define(["require", "exports", './app', './scripts/literki', './scripts/system', 
             }
         };
         return BoardViewModel;
-    })(App.BaseViewModel);
+    })(Core.BaseViewModel);
     function init() {
         $.ajaxSetup({ cache: false });
         var debugLabel = document.getElementById("debugLabel");

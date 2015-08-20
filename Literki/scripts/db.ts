@@ -23,8 +23,8 @@ export class GameRepository {
     User: mongoose.Model<UserProfilModel>;
     DictionaryWord: mongoose.Model<DictionaryWordModel>;
 
-    open(): void {
-        this.connect();
+    open(uri: string): void {
+        this.connect(uri);
     }
 
     allGames(callback: (err: Error, games: any) => any): void {
@@ -128,8 +128,7 @@ export class GameRepository {
         });
     }
 
-    private connect(): void {
-        var uri = 'mongodb://localhost/literki';
+    private connect(uri: string): void {
         mongoose.connect(uri);
         this.addGameStateSchema();
         this.addUserProfileSchema();

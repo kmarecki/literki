@@ -1,4 +1,4 @@
-﻿import App = require('./app');
+﻿import Core = require('./core');
 import Literki = require('./scripts/literki');
 import ko = require('knockout');
 import $ = require('jquery');
@@ -13,7 +13,7 @@ class GameViewModel {
     }
 }
 
-class MainViewModel extends App.BaseViewModel {
+class MainViewModel extends Core.BaseViewModel {
 
     private self = this;
     games = ko.observableArray<GameViewModel>();
