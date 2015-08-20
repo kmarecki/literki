@@ -10,14 +10,14 @@ console.log(`Importowanie pliku ${fileName}`);
 
 
 var repo = new db.GameRepository();
-repo.open();
+repo.open('mongodb://localhost/literki');
 repo.removeAllWords((err) => {
     if (!err) {
        
         var liner = util.createLiner();
         var source = fs.createReadStream(fileName);
         source.pipe(liner);
-        liner.once("readable", () => {
+        liner.once('readable', () => {
 
             var line: string;
             async.whilst(

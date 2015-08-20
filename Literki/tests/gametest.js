@@ -3,36 +3,37 @@
 process.env['NODE_ENV'] = 'test';
 process.env['NODE_CONFIG_DIR'] = '../config';
 var assert = require('assert');
-var request = require('request');
+var requestModule = require('request');
+var request = requestModule.defaults({
+    jar: true
+});
 var server = require('../server');
 var literki = require('../scripts/literki');
 describe('Game Test Suite', function () {
     before(function () {
-        console.log('Before method');
         server.start();
     });
     after(function () {
-        console.log('After method');
         server.stop();
     });
-    it('/game/get Test', function (done) {
-        var options = getGETOptions('/game/get');
-        var request2 = request.defaults({
-            jar: true
-        });
-        request2.get('http://test:test@localhost:1337/auth/http', function (error, response, body) {
-            request2.get('http://localhost:1337/game/get', function (error, response, body) {
-                console.log(body);
-                assert.notEqual(body.toString().length, 0);
-                done();
-            });
+    it('/server/alive', function (done) {
+        callGETMethod('User1', '/server/alive', function (error, response, body) {
+            var result = JSON.parse(body);
+            assert.equal(result.errorMessage, undefined);
+            done();
         });
     });
 });
+function callGETMethod(userName, path, call) {
+    var authPath = "http://" + userName + ":test@localhost:1337/auth/http";
+    request.get(authPath, function (error, response, body) {
+        assert.equal(body, 'Authentifaction successfull');
+        var methodPath = "http://localhost:1337" + path;
+        request.get(methodPath, function (error, response, body) { return call(error, response, body); });
+    });
+}
 function createState() {
     var state = new literki.GameState();
     return state;
-}
-function getGETOptions(path) {
 }
 //# sourceMappingURL=gametest.js.map

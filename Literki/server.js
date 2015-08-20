@@ -4,6 +4,7 @@
 ///<reference path="typings\body-parser\body-parser.d.ts"/>
 ///<reference path="typings\cookie-parser\cookie-parser.d.ts"/>
 var config = require('config');
+var _ = require('underscore');
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -60,18 +61,25 @@ switch (strategy) {
         break;
     }
     case 'Http': {
+        var users = new Array();
         var HttpStrategy = require('passport-http').BasicStrategy;
-        passport.use(new HttpStrategy({}, function (user, password, done) {
-            done(null, { googleId: "1", userName: "Test user" });
+        passport.use(new HttpStrategy({}, function (userName, password, done) {
+            users.push({
+                id: users.length + 1,
+                userName: userName
+            });
+            var user = _.last(users);
+            done(null, user);
         }));
         passport.serializeUser(function (user, done) {
-            done(null, user.googleId);
+            done(null, user.id);
         });
         passport.deserializeUser(function (id, done) {
-            done(null, { googleId: "1", userName: "Test user" });
+            var user = _.find(users, function (user) { return user.id == id; });
+            done(null, user);
         });
         app.get('/auth/http', passport.authenticate('basic'), function (req, res) {
-            res.end("Autoryzacja użytkownika powiodła się");
+            res.end('Authentifaction successfull');
         });
         break;
     }
@@ -156,6 +164,9 @@ app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCal
     result.forceRefresh = forceRefresh;
     return call(result);
 }, req.body.gameId); });
+app.get('/server/alive', auth, function (req, res) {
+    res.json({ errorMessage: undefined });
+});
 function simpleGameMethodCall(req, res, call, gameId) {
     if (gameId === void 0) { gameId = req.query.gameId; }
     repo.loadState(gameId, function (err, state) {
@@ -189,12 +200,14 @@ function simpleGameMethodCall(req, res, call, gameId) {
 var server;
 function start() {
     var port = process.env.port || 1337;
+    console.log('Literki start');
     console.log('Literki port: ' + port);
     server = app.listen(port, '0.0.0.0');
 }
 exports.start = start;
 function stop() {
     if (server) {
+        console.log('Literki shutdown');
         server.close();
     }
 }

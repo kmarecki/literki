@@ -5,46 +5,43 @@ process.env['NODE_ENV'] = 'test';
 process.env['NODE_CONFIG_DIR'] = '../config';
 
 import assert = require('assert');
-import request = require('request');
-
 import http = require('http');
+import requestModule = require('request');
+var request = requestModule.defaults({
+    jar: true
+});
+
 import server = require('../server');
 import literki = require('../scripts/literki');
 
 describe('Game Test Suite', () => {
     before(() => {
-        console.log('Before method');
         server.start();
-
     });
 
     after(() => {
-        console.log('After method');
         server.stop();
     });
 
-    it('/game/get Test', (done) => {
-        var options = getGETOptions('/game/get');
-        var request2 = request.defaults({
-            jar: true
-        });
-        request2.get('http://test:test@localhost:1337/auth/http', (error, response, body) => {
-            
-            request2.get('http://localhost:1337/game/get', (error, response, body) => {
-                console.log(body);
-                assert.notEqual(body.toString().length, 0);
-                done();
-            });
+    it('/server/alive', (done) => {
+        callGETMethod('User1', '/server/alive', (error, response, body) => {
+            var result = JSON.parse(body);
+            assert.equal(result.errorMessage, undefined);
+            done();
         });
     });
-
 });
+
+function callGETMethod(userName: string, path: string, call: (error, response: http.IncomingMessage, body) => void) {
+    var authPath = `http://${userName}:test@localhost:1337/auth/http`;
+    request.get(authPath, (error, response, body) => {
+        assert.equal(body, 'Authentifaction successfull');
+        var methodPath = `http://localhost:1337${path}`;
+        request.get(methodPath, (error, response, body) => call(error, response, body));
+    });
+}
 
 function createState(): literki.GameState {
     var state = new literki.GameState();
     return state;
-}
-
-function getGETOptions(path: string): void {
-    
 }

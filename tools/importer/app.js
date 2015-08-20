@@ -6,13 +6,13 @@ var util = require('../../Literki/scripts/util');
 var fileName = process.argv[2];
 console.log("Importowanie pliku " + fileName);
 var repo = new db.GameRepository();
-repo.open();
+repo.open('mongodb://localhost/literki');
 repo.removeAllWords(function (err) {
     if (!err) {
         var liner = util.createLiner();
         var source = fs.createReadStream(fileName);
         source.pipe(liner);
-        liner.once("readable", function () {
+        liner.once('readable', function () {
             var line;
             async.whilst(function () { return line = liner.read(); }, function (callback) {
                 console.log(line);
