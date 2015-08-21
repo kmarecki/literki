@@ -8,13 +8,17 @@ var request = requestModule.defaults({
     jar: true
 });
 var server = require('../server');
-var literki = require('../scripts/literki');
-describe('Game Test Suite', function () {
-    before(function () {
+var gamestates = require('./gamestates');
+var repo = server.getGameRepository();
+describe('Player2 move Suite', function () {
+    before(function (done) {
         server.start();
+        var state = gamestates.player2Move;
+        repo.saveState(state, function (err) { return done(err); });
     });
-    after(function () {
+    after(function (done) {
         server.stop();
+        repo.removeAllStates(function (err) { return done(err); });
     });
     it('/server/alive', function (done) {
         callGETMethod('User1', '/server/alive', function (error, response, body) {
@@ -31,9 +35,5 @@ function callGETMethod(userName, path, call) {
         var methodPath = "http://localhost:1337" + path;
         request.get(methodPath, function (error, response, body) { return call(error, response, body); });
     });
-}
-function createState() {
-    var state = new literki.GameState();
-    return state;
 }
 //# sourceMappingURL=gametest.js.map

@@ -52,8 +52,15 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.saveState = function (state, callback) {
-        var modelState = new this.GameState(state);
         this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, function (err) {
+            if (err) {
+                console.log(err);
+            }
+            callback(err);
+        });
+    };
+    GameRepository.prototype.removeAllStates = function (callback) {
+        this.GameState.remove({}, function (err) {
             if (err) {
                 console.log(err);
             }

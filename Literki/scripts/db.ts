@@ -70,8 +70,16 @@ export class GameRepository {
     }
 
     saveState(state: literki.IGameState, callback: (err: Error) => any): void {
-        var modelState = new this.GameState(state);
         this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true },(err) => {
+            if (err) {
+                console.log(err);
+            }
+            callback(err);
+        });
+    }
+
+    removeAllStates(callback: (err: Error) => any): void {
+        this.GameState.remove({}, (err) => {
             if (err) {
                 console.log(err);
             }

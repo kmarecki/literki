@@ -13,14 +13,20 @@ var request = requestModule.defaults({
 
 import server = require('../server');
 import literki = require('../scripts/literki');
+import gamestates = require('./gamestates');
 
-describe('Game Test Suite', () => {
-    before(() => {
+var repo = server.getGameRepository();
+
+describe('Player2 move Suite', () => {
+    before((done) => {
         server.start();
+        var state = gamestates.player2Move;
+        repo.saveState(state, err => done(err));
     });
 
-    after(() => {
+    after((done) => {
         server.stop();
+        repo.removeAllStates(err => done(err));
     });
 
     it('/server/alive', (done) => {
@@ -41,7 +47,3 @@ function callGETMethod(userName: string, path: string, call: (error, response: h
     });
 }
 
-function createState(): literki.GameState {
-    var state = new literki.GameState();
-    return state;
-}
