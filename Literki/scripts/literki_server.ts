@@ -13,7 +13,7 @@ export class GameMethodResult {
     errorMessage: string;
     forceRefresh: boolean;
 
-    constructor(errorMessage: string = null) {
+    constructor(errorMessage?: string) {
         this.errorMessage = errorMessage;
     }
 

@@ -15,7 +15,6 @@ var PlayerActionType;
 })(PlayerActionType || (PlayerActionType = {}));
 var GameMethodResult = (function () {
     function GameMethodResult(errorMessage) {
-        if (errorMessage === void 0) { errorMessage = null; }
         this.errorMessage = errorMessage;
     }
     GameMethodResult.Undefined = new GameMethodResult();

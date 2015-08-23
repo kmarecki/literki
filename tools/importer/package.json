@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "async": "^1.4.2",
+    "config": "^1.15.0",
     "underscore": "^1.8.3"
   }
 }

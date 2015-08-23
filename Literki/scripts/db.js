@@ -89,6 +89,14 @@ var GameRepository = (function () {
             callback(err, result);
         });
     };
+    GameRepository.prototype.removeAllUsers = function (callback) {
+        this.User.remove({}, function (err) {
+            if (err) {
+                console.log(err);
+            }
+            callback(err);
+        });
+    };
     GameRepository.prototype.addWord = function (word, callback) {
         this.DictionaryWord.create({ word: word }, function (err, result) {
             if (err) {

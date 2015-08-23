@@ -109,6 +109,16 @@ export class GameRepository {
         });
     }
 
+
+    removeAllUsers(callback: (err: Error) => any): void {
+        this.User.remove({}, (err) => {
+            if (err) {
+                console.log(err);
+            }
+            callback(err);
+        });
+    }
+
     addWord(word: string, callback: (err: Error) => any): void {
         this.DictionaryWord.create({ word: word }, (err, result) => {
             if(err) {

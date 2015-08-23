@@ -1,4 +1,6 @@
 ﻿/// <reference path="../../Literki/typings/async/async.d.ts"/> 
+var config = require('config');
+
 import async = require('async');
 import fs = require('fs');
 import stream = require('stream');
@@ -8,9 +10,9 @@ import util = require('../../Literki/scripts/util');
 var fileName = process.argv[2];
 console.log(`Importowanie pliku ${fileName}`);
 
-
+var uri = config.MongoDb.uri;
 var repo = new db.GameRepository();
-repo.open('mongodb://localhost/literki');
+repo.open(uri);
 repo.removeAllWords((err) => {
     if (!err) {
        

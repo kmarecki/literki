@@ -1,6 +1,18 @@
 ﻿import literki = require('../scripts/literki');
 
-export var player2Move = {
+export var player1 = {
+    "id": "55aaca395dd86414102b50df",
+    "googleId": "106423093215393185264",
+    "userName": "TestUser1",
+}
+
+export var player2 = {
+    "id": "55abc5edad046414050204e4",
+    "googleId": "105271845369319365892",
+    "userName": "TestUser2",
+}
+
+export var player2MoveState = {
     "gameId": 1,
     "currentPlayerIndex": 1,
     "players": [{

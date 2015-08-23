@@ -27,8 +27,8 @@ app.use(lessMiddleware(__dirname, {
 app.use(express.static(__dirname + '/../Public'));
 app.set('view engine', 'jade');
 app.locals.pretty = true;
-var repo = new db.GameRepository();
 var uri = config.MongoDb.uri;
+var repo = new db.GameRepository();
 repo.open(uri);
 var strategy = config.Passport.strategy;
 switch (strategy) {
@@ -64,8 +64,10 @@ switch (strategy) {
         var users = new Array();
         var HttpStrategy = require('passport-http').BasicStrategy;
         passport.use(new HttpStrategy({}, function (userName, password, done) {
+            //hack for mocha tests, never use Http strategy in the production
+            var id = password;
             users.push({
-                id: users.length + 1,
+                id: id,
                 userName: userName
             });
             var user = _.last(users);
@@ -131,7 +133,7 @@ app.get('/game/list', auth, function (req, res) {
 app.get('/game/get', auth, function (req, res) {
     var gameId = req.query.gameId;
     repo.loadState(gameId, function (err, state) {
-        var errorMessages = '';
+        var errorMessages;
         if (err != null) {
             errorMessages = util.formatError(err);
         }
@@ -170,7 +172,7 @@ app.get('/server/alive', auth, function (req, res) {
 function simpleGameMethodCall(req, res, call, gameId) {
     if (gameId === void 0) { gameId = req.query.gameId; }
     repo.loadState(gameId, function (err, state) {
-        var errorMessages = '';
+        var errorMessages;
         if (err != null || !state) {
             errorMessages = util.formatError(err);
             res.json({ state: state, errorMessage: errorMessages });

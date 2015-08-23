@@ -35,8 +35,8 @@ app.use(express.static(__dirname + '/../Public'));
 app.set('view engine', 'jade');
 app.locals.pretty = true;
 
-var repo = new db.GameRepository();
 var uri = config.MongoDb.uri;
+var repo = new db.GameRepository();
 repo.open(uri);
 
 var strategy = config.Passport.strategy;
@@ -85,8 +85,10 @@ switch (strategy) {
         var HttpStrategy = require('passport-http').BasicStrategy;
         passport.use(
             new HttpStrategy({}, (userName, password, done) => {
+                //hack for mocha tests, never use Http strategy in the production
+                var id = password;
                 users.push({
-                    id: users.length + 1,
+                    id: id,
                     userName: userName
                 });
                 var user = _.last(users);
@@ -167,7 +169,7 @@ app.get('/game/get', auth, (req, res) => {
     var gameId: number = req.query.gameId;
    
     repo.loadState(gameId,(err, state) => {
-        var errorMessages = '';
+        var errorMessages;
         if (err != null) {
             errorMessages = util.formatError(err);
         }
@@ -212,7 +214,7 @@ type gameMethodCallback = (game: literki_server.GameRun_Server, req: express.Req
 function simpleGameMethodCall(req: express.Request, res: express.Response, call: gameMethodCallback, gameId: number = req.query.gameId): void {
 
     repo.loadState(gameId, (err, state) => {
-        var errorMessages = '';
+        var errorMessages;
         if (err != null || !state) {
             errorMessages = util.formatError(err);
             res.json({ state: state, errorMessage: errorMessages });
