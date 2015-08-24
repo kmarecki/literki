@@ -202,7 +202,7 @@ var GameRun_Server = (function (_super) {
                     //Good Move
                     this.updateStateAfterMove(literki.MoveType.Move);
                     this.clearMove();
-                    //Player must be skipped because the validation was correct
+                    //Player must be skipped because the word exists in the dictionary
                     this.updateStateAfterMove(literki.MoveType.CheckMoveFailed);
                 }
                 break;

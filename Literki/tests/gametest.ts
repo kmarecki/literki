@@ -56,8 +56,8 @@ describe('Player2 move Suite', () => {
         var data = createAliveRequestData(initState);
         callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
-            assert.equal(body.forceRefresh, false);
             assert.equal(game.getCurrentUser().remainingTime == initState.players[0].remainingTime, true);
+            assert.equal(body.forceRefresh, false);
             done();
         });
     });
@@ -66,8 +66,8 @@ describe('Player2 move Suite', () => {
         var data = createAliveRequestData(gamestates.player2MoveState);
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
-            assert.equal(body.forceRefresh, false);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
+            assert.equal(body.forceRefresh, false);
             done();
         });
     });
@@ -117,10 +117,10 @@ describe('Player2 move Suite', () => {
         var data = createAliveRequestData(initState, 0);
         callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
-            assert.equal(body.forceRefresh, false);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[0].remainingTime, true);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            assert.equal(body.forceRefresh, false);
             done();
         });
     });
@@ -129,13 +129,162 @@ describe('Player2 move Suite', () => {
         var data = createAliveRequestData(initState);
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
-            assert.equal(body.forceRefresh, true);
             assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Move);
             assert.equal(game.isNextPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.equal(body.forceRefresh, true);
             done();
         });
     });
+});
+
+describe('Player2 good move check Suite', () => {
+    var initState = gamestates.player2MoveState;
+    before((done) => beforeTestSuite(done, initState));
+    after((done) => afterTestSuite(done));
+
+    it('/game/move Player2', (done) => {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                "letter": "o",
+                "index": 0,
+                "x": 5,
+                "y": 9,
+                "positionType": 0
+            }, {
+                    "letter": "a",
+                    "index": 2,
+                    "x": 7,
+                    "y": 9,
+                    "positionType": 0
+                }]
+        };
+
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
+            assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
+            assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
+            done();
+        });
+    });
+
+    it('/game/approve Player1 not', (done) => {
+        var data = {
+            gameId: initState.gameId,
+            approve: false
+        }
+
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            done();
+        });
+    });
+
+    it('/player/alive Player1 after Player2 good move', (done) => {
+        var data = createAliveRequestData(initState);
+        data.playState = literki.GamePlayState.MoveApproval;
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.state.players[0].moves[2].moveType, literki.MoveType.CheckMoveFailed);
+            assert.equal(game.isNextPlayer(), true);
+            assert.equal(body.forceRefresh, true);
+            done();
+        });
+    });
+
+    it('/player/alive Player2 after Player2 good move', (done) => {
+        var data = createAliveRequestData(initState);
+        data.playState = literki.GamePlayState.MoveApproval;
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Move);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.equal(body.forceRefresh, true);
+            done();
+        });
+    });
+});
+
+describe('Player2 wrong move check Suite', () => {
+    var initState = gamestates.player2MoveState;
+    before((done) => beforeTestSuite(done, initState));
+    after((done) => afterTestSuite(done));
+
+    it('/game/move Player2', (done) => {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                "letter": "o",
+                "index": 0,
+                "x": 5,
+                "y": 9,
+                "positionType": 0
+            }, {
+                    "letter": "i",
+                    "index": 1,
+                    "x": 7,
+                    "y": 9,
+                    "positionType": 0
+                }]
+        };
+
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
+            assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
+            assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
+            done();
+        });
+    });
+
+    it('/game/approve Player1 not', (done) => {
+        var data = {
+            gameId: initState.gameId,
+            approve: false
+        }
+
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            done();
+        });
+    });
+
+    it('/player/alive Player1 after Player2 wrong move', (done) => {
+        var data = createAliveRequestData(initState);
+        data.playState = literki.GamePlayState.MoveApproval;
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(body.forceRefresh, true);
+            done();
+        });
+    });
+
+    it('/player/alive Player2 after Player2 wrong move', (done) => {
+        var data = createAliveRequestData(initState);
+        data.playState = literki.GamePlayState.MoveApproval;
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.WrongMove);
+            assert.equal(game.isNextPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.equal(body.forceRefresh, true);
+            done();
+        });
+    });
+});
+
+describe('Player2 not allowed move check Suite', () => {
+    var initState = gamestates.player2MoveState;
+    before((done) => beforeTestSuite(done, initState));
+    after((done) => afterTestSuite(done));
 });
 
 describe('Player2 fold Suite', () => {
@@ -184,9 +333,10 @@ describe('Player2 change letters Suite', () => {
             assert.equal(game.isNextPlayer(), true);
             assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Exchange);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
-            assert.notEqual(initState.players[1].freeLetters[0], game.state.players[1].freeLetters[0]);
-            assert.notEqual(initState.players[1].freeLetters[1], game.state.players[1].freeLetters[1]);
-            assert.notEqual(initState.players[1].freeLetters[2], game.state.players[1].freeLetters[2]);
+            assert.equal(
+                initState.players[1].freeLetters[0] == game.state.players[1].freeLetters[0] &&
+                initState.players[1].freeLetters[1] == game.state.players[1].freeLetters[1] &&
+                initState.players[1].freeLetters[2] == game.state.players[1].freeLetters[2], false);
             done();
         });
     });
@@ -225,7 +375,7 @@ function createAliveRequestData(state: literki.IGameState, currentPlayerIndex: n
         gameId: state.gameId,
         currentPlayerId: state.players[currentPlayerIndex].userId,
         playState: state.playState,
-        playersCount: state.players.length
+        playersCount: state.players.length,
     };
     return data;
 }

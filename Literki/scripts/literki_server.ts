@@ -173,7 +173,7 @@ export class GameRun_Server extends literki.GameRun {
     private pickLetters(playerIndex: number): void {
         var player = this.state.players[playerIndex];
         var lettersToPick = literki.MAX_LETTERS - player.freeLetters.length;
-        for (var n = 0; n < lettersToPick; n++) {
+            for (var n = 0; n < lettersToPick; n++) {
             var range = this.state.remainingLetters.length;
             var pickIndex = Math.floor((Math.random() * range));
             player.freeLetters.push(this.state.remainingLetters[pickIndex]);
@@ -205,7 +205,7 @@ export class GameRun_Server extends literki.GameRun {
                     //Good Move
                     this.updateStateAfterMove(literki.MoveType.Move);
                     this.clearMove();
-                    //Player must be skipped because the validation was correct
+                    //Player must be skipped because the word exists in the dictionary
                     this.updateStateAfterMove(literki.MoveType.CheckMoveFailed);
                 }
                 break;

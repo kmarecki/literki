@@ -544,9 +544,11 @@ export class GameRun {
         return words;
     }
 
+    private isMoveRendered = false;
+
     public getActualMove(): GameMove {
         var freeLetters = this.freeLetters.getAllLetters();
-        if (this.state.currentMove) {
+        if (this.state.currentMove && !this.isMoveRendered) {
             freeLetters = freeLetters.concat(this.state.currentMove.freeLetters);
         }
         return { gameId: this.state.gameId, freeLetters: freeLetters };
@@ -557,6 +559,7 @@ export class GameRun {
         move.freeLetters.forEach(fl => {
             this.putLetterOnBoard(fl.letter, fl.index, fl.x, fl.y);
         });
+        this.isMoveRendered = true;
     }
 
     public canApproveMove(): boolean {
