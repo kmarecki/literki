@@ -19,17 +19,9 @@ import gamestates = require('./gamestates');
 var repo = server.getGameRepository();
 
 describe('Player2 move Suite', () => {
-    before((done) => {
-        server.start();
-        var state = gamestates.player2MoveState;
-        state.players.forEach(p => p.lastSeen = new Date());
-        repo.saveState(state, err => done(err));
-    });
-
-    after((done) => {
-        server.stop();
-        repo.removeAllStates(err => done(err));
-    });
+    var initState = gamestates.player2MoveState;
+    before((done) => beforeTestSuite(done, initState));
+    after((done) => afterTestSuite(done));
 
     it('/server/alive Player1', (done) => {
         callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/server/alive', undefined, (error, response, body) => {
@@ -40,9 +32,7 @@ describe('Player2 move Suite', () => {
     });
 
     it('/game/get Player1', (done) => {
-         var data = {
-            gameId: gamestates.player2MoveState.gameId
-        };
+        var data = createRequestData(initState);
         callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/game/get', data, (error, response, body) => {
             var game = processGETbody(body);
             assert.equal(game.isNextPlayer(), true);
@@ -52,9 +42,7 @@ describe('Player2 move Suite', () => {
     });
 
     it('/game/get Player2', (done) => {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId
-        };
+        var data = createRequestData(initState);
         callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/get', data, (error, response, body) => {
             var game = processGETbody(body);
             assert.equal(game.isCurrentPlayer(), true);
@@ -65,40 +53,28 @@ describe('Player2 move Suite', () => {
     });
 
     it('/player/alive Player1', (done) => {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId,
-            currentPlayerId: gamestates.player2MoveState.players[1].userId,
-            playState: gamestates.player2MoveState.playState,
-            playersCount: gamestates.player2MoveState.players.length
-        };
-
+        var data = createAliveRequestData(initState);
         callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, false);
-            assert.equal(game.getCurrentUser().remainingTime == gamestates.player2MoveState.players[0].remainingTime, true);
+            assert.equal(game.getCurrentUser().remainingTime == initState.players[0].remainingTime, true);
             done();
         });
     });
 
     it('/player/alive Player2', (done) => {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId,
-            currentPlayerId: gamestates.player2MoveState.players[1].userId,
-            playState: gamestates.player2MoveState.playState,
-            playersCount: gamestates.player2MoveState.players.length
-        };
-
+        var data = createAliveRequestData(gamestates.player2MoveState);
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, false);
-            assert.equal(game.getCurrentUser().remainingTime < gamestates.player2MoveState.players[1].remainingTime, true);
+            assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
             done();
         });
     });
 
     it('/game/move Player2', (done) => {
         var data = {
-            "gameId": gamestates.player2MoveState.gameId,
+            "gameId": initState.gameId,
             "freeLetters" : [{
                 "letter": "o",
                 "index": 0,
@@ -126,7 +102,7 @@ describe('Player2 move Suite', () => {
 
     it('/game/approve Player1', (done) => {
         var data = {
-            gameId: gamestates.player2MoveState.gameId,
+            gameId: initState.gameId,
             approve: true
         }
 
@@ -138,41 +114,123 @@ describe('Player2 move Suite', () => {
     });
 
     it('/player/alive Player1 after Player2 move', (done) => {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId,
-            currentPlayerId: gamestates.player2MoveState.players[0].userId,
-            playState: gamestates.player2MoveState.playState,
-            playersCount: gamestates.player2MoveState.players.length
-        };
-
+        var data = createAliveRequestData(initState, 0);
         callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, false);
             assert.equal(game.isCurrentPlayer(), true);
-            assert.equal(game.getCurrentUser().remainingTime < gamestates.player2MoveState.players[0].remainingTime, true);
+            assert.equal(game.getCurrentUser().remainingTime < initState.players[0].remainingTime, true);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
         });
     });
 
     it('/player/alive Player2 after Player2 move', (done) => {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId,
-            currentPlayerId: gamestates.player2MoveState.players[1].userId,
-            playState: gamestates.player2MoveState.playState,
-            playersCount: gamestates.player2MoveState.players.length
-        };
-
+        var data = createAliveRequestData(initState);
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, true);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Move);
             assert.equal(game.isNextPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
             done();
         });
     });
 });
 
-function callGETMethod(userName: string, id: string, path: string, data: any, call: (error, response: http.IncomingMessage, body) => void) {
+describe('Player2 fold Suite', () => {
+    var initState = gamestates.player2MoveState;
+    before((done) => beforeTestSuite(done, initState));
+    after((done) => afterTestSuite(done));
+
+    it('/game/fold Player2', (done) => {
+        var data = createRequestData(initState);
+        callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/fold', data, (error, response, body) => {
+            var game = processGETbody(body);
+            assert.equal(game.isNextPlayer(), true);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Fold);
+            done();
+        });
+    });
+
+    it('/player/alive Player1 after Player2 folds', (done) => {
+        var data = createAliveRequestData(initState);
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(body.forceRefresh, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            done();
+        });
+    });
+
+});
+
+describe('Player2 change letters Suite', () => {
+    var initState = gamestates.player2MoveState;
+    before((done) => beforeTestSuite(done, initState));
+    after((done) => afterTestSuite(done));
+
+    it('/game/exchange Player2', (done) => {
+        var data = {
+            gameId: initState.gameId,
+            exchangeLetters: [
+                initState.players[1].freeLetters[0],
+                initState.players[1].freeLetters[1],
+                initState.players[1].freeLetters[2]
+            ]
+        };
+        callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/exchange', data, (error, response, body) => {
+            var game = processGETbody(body);
+            assert.equal(game.isNextPlayer(), true);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Exchange);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.notEqual(initState.players[1].freeLetters[0], game.state.players[1].freeLetters[0]);
+            assert.notEqual(initState.players[1].freeLetters[1], game.state.players[1].freeLetters[1]);
+            assert.notEqual(initState.players[1].freeLetters[2], game.state.players[1].freeLetters[2]);
+            done();
+        });
+    });
+
+    it('/player/alive Player1 after Player2 exchanges letters', (done) => {
+        var data = createAliveRequestData(initState);
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(body.forceRefresh, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            done();
+        });
+    });
+});
+
+function beforeTestSuite(done: any, state: literki.IGameState): void {
+    server.start();
+    state.players.forEach(p => p.lastSeen = new Date());
+    repo.saveState(state, err => done(err));
+}
+
+function afterTestSuite(done: any): void {
+    server.stop();
+    repo.removeAllStates(err => done(err));
+}
+
+function createRequestData(state: literki.IGameState): any {
+    var data = {
+        gameId: state.gameId
+    };
+    return data;
+}
+
+function createAliveRequestData(state: literki.IGameState, currentPlayerIndex: number = state.currentPlayerIndex): any {
+    var data = {
+        gameId: state.gameId,
+        currentPlayerId: state.players[currentPlayerIndex].userId,
+        playState: state.playState,
+        playersCount: state.players.length
+    };
+    return data;
+}
+
+function callGETMethod(userName: string, id: string, path: string, data: any, call: (error, response: http.IncomingMessage, body) => void): void {
     var authPath = `http://${userName}:${id}@localhost:1337/auth/http`;
     request.get(authPath, (error, response, body) => {
         assert.equal(body, 'Authentifaction successfull');
@@ -181,7 +239,7 @@ function callGETMethod(userName: string, id: string, path: string, data: any, ca
     });
 }
 
-function callPOSTMethod(userName: string, id: string, path: string, data: any, call: (error, response: http.IncomingMessage, body) => void) {
+function callPOSTMethod(userName: string, id: string, path: string, data: any, call: (error, response: http.IncomingMessage, body) => void): void {
     var authPath = `http://${userName}:${id}@localhost:1337/auth/http`;
     request.get(authPath, (error, response, body) => {
         assert.equal(body, 'Authentifaction successfull');

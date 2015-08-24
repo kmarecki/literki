@@ -12,16 +12,9 @@ var literki = require('../scripts/literki');
 var gamestates = require('./gamestates');
 var repo = server.getGameRepository();
 describe('Player2 move Suite', function () {
-    before(function (done) {
-        server.start();
-        var state = gamestates.player2MoveState;
-        state.players.forEach(function (p) { return p.lastSeen = new Date(); });
-        repo.saveState(state, function (err) { return done(err); });
-    });
-    after(function (done) {
-        server.stop();
-        repo.removeAllStates(function (err) { return done(err); });
-    });
+    var initState = gamestates.player2MoveState;
+    before(function (done) { return beforeTestSuite(done, initState); });
+    after(function (done) { return afterTestSuite(done); });
     it('/server/alive Player1', function (done) {
         callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/server/alive', undefined, function (error, response, body) {
             var result = JSON.parse(body);
@@ -30,9 +23,7 @@ describe('Player2 move Suite', function () {
         });
     });
     it('/game/get Player1', function (done) {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId
-        };
+        var data = createRequestData(initState);
         callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/game/get', data, function (error, response, body) {
             var game = processGETbody(body);
             assert.equal(game.isNextPlayer(), true);
@@ -41,9 +32,7 @@ describe('Player2 move Suite', function () {
         });
     });
     it('/game/get Player2', function (done) {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId
-        };
+        var data = createRequestData(initState);
         callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/get', data, function (error, response, body) {
             var game = processGETbody(body);
             assert.equal(game.isCurrentPlayer(), true);
@@ -53,36 +42,26 @@ describe('Player2 move Suite', function () {
         });
     });
     it('/player/alive Player1', function (done) {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId,
-            currentPlayerId: gamestates.player2MoveState.players[1].userId,
-            playState: gamestates.player2MoveState.playState,
-            playersCount: gamestates.player2MoveState.players.length
-        };
+        var data = createAliveRequestData(initState);
         callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, function (error, response, body) {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, false);
-            assert.equal(game.getCurrentUser().remainingTime == gamestates.player2MoveState.players[0].remainingTime, true);
+            assert.equal(game.getCurrentUser().remainingTime == initState.players[0].remainingTime, true);
             done();
         });
     });
     it('/player/alive Player2', function (done) {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId,
-            currentPlayerId: gamestates.player2MoveState.players[1].userId,
-            playState: gamestates.player2MoveState.playState,
-            playersCount: gamestates.player2MoveState.players.length
-        };
+        var data = createAliveRequestData(gamestates.player2MoveState);
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, false);
-            assert.equal(game.getCurrentUser().remainingTime < gamestates.player2MoveState.players[1].remainingTime, true);
+            assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
             done();
         });
     });
     it('/game/move Player2', function (done) {
         var data = {
-            "gameId": gamestates.player2MoveState.gameId,
+            "gameId": initState.gameId,
             "freeLetters": [{
                     "letter": "o",
                     "index": 0,
@@ -108,7 +87,7 @@ describe('Player2 move Suite', function () {
     });
     it('/game/approve Player1', function (done) {
         var data = {
-            gameId: gamestates.player2MoveState.gameId,
+            gameId: initState.gameId,
             approve: true
         };
         callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, function (error, response, body) {
@@ -118,36 +97,110 @@ describe('Player2 move Suite', function () {
         });
     });
     it('/player/alive Player1 after Player2 move', function (done) {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId,
-            currentPlayerId: gamestates.player2MoveState.players[0].userId,
-            playState: gamestates.player2MoveState.playState,
-            playersCount: gamestates.player2MoveState.players.length
-        };
+        var data = createAliveRequestData(initState, 0);
         callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, function (error, response, body) {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, false);
             assert.equal(game.isCurrentPlayer(), true);
-            assert.equal(game.getCurrentUser().remainingTime < gamestates.player2MoveState.players[0].remainingTime, true);
+            assert.equal(game.getCurrentUser().remainingTime < initState.players[0].remainingTime, true);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
         });
     });
     it('/player/alive Player2 after Player2 move', function (done) {
-        var data = {
-            gameId: gamestates.player2MoveState.gameId,
-            currentPlayerId: gamestates.player2MoveState.players[1].userId,
-            playState: gamestates.player2MoveState.playState,
-            playersCount: gamestates.player2MoveState.players.length
-        };
+        var data = createAliveRequestData(initState);
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, true);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Move);
             assert.equal(game.isNextPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
             done();
         });
     });
 });
+describe('Player2 fold Suite', function () {
+    var initState = gamestates.player2MoveState;
+    before(function (done) { return beforeTestSuite(done, initState); });
+    after(function (done) { return afterTestSuite(done); });
+    it('/game/fold Player2', function (done) {
+        var data = createRequestData(initState);
+        callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/fold', data, function (error, response, body) {
+            var game = processGETbody(body);
+            assert.equal(game.isNextPlayer(), true);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Fold);
+            done();
+        });
+    });
+    it('/player/alive Player1 after Player2 folds', function (done) {
+        var data = createAliveRequestData(initState);
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, function (error, response, body) {
+            var game = processPOSTbody(body);
+            assert.equal(body.forceRefresh, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            done();
+        });
+    });
+});
+describe('Player2 change letters Suite', function () {
+    var initState = gamestates.player2MoveState;
+    before(function (done) { return beforeTestSuite(done, initState); });
+    after(function (done) { return afterTestSuite(done); });
+    it('/game/exchange Player2', function (done) {
+        var data = {
+            gameId: initState.gameId,
+            exchangeLetters: [
+                initState.players[1].freeLetters[0],
+                initState.players[1].freeLetters[1],
+                initState.players[1].freeLetters[2]
+            ]
+        };
+        callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/exchange', data, function (error, response, body) {
+            var game = processGETbody(body);
+            assert.equal(game.isNextPlayer(), true);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Exchange);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.notEqual(initState.players[1].freeLetters[0], game.state.players[1].freeLetters[0]);
+            assert.notEqual(initState.players[1].freeLetters[1], game.state.players[1].freeLetters[1]);
+            assert.notEqual(initState.players[1].freeLetters[2], game.state.players[1].freeLetters[2]);
+            done();
+        });
+    });
+    it('/player/alive Player1 after Player2 exchanges letters', function (done) {
+        var data = createAliveRequestData(initState);
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, function (error, response, body) {
+            var game = processPOSTbody(body);
+            assert.equal(body.forceRefresh, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            done();
+        });
+    });
+});
+function beforeTestSuite(done, state) {
+    server.start();
+    state.players.forEach(function (p) { return p.lastSeen = new Date(); });
+    repo.saveState(state, function (err) { return done(err); });
+}
+function afterTestSuite(done) {
+    server.stop();
+    repo.removeAllStates(function (err) { return done(err); });
+}
+function createRequestData(state) {
+    var data = {
+        gameId: state.gameId
+    };
+    return data;
+}
+function createAliveRequestData(state, currentPlayerIndex) {
+    if (currentPlayerIndex === void 0) { currentPlayerIndex = state.currentPlayerIndex; }
+    var data = {
+        gameId: state.gameId,
+        currentPlayerId: state.players[currentPlayerIndex].userId,
+        playState: state.playState,
+        playersCount: state.players.length
+    };
+    return data;
+}
 function callGETMethod(userName, id, path, data, call) {
     var authPath = "http://" + userName + ":" + id + "@localhost:1337/auth/http";
     request.get(authPath, function (error, response, body) {
