@@ -174,7 +174,9 @@ function simpleGameMethodCall(req, res, call, gameId) {
     repo.loadState(gameId, function (err, state) {
         var errorMessages;
         if (err != null || !state) {
-            errorMessages = util.formatError(err);
+            if (err) {
+                errorMessages = util.formatError(err);
+            }
             res.json({ state: state, errorMessage: errorMessages });
         }
         else {

@@ -216,7 +216,9 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
     repo.loadState(gameId, (err, state) => {
         var errorMessages;
         if (err != null || !state) {
-            errorMessages = util.formatError(err);
+            if (err) {
+                errorMessages = util.formatError(err);
+            }
             res.json({ state: state, errorMessage: errorMessages });
         } else {
             var game = new literki_server.GameRun_Server(req.user.id);
