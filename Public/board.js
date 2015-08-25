@@ -239,8 +239,8 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 });
                 letterGroup.on('dragend', function (e) {
                     var dragEnd = _this.getLetterPosition(letterGroup);
-                    var isFieldFree = game.isFieldFree(dragEnd.fieldX, dragEnd.fieldY);
-                    if (!isFieldFree) {
+                    var isFieldValid = game.isFieldValid(dragEnd.fieldX, dragEnd.fieldY);
+                    if (!isFieldValid) {
                         dragEnd = dragStart;
                     }
                     var tween = new Kinetic.Tween({
@@ -250,7 +250,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                         duration: 0.1
                     });
                     tween.play();
-                    if (isFieldFree) {
+                    if (isFieldValid) {
                         switch (dragEnd.endType) {
                             case 0 /* BoardField */: {
                                 game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);

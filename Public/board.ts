@@ -293,8 +293,8 @@ class Board {
 
             letterGroup.on('dragend', (e) => {
                 var dragEnd = this.getLetterPosition(letterGroup);
-                var isFieldFree = game.isFieldFree(dragEnd.fieldX, dragEnd.fieldY);
-                if (!isFieldFree) {
+                var isFieldValid = game.isFieldValid(dragEnd.fieldX, dragEnd.fieldY);
+                if (!isFieldValid) {
                     dragEnd = dragStart;
                 }
 
@@ -306,7 +306,7 @@ class Board {
                 });
                 tween.play();
 
-                if (isFieldFree) {
+                if (isFieldValid) {
                     switch (dragEnd.endType) {
                         case Literki.LetterPositionType.BoardField: {
                             game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
@@ -330,9 +330,7 @@ class Board {
         letterGroup.add(letterText);
         letterGroup.add(pointsText);
         return letterGroup;
-    }
-
-        
+    }   
 
     private getLetterPosition(letterGroup: Kinetic.IGroup): BoardLetterPosition {
 

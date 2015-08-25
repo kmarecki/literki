@@ -125,6 +125,25 @@ var BoardFields = (function () {
             this.setFieldValue(fieldX, fieldY, word.charAt(i));
         }
     };
+    BoardFields.prototype.isFieldFree = function (x, y) {
+        return this.getFieldValue(x, y) == null;
+    };
+    BoardFields.prototype.hasFieldNeighbour = function (x, y) {
+        var _this = this;
+        var result = false;
+        var fields = [{ x: x - 1, y: y }, { x: x + 1, y: y }, { x: x, y: y - 1 }, { x: x, y: y + 1 }];
+        fields.forEach(function (field) {
+            if (field.y >= exports.ROW_SIZE) {
+                result = true;
+            }
+            else if (field.x >= 0 && field.y >= 0) {
+                if (!_this.isFieldFree(field.x, field.y)) {
+                    result = true;
+                }
+            }
+        });
+        return result;
+    };
     return BoardFields;
 })();
 exports.BoardFields = BoardFields;
@@ -364,8 +383,8 @@ var GameRun = (function () {
         this.board.setFieldValue(x, y, letter);
         this.freeLetters.setLetter(letter, index, x, y, LetterPositionType.BoardField);
     };
-    GameRun.prototype.isFieldFree = function (x, y) {
-        return this.board.getFieldValue(x, y) == null;
+    GameRun.prototype.isFieldValid = function (x, y) {
+        return this.board.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y);
     };
     GameRun.prototype.addLetterToExchange = function (letter, index) {
         this.cleanLetterOnBoard(letter, index);

@@ -135,6 +135,25 @@ export class BoardFields {
             this.setFieldValue(fieldX, fieldY, word.charAt(i));
         }
     }
+
+    isFieldFree(x: number, y: number): boolean {
+        return this.getFieldValue(x, y) == null;
+    }
+
+    hasFieldNeighbour(x: number, y: number): boolean {
+        var result = false;
+        var fields = [{ x: x - 1, y: y }, { x: x + 1, y: y }, { x: x, y: y - 1 }, { x: x, y: y + 1 }];
+        fields.forEach(field => {
+            if (field.y >= ROW_SIZE) {
+                result = true;
+            } else if (field.x >= 0 && field.y >= 0) {
+                if (!this.isFieldFree(field.x, field.y)) {
+                    result = true;
+                }
+            }
+        });
+        return result;
+    }
 }
 
 export interface IGameWord {
@@ -454,8 +473,8 @@ export class GameRun {
         this.freeLetters.setLetter(letter, index, x, y, LetterPositionType.BoardField);
     }
 
-    isFieldFree(x: number, y: number): boolean {
-        return this.board.getFieldValue(x, y) == null;
+    isFieldValid(x: number, y: number): boolean {
+        return this.board.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y);
     }
 
     addLetterToExchange(letter: string, index: number): void {
