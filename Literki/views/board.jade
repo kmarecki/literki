@@ -1,6 +1,7 @@
 ﻿extends ./layout.jade
 
 block stylesheets
+    link(rel='stylesheet', href='styles/jquery-ui.css', type='text/css')
     link(rel='stylesheet', href='styles/app.css', type='text/css')
     link(rel='stylesheet', href='styles/board.css', type='text/css')
 
@@ -50,20 +51,32 @@ block body
                     td(colspan='2')
                       label.center(data-bind='text: points')
             // /ko
-      #historyDiv
-        table.tableBorders
-          thead
-            tr
-              th(data-bind='attr: { colspan: playerCount }') Historia
-            tr(data-bind='foreach:  allPlayers')
-              th.tableBorders
-                label(data-bind='text: playerName')
-          tbody
-            // ko foreach: historyMoves
-            tr(data-bind='foreach: playerMoves')
-              td.tableBorders
-                label(data-bind='text: $data')
-            // /ko
+      #tabsDiv
+        ul
+          li
+            li
+              a(href='#historyDiv') Historia
+            li
+              a(href='#logDiv') Log
+            li
+              a(href='#chatDiv') Czat
+        #logDiv
+          label Log
+        #historyDiv
+          table.tableBorders
+            thead
+              tr(data-bind='foreach:  allPlayers')
+                th.tableBorders
+                  label(data-bind='text: playerName')
+            tbody
+              // ko foreach: historyMoves
+              tr(data-bind='foreach: playerMoves')
+                td.tableBorders
+                  label(data-bind='text: $data')
+              // /ko
+        #chatDiv
+          label Czat
+     
       #messageDiv
         p(data-bind='text: errorMessage') Test
       #buttonsDiv

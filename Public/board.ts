@@ -685,6 +685,7 @@ class BoardViewModel extends Core.BaseViewModel {
 export function init(): void {
 
     $.ajaxSetup({ cache: false });
+    $("#tabsDiv").tabs();
 
     var debugLabel = <HTMLLabelElement>document.getElementById("debugLabel");
 

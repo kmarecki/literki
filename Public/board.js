@@ -600,6 +600,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
     })(Core.BaseViewModel);
     function init() {
         $.ajaxSetup({ cache: false });
+        $("#tabsDiv").tabs();
         var debugLabel = document.getElementById("debugLabel");
         viewModel = new BoardViewModel();
         viewModel.board = new Board("boardDiv");

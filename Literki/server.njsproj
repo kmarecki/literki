@@ -39,6 +39,7 @@
     <Content Include="config\test.json" />
     <Content Include="styles\app.less" />
     <Content Include="styles\board.less" />
+    <Content Include="styles\jquery-ui.less" />
     <Content Include="views\board.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\login.jade" />
