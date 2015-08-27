@@ -6,7 +6,16 @@ html(xmlns='http://www.w3.org/1999/xhtml')
     block stylesheets
     block scripts
   body
-    block body
+    div.borderBox(id='boardDiv')
+    div.borderBox(id='infoDiv')
+      div.contentBox
+        #navigationbox
+          a(href="profile.html") Profil
+          a(href="/auth/google/signout") Wylogowanie
+        h1.center Literki
+        br
+        block body
+
     #dialogbox
       div
         #dialogboxhead
