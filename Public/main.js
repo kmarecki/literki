@@ -67,6 +67,8 @@ define(["require", "exports", './core', './scripts/literki', 'knockout', 'jquery
     })(Core.BaseViewModel);
     function init() {
         $.ajaxSetup({ cache: false });
+        $("#boardDiv").hide();
+        $("#infoDiv").css("float", "right");
         var viewModel = new MainViewModel();
         viewModel.init();
     }

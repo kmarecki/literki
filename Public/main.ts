@@ -64,7 +64,8 @@ class MainViewModel extends Core.BaseViewModel {
 
 export function init(): void  {
     $.ajaxSetup({ cache: false });
-
+    $("#boardDiv").hide();
+    $("#infoDiv").css("float", "right");
     var viewModel = new MainViewModel();
     viewModel.init();
 }
