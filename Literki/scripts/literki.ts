@@ -473,8 +473,12 @@ export class GameRun {
         this.freeLetters.setLetter(letter, index, x, y, LetterPositionType.BoardField);
     }
 
+    isFieldFree(x: number, y: number): boolean {
+        return this.board.isFieldFree(x, y);
+    }
+
     isFieldValid(x: number, y: number): boolean {
-        return this.board.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y);
+        return this.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y);
     }
 
     addLetterToExchange(letter: string, index: number): void {

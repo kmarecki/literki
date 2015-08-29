@@ -293,8 +293,8 @@ class Board {
 
             letterGroup.on('dragend', (e) => {
                 var dragEnd = this.getLetterPosition(letterGroup);
-                var isFieldValid = game.isFieldValid(dragEnd.fieldX, dragEnd.fieldY);
-                if (!isFieldValid) {
+                var isFieldFree = game.isFieldFree(dragEnd.fieldX, dragEnd.fieldY);
+                if (!isFieldFree) {
                     dragEnd = dragStart;
                 }
 
@@ -306,7 +306,7 @@ class Board {
                 });
                 tween.play();
 
-                if (isFieldValid) {
+                if (isFieldFree) {
                     switch (dragEnd.endType) {
                         case Literki.LetterPositionType.BoardField: {
                             game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);

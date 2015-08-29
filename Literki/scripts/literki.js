@@ -383,8 +383,11 @@ var GameRun = (function () {
         this.board.setFieldValue(x, y, letter);
         this.freeLetters.setLetter(letter, index, x, y, LetterPositionType.BoardField);
     };
+    GameRun.prototype.isFieldFree = function (x, y) {
+        return this.board.isFieldFree(x, y);
+    };
     GameRun.prototype.isFieldValid = function (x, y) {
-        return this.board.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y);
+        return this.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y);
     };
     GameRun.prototype.addLetterToExchange = function (letter, index) {
         this.cleanLetterOnBoard(letter, index);

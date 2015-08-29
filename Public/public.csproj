@@ -45,6 +45,7 @@
   <ItemGroup>
     <Content Include="board-conf.js" />
     <Content Include="images\scrabble.jpg" />
+    <Content Include="images\scrabble_small.jpg" />
     <Content Include="main-conf.js" />
     <Content Include="scripts\jquery-ui.js" />
     <Content Include="scripts\jquery.js" />
