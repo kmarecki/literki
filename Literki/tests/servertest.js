@@ -10,6 +10,7 @@ var request = requestModule.defaults({
 var literki = require('../scripts/literki');
 var gamestates = require('./gamestates');
 var helper = require('./helper');
+//var repo = server.getGameRepository();
 describe('Player2 move Suite', function () {
     var initState = gamestates.player2MoveState;
     before(function (done) { return helper.beforeTestSuite(done, initState); });
@@ -275,6 +276,22 @@ describe('Player2 not allowed move check Suite', function () {
             done();
         });
     });
+    it('/game/move Player2', function (done) {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                    "letter": "o",
+                    "index": 0,
+                    "x": 12,
+                    "y": 9,
+                    "positionType": 0
+                }]
+        };
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, function (error, response, body) {
+            assert.notEqual(body.errorMessage, undefined);
+            done();
+        });
+    });
     it('/player/alive Player2', function (done) {
         var data = createAliveRequestData(gamestates.player2MoveState);
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
@@ -391,4 +408,4 @@ function processPOSTbody(body) {
     game.runState(state);
     return game;
 }
-//# sourceMappingURL=gametest.js.map
+//# sourceMappingURL=servertest.js.map

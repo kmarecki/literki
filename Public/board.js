@@ -1,15 +1,13 @@
 /// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path=".\typings\jqueryui\jqueryui.d.ts" />
 /// <amd-dependency path="./scripts/jquery-ui" />
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './core', './scripts/literki', './scripts/system', 'knockout', 'jquery', 'Kinetic', "./scripts/jquery-ui"], function (require, exports, Core, Literki, System, ko, $, Kinetic) {
-    var game;
-    var viewModel;
+define(["require", "exports", './master', './scripts/literki', './scripts/system', 'knockout', 'jquery', 'Kinetic', "./scripts/jquery-ui"], function (require, exports, master, literki, System, ko, $, Kinetic) {
     var BoardLetterPosition = (function () {
         function BoardLetterPosition() {
         }
@@ -27,12 +25,12 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.bonusColors[1 /* DoubleLetter */] = "lightblue";
-            this.bonusColors[3 /* DoubleWord */] = "lightpink";
-            this.bonusColors[2 /* TripleLetter */] = "blue";
-            this.bonusColors[4 /* TripleWord */] = "red";
-            this.bonusColors[5 /* Start */] = "lightpink";
-            this.bonusColors[0 /* None */] = "darkgreen";
+            this.bonusColors[literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+            this.bonusColors[literki.BoardFieldBonus.DoubleWord] = "lightpink";
+            this.bonusColors[literki.BoardFieldBonus.TripleLetter] = "blue";
+            this.bonusColors[literki.BoardFieldBonus.TripleWord] = "red";
+            this.bonusColors[literki.BoardFieldBonus.Start] = "lightpink";
+            this.bonusColors[literki.BoardFieldBonus.None] = "darkgreen";
         };
         Board.prototype.setupDisplay = function () {
             var containerElem = $("#" + this.container);
@@ -40,13 +38,13 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 width: containerElem.width(),
                 height: containerElem.height()
             });
-            this.FIELD_SIZE = this.stage.width() / (Literki.ROW_SIZE + 0.5);
+            this.FIELD_SIZE = this.stage.width() / (literki.ROW_SIZE + 0.5);
             this.LINE_WIDTH = this.FIELD_SIZE / 15;
-            this.BOARD_SIZE = this.FIELD_SIZE * Literki.ROW_SIZE;
+            this.BOARD_SIZE = this.FIELD_SIZE * literki.ROW_SIZE;
             this.BOARD_MARGIN = this.FIELD_SIZE / 4;
             this.MAX_LINES = this.BOARD_MARGIN + this.BOARD_SIZE;
             this.LETTERS_TOP = this.MAX_LINES + 2 * this.BOARD_MARGIN;
-            this.CHANGE_LETTERS_LEFT = this.BOARD_MARGIN + (Literki.MAX_LETTERS + 1) * this.FIELD_SIZE;
+            this.CHANGE_LETTERS_LEFT = this.BOARD_MARGIN + (literki.MAX_LETTERS + 1) * this.FIELD_SIZE;
         };
         Board.prototype.drawGameState = function () {
             var _this = this;
@@ -62,11 +60,13 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             var context = canvas.getContext("2d");
             var backgroundColor = "#FFFFCC";
             //background
-            context.beginPath(), context.rect(0, 0, canvas.width, canvas.height);
+            context.beginPath(),
+                context.rect(0, 0, canvas.width, canvas.height);
             context.fillStyle = backgroundColor;
             context.fill();
-            for (var x = 0; x < Literki.ROW_SIZE; x++) {
-                for (var y = 0; y < Literki.ROW_SIZE; y++) {
+            //board fields
+            for (var x = 0; x < literki.ROW_SIZE; x++) {
+                for (var y = 0; y < literki.ROW_SIZE; y++) {
                     var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
                     var ypos = this.BOARD_MARGIN + y * this.FIELD_SIZE;
                     var value = game.board.getFieldValue(x, y);
@@ -77,7 +77,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                         context.rect(xpos, ypos, this.FIELD_SIZE, this.FIELD_SIZE);
                         context.fillStyle = fieldColor;
                         context.fill();
-                        if (bonus == 5 /* Start */) {
+                        if (bonus == literki.BoardFieldBonus.Start) {
                             var star = new Kinetic.Star({
                                 x: xpos + this.FIELD_SIZE / 2,
                                 y: ypos + this.FIELD_SIZE / 2,
@@ -91,6 +91,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                     }
                 }
             }
+            //vertical lines
             for (var x = this.BOARD_MARGIN; x <= this.MAX_LINES + this.LINE_WIDTH; x += this.FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(x, this.BOARD_MARGIN);
@@ -99,6 +100,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 context.strokeStyle = "black";
                 context.stroke();
             }
+            //horizontal lines
             for (var y = this.BOARD_MARGIN; y <= this.MAX_LINES + this.LINE_WIDTH; y += this.FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(this.BOARD_MARGIN, y);
@@ -109,12 +111,13 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             }
             //letters field
             context.beginPath();
-            context.rect(this.BOARD_MARGIN, this.LETTERS_TOP, this.FIELD_SIZE * Literki.MAX_LETTERS, this.FIELD_SIZE);
+            context.rect(this.BOARD_MARGIN, this.LETTERS_TOP, this.FIELD_SIZE * literki.MAX_LETTERS, this.FIELD_SIZE);
             context.fillStyle = "silver";
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
-            for (var x = 1; x < Literki.MAX_LETTERS; x++) {
+            //letters field lines
+            for (var x = 1; x < literki.MAX_LETTERS; x++) {
                 context.beginPath();
                 context.moveTo(this.BOARD_MARGIN + x * this.FIELD_SIZE, this.LETTERS_TOP);
                 context.lineTo(this.BOARD_MARGIN + x * this.FIELD_SIZE, this.LETTERS_TOP + this.FIELD_SIZE);
@@ -123,20 +126,22 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             }
             //change letters field
             context.beginPath();
-            context.rect(this.CHANGE_LETTERS_LEFT, this.LETTERS_TOP, this.FIELD_SIZE * Literki.MAX_LETTERS, this.FIELD_SIZE);
+            context.rect(this.CHANGE_LETTERS_LEFT, this.LETTERS_TOP, this.FIELD_SIZE * literki.MAX_LETTERS, this.FIELD_SIZE);
             context.fillStyle = backgroundColor;
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
-            for (var x = 1; x < Literki.MAX_LETTERS; x++) {
+            //change letters field lines
+            for (var x = 1; x < literki.MAX_LETTERS; x++) {
                 context.beginPath();
                 context.moveTo(this.CHANGE_LETTERS_LEFT + x * this.FIELD_SIZE, this.LETTERS_TOP);
                 context.lineTo(this.CHANGE_LETTERS_LEFT + x * this.FIELD_SIZE, this.LETTERS_TOP + this.FIELD_SIZE);
                 context.strokeStyle = "black";
                 context.stroke();
             }
-            for (var x = 0; x < Literki.ROW_SIZE; x++) {
-                for (var y = 0; y < Literki.ROW_SIZE; y++) {
+            //letter fields
+            for (var x = 0; x < literki.ROW_SIZE; x++) {
+                for (var y = 0; y < literki.ROW_SIZE; y++) {
                     var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
                     var ypos = this.BOARD_MARGIN + y * this.FIELD_SIZE;
                     var value = game.board.getFieldValue(x, y);
@@ -180,11 +185,11 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             if (currentUser != null) {
                 // moving letters
                 var foregroundLayer = new Kinetic.Layer();
-                for (var x = 0; x < Literki.MAX_LETTERS; x++) {
+                for (var x = 0; x < literki.MAX_LETTERS; x++) {
                     if (x < currentUser.freeLetters.length) {
                         var letter = currentUser.freeLetters[x];
                         var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
-                        var movable = game.isCurrentPlayer() && game.state.playState == 0 /* PlayerMove */;
+                        var movable = game.isCurrentPlayer() && game.state.playState == literki.GamePlayState.PlayerMove;
                         var letterGroup = this.getLetterGroup(xpos, this.LETTERS_TOP, letter, x, movable);
                         foregroundLayer.add(letterGroup);
                     }
@@ -220,7 +225,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 align: "right",
                 x: -5,
                 y: this.FIELD_SIZE - 15,
-                text: Literki.LETTERS[letter].points.toString(),
+                text: literki.LETTERS[letter].points.toString(),
                 fontFamily: "Calibri",
                 fontSize: 14,
                 fontStyle: "bold",
@@ -252,18 +257,18 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                     tween.play();
                     if (isFieldFree) {
                         switch (dragEnd.endType) {
-                            case 0 /* BoardField */: {
+                            case literki.LetterPositionType.BoardField: {
                                 game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
-                                viewModel.refreshBindings();
+                                controller.model.refreshBindings();
                                 break;
                             }
-                            case 1 /* ExchangeLetter */:
+                            case literki.LetterPositionType.ExchangeLetter:
                                 game.addLetterToExchange(letter, index);
-                                viewModel.refreshBindings();
+                                controller.model.refreshBindings();
                                 break;
-                            case 2 /* FreeLetter */:
+                            case literki.LetterPositionType.FreeLetter:
                                 game.removeLetter(letter, index);
-                                viewModel.refreshBindings();
+                                controller.model.refreshBindings();
                                 break;
                         }
                     }
@@ -292,7 +297,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             }
             else {
                 //free letters fields
-                if (fieldX == Literki.ROW_SIZE / 2) {
+                if (fieldX == literki.ROW_SIZE / 2) {
                     fieldX++;
                     floorX += this.FIELD_SIZE;
                 }
@@ -300,17 +305,19 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 x += this.BOARD_MARGIN;
                 y = this.LETTERS_TOP;
             }
-            var endType = 0 /* BoardField */;
-            if (fieldY >= Literki.ROW_SIZE) {
-                endType = fieldX > Literki.ROW_SIZE / 2 ? 1 /* ExchangeLetter */ : 2 /* FreeLetter */;
+            var endType = literki.LetterPositionType.BoardField;
+            if (fieldY >= literki.ROW_SIZE) {
+                endType = fieldX > literki.ROW_SIZE / 2 ? literki.LetterPositionType.ExchangeLetter : literki.LetterPositionType.FreeLetter;
             }
             fieldX = Math.floor(x / this.FIELD_SIZE);
             fieldY = Math.floor(y / this.FIELD_SIZE);
             return { x: x, y: y, fieldX: fieldX, fieldY: fieldY, endType: endType };
         };
         Board.prototype.normalizeDragEndPositionX = function (x) {
-            var lastTileX = (Literki.ROW_SIZE - 1) * this.FIELD_SIZE;
-            return x >= 0 ? (x >= lastTileX ? lastTileX : x) : 0;
+            var lastTileX = (literki.ROW_SIZE - 1) * this.FIELD_SIZE;
+            return x >= 0 ?
+                (x >= lastTileX ? lastTileX : x) :
+                0;
         };
         Board.prototype.normalizeDragEndPositionY = function (y) {
             return y >= 0 ? y : 0;
@@ -326,8 +333,8 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
         }
         return BoardViewModelWord;
     })();
-    var PlayerViewModel = (function () {
-        function PlayerViewModel(parent) {
+    var PlayerModel = (function () {
+        function PlayerModel(parent) {
             this.isCurrentPlayer = ko.observable(false);
             this.isCurrentUser = ko.observable(false);
             this.playerName = ko.observable("");
@@ -336,7 +343,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             this.playerCss = ko.observable("");
             this.parentModel = parent;
         }
-        PlayerViewModel.prototype.findAndRefresh = function (players, currentPlayer) {
+        PlayerModel.prototype.findAndRefresh = function (players, currentPlayer) {
             var _this = this;
             players.forEach(function (p) {
                 if (p.playerName == _this.playerName()) {
@@ -344,7 +351,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 }
             });
         };
-        PlayerViewModel.prototype.refresh = function (player, currentPlayer) {
+        PlayerModel.prototype.refresh = function (player, currentPlayer) {
             this.playerName(player.playerName);
             this.points(player.getPoints());
             this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
@@ -352,7 +359,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             this.isCurrentUser(player.userId == game.currentUserId);
             this.playerCss((this.isCurrentUser() ? "currentUser" : "player") + (!player.isAlive() ? " inactivePlayer" : ""));
         };
-        return PlayerViewModel;
+        return PlayerModel;
     })();
     var MoveHistoryViewModel = (function () {
         function MoveHistoryViewModel(moves) {
@@ -362,9 +369,9 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
         }
         return MoveHistoryViewModel;
     })();
-    var BoardViewModel = (function (_super) {
-        __extends(BoardViewModel, _super);
-        function BoardViewModel() {
+    var BoardModel = (function (_super) {
+        __extends(BoardModel, _super);
+        function BoardModel() {
             _super.apply(this, arguments);
             this.newWords = ko.observableArray();
             this.changeLetters = ko.observable("");
@@ -373,47 +380,119 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
             this.playerCount = ko.observable(0);
             this.historyMoves = ko.observableArray();
         }
-        BoardViewModel.prototype.setNewWords = function (newWords) {
+        BoardModel.prototype.setNewWords = function (newWords) {
             var _this = this;
             this.cleanNewWords();
             newWords.forEach(function (word) { return _this.newWords.push(word); });
         };
-        BoardViewModel.prototype.cleanNewWords = function () {
+        BoardModel.prototype.cleanNewWords = function () {
             this.newWords.removeAll();
         };
-        BoardViewModel.prototype.setChangeLetters = function (changeLetters) {
+        BoardModel.prototype.setChangeLetters = function (changeLetters) {
             this.cleanChangeLetters();
             this.changeLetters(changeLetters.join(" "));
         };
-        BoardViewModel.prototype.cleanChangeLetters = function () {
+        BoardModel.prototype.cleanChangeLetters = function () {
             this.changeLetters("");
         };
-        BoardViewModel.prototype.getPlayers = function (start, end) {
+        BoardModel.prototype.getPlayers = function (start, end) {
             var _this = this;
             var players = new Array();
             game.getPlayers().slice(start, end).forEach(function (p) {
-                var playerModel = new PlayerViewModel(_this);
+                var playerModel = new PlayerModel(_this);
                 playerModel.refresh(p, game.getCurrentPlayer());
                 players.push(playerModel);
             });
             this.allPlayers(players);
             return this.allPlayers();
         };
-        BoardViewModel.prototype.getAllPlayers = function () {
+        BoardModel.prototype.getAllPlayers = function () {
             return this.getPlayers(0, game.getPlayers().length);
         };
-        BoardViewModel.prototype.getPlayersRow = function () {
+        BoardModel.prototype.getPlayersRow = function () {
             return game.getPlayers().length > 2 ? [0, 1] : [0];
         };
-        BoardViewModel.prototype.refreshBoard = function () {
+        BoardModel.prototype.refreshBoard = function () {
             this.board.clearBoard();
             this.board.drawGameState();
         };
-        BoardViewModel.prototype.runState = function (state) {
-            game.runState(state);
-            viewModel.board.drawGameState();
+        BoardModel.prototype.refreshBindings = function () {
+            var newWords = game.getNewWords();
+            this.setNewWords(newWords);
+            var changeLetters = game.getExchangeLetters();
+            this.setChangeLetters(changeLetters);
         };
-        BoardViewModel.prototype.init = function () {
+        BoardModel.prototype.refreshPlayerModels = function () {
+            if (this.allPlayers().length == game.getPlayers().length) {
+                this.allPlayers().forEach(function (p) { return p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()); });
+            }
+            else {
+                this.allPlayers.removeAll();
+                this.playerCount(game.getPlayers().length);
+                this.getAllPlayers();
+            }
+        };
+        BoardModel.prototype.refreshHistoryMoves = function () {
+            this.historyMoves.removeAll();
+            var players = game.getPlayers();
+            var moves = new Array();
+            var movesTotals = {};
+            var moveIndex = 0;
+            var lastMove = _.max(players, function (p) { return p.moves.length; }).moves.length;
+            while (moveIndex < lastMove) {
+                var playerMoves = new Array();
+                players.forEach(function (p) {
+                    var moveDesc = "";
+                    var move = p.moves.length > moveIndex ?
+                        p.moves[moveIndex] :
+                        null;
+                    if (move) {
+                        var total = (p.userId in movesTotals) ? movesTotals[p.userId] : 0;
+                        var sum = move.words.length > 0 ?
+                            move.words.map(function (w) { return w.points; }).reduce(function (total, x) { return total += x; }) :
+                            0;
+                        total += sum;
+                        movesTotals[p.userId] = total;
+                        switch (move.moveType) {
+                            case literki.MoveType.Exchange:
+                                moveDesc = total + " (Wymiana)";
+                                break;
+                            case literki.MoveType.Fold:
+                                moveDesc = total + " (Pas)";
+                                break;
+                            case literki.MoveType.WrongMove:
+                                moveDesc = total + " (B\u0142\u0119dny ruch)";
+                                break;
+                            case literki.MoveType.CheckMoveFailed:
+                                moveDesc = total + " (B\u0142\u0119dne sprawdzenie)";
+                                break;
+                            case literki.MoveType.Move:
+                                moveDesc = total + " (" + sum + ")";
+                                break;
+                        }
+                    }
+                    playerMoves.push(moveDesc);
+                });
+                var moveModel = new MoveHistoryViewModel(playerMoves);
+                this.historyMoves.push(moveModel);
+                moveIndex++;
+            }
+        };
+        BoardModel.prototype.drawGameState = function () {
+            this.board.drawGameState();
+        };
+        return BoardModel;
+    })(master.MasterModel);
+    var BoardController = (function (_super) {
+        __extends(BoardController, _super);
+        function BoardController() {
+            _super.apply(this, arguments);
+        }
+        BoardController.prototype.runState = function (state) {
+            game.runState(state);
+            this.model.drawGameState();
+        };
+        BoardController.prototype.init = function () {
             var gameId = System.urlParam("gameId");
             var join = System.urlParam("join");
             if (join) {
@@ -428,25 +507,25 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 }
             }
         };
-        BoardViewModel.prototype.refreshClick = function () {
+        BoardController.prototype.refreshClick = function () {
             this.callGETMethod("/game/get", true);
         };
-        BoardViewModel.prototype.startClick = function () {
+        BoardController.prototype.startClick = function () {
             this.callGETMethod("/game/start");
         };
-        BoardViewModel.prototype.pauseClick = function () {
+        BoardController.prototype.pauseClick = function () {
             this.callGETMethod("/game/pause");
         };
-        BoardViewModel.prototype.foldClick = function () {
+        BoardController.prototype.foldClick = function () {
             this.callGETMethod("/game/fold");
         };
-        BoardViewModel.prototype.exchangeClick = function () {
+        BoardController.prototype.exchangeClick = function () {
             this.callGETMethod("/game/exchange", true, {
                 gameId: game.state.gameId,
                 exchangeLetters: game.getExchangeLetters()
             });
         };
-        BoardViewModel.prototype.alive = function () {
+        BoardController.prototype.alive = function () {
             this.callPOSTMethod("/player/alive", false, {
                 gameId: game.state.gameId,
                 currentPlayerId: game.getCurrentPlayer().userId,
@@ -454,7 +533,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 playersCount: game.getPlayers().length
             });
         };
-        BoardViewModel.prototype.callGETMethod = function (name, refreshBoard, data, applyBindings) {
+        BoardController.prototype.callGETMethod = function (name, refreshBoard, data, applyBindings) {
             var _this = this;
             if (refreshBoard === void 0) { refreshBoard = true; }
             if (data === void 0) { data = { gameId: game.state.gameId }; }
@@ -468,7 +547,7 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
             });
         };
-        BoardViewModel.prototype.callPOSTMethod = function (name, refreshBoard, data, applyBindings) {
+        BoardController.prototype.callPOSTMethod = function (name, refreshBoard, data, applyBindings) {
             var _this = this;
             if (refreshBoard === void 0) { refreshBoard = true; }
             if (data === void 0) { data = { gameId: game.state.gameId }; }
@@ -483,17 +562,17 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
             });
         };
-        BoardViewModel.prototype.refreshAfterHTMLMethodCall = function (result, refreshBoard, applyBindings) {
+        BoardController.prototype.refreshAfterHTMLMethodCall = function (result, refreshBoard, applyBindings) {
             var refresh = refreshBoard || result.forceRefresh;
             this.refreshModel(result, refresh);
             if (refresh) {
-                this.refreshBoard();
+                this.model.refreshBoard();
             }
             if (applyBindings) {
                 ko.applyBindings(this);
             }
         };
-        BoardViewModel.prototype.moveClick = function () {
+        BoardController.prototype.moveClick = function () {
             var _this = this;
             var move = game.getActualMove();
             $.ajax({
@@ -504,32 +583,26 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                 dataType: "json",
                 success: function (result) {
                     _this.refreshModel(result);
-                    _this.refreshBoard();
+                    _this.model.refreshBoard();
                 }
             });
         };
-        BoardViewModel.prototype.refreshBindings = function () {
-            var newWords = game.getNewWords();
-            this.setNewWords(newWords);
-            var changeLetters = game.getExchangeLetters();
-            this.setChangeLetters(changeLetters);
-        };
-        BoardViewModel.prototype.refreshModel = function (result, fullRefresh) {
+        BoardController.prototype.refreshModel = function (result, fullRefresh) {
             var _this = this;
             if (fullRefresh === void 0) { fullRefresh = true; }
             _super.prototype.refreshModel.call(this, result);
             if (result.state) {
                 if (!game) {
-                    game = new Literki.GameRun(result.userId);
+                    game = new literki.GameRun(result.userId);
                 }
-                var state = Literki.GameState.fromJSON(result.state);
+                var state = literki.GameState.fromJSON(result.state);
                 game.state = state;
-                this.refreshPlayerModels();
+                this.model.refreshPlayerModels();
                 if (fullRefresh) {
                     game.runState(state);
-                    this.cleanNewWords();
-                    this.cleanChangeLetters();
-                    this.refreshHistoryMoves();
+                    this.model.cleanNewWords();
+                    this.model.cleanChangeLetters();
+                    this.model.refreshHistoryMoves();
                     if (!result.errorMessage) {
                         this.hideDialogBox();
                         if (game.canApproveMove()) {
@@ -538,81 +611,33 @@ define(["require", "exports", './core', './scripts/literki', './scripts/system',
                             });
                         }
                         if (game.isWaitingForMoveApproval()) {
-                            this.showPersistentInfoDialogBox("Oczekiwanie na akceptację ruchu przez gracza " + game.getNextPlayer().playerName + ".");
+                            this.showPersistentInfoDialogBox("Oczekiwanie na akceptacj\u0119 ruchu przez gracza " + game.getNextPlayer().playerName + ".");
                         }
                     }
                 }
             }
         };
-        BoardViewModel.prototype.refreshPlayerModels = function () {
-            if (this.allPlayers().length == game.getPlayers().length) {
-                this.allPlayers().forEach(function (p) { return p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()); });
-            }
-            else {
-                this.allPlayers.removeAll();
-                this.playerCount(game.getPlayers().length);
-                this.getAllPlayers();
-            }
-        };
-        BoardViewModel.prototype.refreshHistoryMoves = function () {
-            this.historyMoves.removeAll();
-            var players = game.getPlayers();
-            var moves = new Array();
-            var movesTotals = {};
-            var moveIndex = 0;
-            var lastMove = _.max(players, function (p) { return p.moves.length; }).moves.length;
-            while (moveIndex < lastMove) {
-                var playerMoves = new Array();
-                players.forEach(function (p) {
-                    var moveDesc = "";
-                    var move = p.moves.length > moveIndex ? p.moves[moveIndex] : null;
-                    if (move) {
-                        var total = (p.userId in movesTotals) ? movesTotals[p.userId] : 0;
-                        var sum = move.words.length > 0 ? move.words.map(function (w) { return w.points; }).reduce(function (total, x) { return total += x; }) : 0;
-                        total += sum;
-                        movesTotals[p.userId] = total;
-                        switch (move.moveType) {
-                            case 2 /* Exchange */:
-                                moveDesc = "" + total + " (Wymiana)";
-                                break;
-                            case 1 /* Fold */:
-                                moveDesc = "" + total + " (Pas)";
-                                break;
-                            case 3 /* WrongMove */:
-                                moveDesc = "" + total + " (Błędny ruch)";
-                                break;
-                            case 4 /* CheckMoveFailed */:
-                                moveDesc = "" + total + " (Błędne sprawdzenie)";
-                                break;
-                            case 0 /* Move */:
-                                moveDesc = "" + total + " (" + sum + ")";
-                                break;
-                        }
-                    }
-                    playerMoves.push(moveDesc);
-                });
-                var moveModel = new MoveHistoryViewModel(playerMoves);
-                this.historyMoves.push(moveModel);
-                moveIndex++;
-            }
-        };
-        return BoardViewModel;
-    })(Core.BaseViewModel);
+        return BoardController;
+    })(master.MasterControler);
+    var game;
+    var controller = new BoardController();
     function init() {
-        $.ajaxSetup({ cache: false });
+        master.init();
         $("#tabsDiv").tabs();
         var debugLabel = document.getElementById("debugLabel");
-        viewModel = new BoardViewModel();
-        viewModel.board = new Board("boardDiv");
-        viewModel.init();
+        var model = new BoardModel();
+        model.board = new Board("boardDiv");
+        controller.model = model;
+        controller.init();
         setInterval(function () {
-            debugLabel.textContent = "Screen: " + screen.availWidth + " X " + screen.availHeight + ",  Window: " + window.innerWidth + " X " + window.innerHeight + " " + new Date().toLocaleTimeString();
-            viewModel.alive();
+            debugLabel.textContent =
+                "Screen: " + screen.availWidth + " X " + screen.availHeight + ",  Window: " + window.innerWidth + " X " + window.innerHeight + " " + new Date().toLocaleTimeString();
+            controller.alive();
         }, 1000);
     }
     exports.init = init;
     window.onresize = function () {
-        viewModel.refreshBoard();
+        controller.model.refreshBoard();
     };
 });
 //# sourceMappingURL=board.js.map

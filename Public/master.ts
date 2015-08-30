@@ -3,18 +3,22 @@
 import ko = require("knockout");
 import $ = require("jquery");
 
-export class BaseViewModel {
+export class MasterModel {
 
     errorMessage = ko.observable("");
+} 
+
+export class MasterControler<TModel extends MasterModel> {
+    private dialogBoxCallback: (boolean) => void;
+
+    model: TModel;
 
     protected refreshModel(result: any): void {
-        this.errorMessage(result.errorMessage);
+        this.model.errorMessage(result.errorMessage);
         if (result.errorMessage) {
             this.showErrorDialogBox(result.errorMessage);
         }
     }
-
-    private dialogBoxCallback: (boolean) => void;
 
     protected showAskDialogBox(message: string, callback: (boolean) => void): void {
         this.showDialogBox(message, "Pytanie", callback, {
@@ -39,15 +43,15 @@ export class BaseViewModel {
     }
 
     protected showDialogBox(message: string,
-                            title: string,
-                            callback: (boolean) => void = null, 
-                            options: {
-                                showCancelButton?: boolean; 
-                                showOkButton?: boolean;
-                                showDialogOverlay?: boolean;
-                                cancelButtonText?: string;
-                                okButtonText?: string
-                            } = null): void {
+        title: string,
+        callback: (boolean) => void = null,
+        options: {
+            showCancelButton?: boolean;
+            showOkButton?: boolean;
+            showDialogOverlay?: boolean;
+            cancelButtonText?: string;
+            okButtonText?: string
+        } = null): void {
         this.hideDialogBox();
 
         var winW = window.innerWidth;
@@ -90,7 +94,7 @@ export class BaseViewModel {
 
         dialogbox.show();
         dialogbox.draggable();
-        
+
         this.dialogBoxCallback = callback;
     }
 
@@ -120,4 +124,14 @@ export class BaseViewModel {
         var message = xhr.responseText ? xhr.responseText : "Brak połączenia z serwerem gry.";
         this.showErrorDialogBox(message);
     }
-} 
+}
+
+export function init(): void {
+    $.ajaxSetup({ cache: false });
+}
+
+export function hideBoardDiv(): void {
+    $("#boardDiv").hide();
+    $("#infoDiv").css("float", "right");
+}
+

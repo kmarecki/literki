@@ -1,26 +1,32 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './core', './scripts/literki', 'knockout', 'jquery', 'moment'], function (require, exports, Core, Literki, ko, $, moment) {
+define(["require", "exports", './master', './scripts/literki', 'knockout', 'jquery', 'moment'], function (require, exports, master, literki, ko, $, moment) {
     var GameViewModel = (function () {
         function GameViewModel() {
         }
         GameViewModel.prototype.joinAction = function () {
-            return this.runState == 0 /* Created */ ? "Dołącz" : "Obserwuj";
+            return this.runState == literki.GameRunState.Created ? "Dołącz" : "Obserwuj";
         };
         return GameViewModel;
     })();
-    var MainViewModel = (function (_super) {
-        __extends(MainViewModel, _super);
-        function MainViewModel() {
+    var MainModel = (function (_super) {
+        __extends(MainModel, _super);
+        function MainModel() {
             _super.apply(this, arguments);
-            this.self = this;
             this.games = ko.observableArray();
         }
-        MainViewModel.prototype.init = function () {
+        return MainModel;
+    })(master.MasterModel);
+    var MainController = (function (_super) {
+        __extends(MainController, _super);
+        function MainController() {
+            _super.apply(this, arguments);
+        }
+        MainController.prototype.init = function () {
             var _this = this;
             $.ajax({
                 type: "GET",
@@ -32,20 +38,20 @@ define(["require", "exports", './core', './scripts/literki', 'knockout', 'jquery
                 }
             });
         };
-        MainViewModel.prototype.refreshModel = function (result) {
+        MainController.prototype.refreshModel = function (result) {
             var _this = this;
             _super.prototype.refreshModel.call(this, result);
             var games = result.games;
-            this.games.removeAll();
+            this.model.games.removeAll();
             games.forEach(function (g) {
                 var gameModel = new GameViewModel();
                 gameModel.gameId = g.gameId;
                 gameModel.creationDate = g.creationDate ? moment(g.creationDate).format("DD.MM.YYYY hh:mm") : "";
                 gameModel.runState = g.runState;
-                _this.games.push(gameModel);
+                _this.model.games.push(gameModel);
             });
         };
-        MainViewModel.prototype.newGameClick = function () {
+        MainController.prototype.newGameClick = function () {
             var _this = this;
             $.ajax({
                 type: "GET",
@@ -63,14 +69,15 @@ define(["require", "exports", './core', './scripts/literki', 'knockout', 'jquery
                 }
             });
         };
-        return MainViewModel;
-    })(Core.BaseViewModel);
+        return MainController;
+    })(master.MasterControler);
+    var controller = new MainController();
     function init() {
-        $.ajaxSetup({ cache: false });
-        $("#boardDiv").hide();
-        $("#infoDiv").css("float", "right");
-        var viewModel = new MainViewModel();
-        viewModel.init();
+        master.init();
+        master.hideBoardDiv();
+        var model = new MainModel();
+        controller.model = model;
+        controller.init();
     }
     exports.init = init;
 });

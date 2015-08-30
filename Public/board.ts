@@ -2,23 +2,18 @@
 /// <reference path=".\typings\jqueryui\jqueryui.d.ts" />
 /// <amd-dependency path="./scripts/jquery-ui" />
 
-import Core = require('./core');
-import Literki = require('./scripts/literki');
+import master = require('./master');
+import literki = require('./scripts/literki');
 import System = require('./scripts/system');
 import ko = require('knockout');
 import $ = require('jquery');
 import Kinetic = require('Kinetic');
 
-
-
-var game: Literki.GameRun;
-var viewModel: BoardViewModel;
-
 class BoardLetterPosition {
     x: number;
     y: number; fieldX:
     number; fieldY: number;
-    endType: Literki.LetterPositionType;
+    endType: literki.LetterPositionType;
 }
 
 class Board {
@@ -48,12 +43,12 @@ class Board {
 
     private initalizeFields(): void {
 
-        this.bonusColors[Literki.BoardFieldBonus.DoubleLetter] = "lightblue";
-        this.bonusColors[Literki.BoardFieldBonus.DoubleWord] = "lightpink";
-        this.bonusColors[Literki.BoardFieldBonus.TripleLetter] = "blue"
-        this.bonusColors[Literki.BoardFieldBonus.TripleWord] = "red";
-        this.bonusColors[Literki.BoardFieldBonus.Start] = "lightpink";
-        this.bonusColors[Literki.BoardFieldBonus.None] = "darkgreen";
+        this.bonusColors[literki.BoardFieldBonus.DoubleLetter] = "lightblue";
+        this.bonusColors[literki.BoardFieldBonus.DoubleWord] = "lightpink";
+        this.bonusColors[literki.BoardFieldBonus.TripleLetter] = "blue"
+        this.bonusColors[literki.BoardFieldBonus.TripleWord] = "red";
+        this.bonusColors[literki.BoardFieldBonus.Start] = "lightpink";
+        this.bonusColors[literki.BoardFieldBonus.None] = "darkgreen";
     }
 
     private setupDisplay(): void {
@@ -63,13 +58,13 @@ class Board {
             height: containerElem.height()
         });
 
-        this.FIELD_SIZE = this.stage.width() / (Literki.ROW_SIZE + 0.5);
+        this.FIELD_SIZE = this.stage.width() / (literki.ROW_SIZE + 0.5);
         this.LINE_WIDTH = this.FIELD_SIZE / 15;
-        this.BOARD_SIZE = this.FIELD_SIZE * Literki.ROW_SIZE;
+        this.BOARD_SIZE = this.FIELD_SIZE * literki.ROW_SIZE;
         this.BOARD_MARGIN = this.FIELD_SIZE / 4;
         this.MAX_LINES = this.BOARD_MARGIN + this.BOARD_SIZE;
         this.LETTERS_TOP = this.MAX_LINES + 2 * this.BOARD_MARGIN;
-        this.CHANGE_LETTERS_LEFT = this.BOARD_MARGIN + (Literki.MAX_LETTERS + 1) * this.FIELD_SIZE;
+        this.CHANGE_LETTERS_LEFT = this.BOARD_MARGIN + (literki.MAX_LETTERS + 1) * this.FIELD_SIZE;
     }
 
     drawGameState(): void {
@@ -95,8 +90,8 @@ class Board {
         context.fill();
 
         //board fields
-        for (var x = 0; x < Literki.ROW_SIZE; x++) {
-            for (var y = 0; y < Literki.ROW_SIZE; y++) {
+        for (var x = 0; x < literki.ROW_SIZE; x++) {
+            for (var y = 0; y < literki.ROW_SIZE; y++) {
                 var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
                 var ypos = this.BOARD_MARGIN + y * this.FIELD_SIZE;
                 var value = game.board.getFieldValue(x, y);
@@ -107,7 +102,7 @@ class Board {
                     context.rect(xpos, ypos, this.FIELD_SIZE, this.FIELD_SIZE);
                     context.fillStyle = fieldColor;
                     context.fill();
-                    if (bonus == Literki.BoardFieldBonus.Start) {
+                    if (bonus == literki.BoardFieldBonus.Start) {
                         var star = new Kinetic.Star({
                             x: xpos + this.FIELD_SIZE / 2,
                             y: ypos + this.FIELD_SIZE / 2,
@@ -144,14 +139,14 @@ class Board {
 
         //letters field
         context.beginPath();
-        context.rect(this.BOARD_MARGIN, this.LETTERS_TOP, this.FIELD_SIZE * Literki.MAX_LETTERS, this.FIELD_SIZE);
+        context.rect(this.BOARD_MARGIN, this.LETTERS_TOP, this.FIELD_SIZE * literki.MAX_LETTERS, this.FIELD_SIZE);
         context.fillStyle = "silver";
         context.fill();
         context.strokeStyle = "black";
         context.stroke();
 
         //letters field lines
-        for (var x = 1; x < Literki.MAX_LETTERS; x++) {
+        for (var x = 1; x < literki.MAX_LETTERS; x++) {
             context.beginPath();
             context.moveTo(this.BOARD_MARGIN + x * this.FIELD_SIZE, this.LETTERS_TOP);
             context.lineTo(this.BOARD_MARGIN + x * this.FIELD_SIZE, this.LETTERS_TOP + this.FIELD_SIZE);
@@ -161,14 +156,14 @@ class Board {
 
         //change letters field
         context.beginPath();
-        context.rect(this.CHANGE_LETTERS_LEFT, this.LETTERS_TOP, this.FIELD_SIZE * Literki.MAX_LETTERS, this.FIELD_SIZE);
+        context.rect(this.CHANGE_LETTERS_LEFT, this.LETTERS_TOP, this.FIELD_SIZE * literki.MAX_LETTERS, this.FIELD_SIZE);
         context.fillStyle = backgroundColor;
         context.fill();
         context.strokeStyle = "black";
         context.stroke();
 
         //change letters field lines
-        for (var x = 1; x < Literki.MAX_LETTERS; x++) {
+        for (var x = 1; x < literki.MAX_LETTERS; x++) {
             context.beginPath();
             context.moveTo(this.CHANGE_LETTERS_LEFT + x * this.FIELD_SIZE, this.LETTERS_TOP);
             context.lineTo(this.CHANGE_LETTERS_LEFT + x * this.FIELD_SIZE, this.LETTERS_TOP + this.FIELD_SIZE);
@@ -177,8 +172,8 @@ class Board {
         }
 
         //letter fields
-        for (var x = 0; x < Literki.ROW_SIZE; x++) {
-            for (var y = 0; y < Literki.ROW_SIZE; y++) {
+        for (var x = 0; x < literki.ROW_SIZE; x++) {
+            for (var y = 0; y < literki.ROW_SIZE; y++) {
                 var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
                 var ypos = this.BOARD_MARGIN + y * this.FIELD_SIZE;
                 var value = game.board.getFieldValue(x, y);
@@ -228,11 +223,11 @@ class Board {
             // moving letters
             var foregroundLayer = new Kinetic.Layer();
 
-            for (var x = 0; x < Literki.MAX_LETTERS; x++) {
+            for (var x = 0; x < literki.MAX_LETTERS; x++) {
                 if (x < currentUser.freeLetters.length) {
                     var letter = currentUser.freeLetters[x];
                     var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
-                    var movable = game.isCurrentPlayer() && game.state.playState == Literki.GamePlayState.PlayerMove;
+                    var movable = game.isCurrentPlayer() && game.state.playState == literki.GamePlayState.PlayerMove;
                     var letterGroup = this.getLetterGroup(xpos, this.LETTERS_TOP, letter, x, movable);
                     foregroundLayer.add(letterGroup);
                 }
@@ -270,7 +265,7 @@ class Board {
             align: "right",
             x: -5,
             y: this.FIELD_SIZE - 15,
-            text: Literki.LETTERS[letter].points.toString(),
+            text: literki.LETTERS[letter].points.toString(),
             fontFamily: "Calibri",
             fontSize: 14,
             fontStyle: "bold",
@@ -308,18 +303,18 @@ class Board {
 
                 if (isFieldFree) {
                     switch (dragEnd.endType) {
-                        case Literki.LetterPositionType.BoardField: {
+                        case literki.LetterPositionType.BoardField: {
                             game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
-                            viewModel.refreshBindings();
+                            controller.model.refreshBindings();
                             break;
                         }
-                        case Literki.LetterPositionType.ExchangeLetter:
+                        case literki.LetterPositionType.ExchangeLetter:
                             game.addLetterToExchange(letter, index);
-                            viewModel.refreshBindings();
+                            controller.model.refreshBindings();
                             break;
-                        case Literki.LetterPositionType.FreeLetter:
+                        case literki.LetterPositionType.FreeLetter:
                             game.removeLetter(letter, index);
-                            viewModel.refreshBindings();
+                            controller.model.refreshBindings();
                             break;
                     }
                 }
@@ -351,7 +346,7 @@ class Board {
             y += this.BOARD_MARGIN;
         } else {
             //free letters fields
-            if (fieldX == Literki.ROW_SIZE / 2) {
+            if (fieldX == literki.ROW_SIZE / 2) {
                 fieldX++;
                 floorX += this.FIELD_SIZE;
             }
@@ -360,9 +355,9 @@ class Board {
             y = this.LETTERS_TOP;
         }
 
-        var endType = Literki.LetterPositionType.BoardField;
-        if (fieldY >= Literki.ROW_SIZE) {
-            endType = fieldX > Literki.ROW_SIZE / 2 ? Literki.LetterPositionType.ExchangeLetter : Literki.LetterPositionType.FreeLetter;
+        var endType = literki.LetterPositionType.BoardField;
+        if (fieldY >= literki.ROW_SIZE) {
+            endType = fieldX > literki.ROW_SIZE / 2 ? literki.LetterPositionType.ExchangeLetter : literki.LetterPositionType.FreeLetter;
         }
 
         fieldX = Math.floor(x / this.FIELD_SIZE);
@@ -371,7 +366,7 @@ class Board {
     }
 
     private normalizeDragEndPositionX(x: number): number {
-        var lastTileX = (Literki.ROW_SIZE - 1) * this.FIELD_SIZE;
+        var lastTileX = (literki.ROW_SIZE - 1) * this.FIELD_SIZE;
         return x >= 0 ?
             (x >= lastTileX ?  lastTileX : x) :
             0;
@@ -387,27 +382,27 @@ class Board {
     }
 }
 
-var game: Literki.GameRun
+var game: literki.GameRun
 
 class BoardViewModelWord {
     word: string;
     points: number;
 }
 
-class PlayerViewModel {
+class PlayerModel {
     isCurrentPlayer = ko.observable(false);
     isCurrentUser = ko.observable(false);
     playerName = ko.observable("");
     points = ko.observable(0);
     remainingTime = ko.observable("");
     playerCss = ko.observable("");
-    parentModel: BoardViewModel;
+    parentModel: BoardModel;
 
-    constructor(parent: BoardViewModel) {
+    constructor(parent: BoardModel) {
         this.parentModel = parent;
     }
 
-    findAndRefresh(players: Literki.GamePlayer[], currentPlayer: Literki.IGamePlayer): void {
+    findAndRefresh(players: literki.GamePlayer[], currentPlayer: literki.IGamePlayer): void {
         players.forEach(p => {
             if (p.playerName == this.playerName()) {
                 this.refresh(p, currentPlayer);
@@ -415,9 +410,9 @@ class PlayerViewModel {
         });
     }
 
-    refresh(player: Literki.GamePlayer, currentPlayer: Literki.IGamePlayer): void {
+    refresh(player: literki.GamePlayer, currentPlayer: literki.IGamePlayer): void {
         this.playerName(player.playerName);
-        this.points((<Literki.GamePlayer>player).getPoints());
+        this.points((<literki.GamePlayer>player).getPoints());
         this.remainingTime(System.formatSeconds(player.remainingTime, "mm:ss"));
         this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
         this.isCurrentUser(player.userId == game.currentUserId);
@@ -435,7 +430,7 @@ class MoveHistoryViewModel {
     }
 }
 
-class BoardViewModel extends Core.BaseViewModel {
+class BoardModel extends master.MasterModel {
 
     private newWords = ko.observableArray<BoardViewModelWord>();
     private changeLetters = ko.observable("");
@@ -443,7 +438,7 @@ class BoardViewModel extends Core.BaseViewModel {
     board: Board;
 
     errorMessage = ko.observable("");
-    allPlayers = ko.observableArray<PlayerViewModel>();
+    allPlayers = ko.observableArray<PlayerModel>();
     playerCount = ko.observable(0);
     historyMoves = ko.observableArray<MoveHistoryViewModel>();
 
@@ -452,7 +447,7 @@ class BoardViewModel extends Core.BaseViewModel {
         newWords.forEach(word => this.newWords.push(word));
     }
 
-    private cleanNewWords(): void {
+    cleanNewWords(): void {
         this.newWords.removeAll();
     }
 
@@ -460,16 +455,16 @@ class BoardViewModel extends Core.BaseViewModel {
         this.cleanChangeLetters()
         this.changeLetters(changeLetters.join(" "));
     }
-    private cleanChangeLetters(): void {
+    cleanChangeLetters(): void {
         this.changeLetters("");
     }
-        
-    getPlayers(start: number, end: number): PlayerViewModel[] {
-        var players = new Array<PlayerViewModel>();
+
+    getPlayers(start: number, end: number): PlayerModel[] {
+        var players = new Array<PlayerModel>();
 
         game.getPlayers().slice(start, end).forEach(p => {
-            var playerModel = new PlayerViewModel(this);
-            playerModel.refresh(<Literki.GamePlayer>p, game.getCurrentPlayer());
+            var playerModel = new PlayerModel(this);
+            playerModel.refresh(<literki.GamePlayer>p, game.getCurrentPlayer());
             players.push(playerModel);
         });
 
@@ -477,7 +472,7 @@ class BoardViewModel extends Core.BaseViewModel {
         return this.allPlayers();
     }
 
-    private getAllPlayers(): PlayerViewModel[] {
+    private getAllPlayers(): PlayerModel[] {
         return this.getPlayers(0, game.getPlayers().length);
     }
 
@@ -490,9 +485,71 @@ class BoardViewModel extends Core.BaseViewModel {
         this.board.drawGameState();
     }
 
-    runState(state: Literki.GameState): void {
+    refreshBindings(): void {
+        var newWords = game.getNewWords();
+        this.setNewWords(newWords);
+
+        var changeLetters = game.getExchangeLetters();
+        this.setChangeLetters(changeLetters);
+    }
+
+   refreshPlayerModels(): void {
+        if (this.allPlayers().length == game.getPlayers().length) {
+            this.allPlayers().forEach(p => p.findAndRefresh(<literki.GamePlayer[]>game.getPlayers(), game.getCurrentPlayer()));
+        } else {
+            this.allPlayers.removeAll();
+            this.playerCount(game.getPlayers().length);
+            this.getAllPlayers();
+        }
+    }
+
+    refreshHistoryMoves(): void {
+        this.historyMoves.removeAll();
+        var players = game.getPlayers();
+        var moves = new Array<MoveHistoryViewModel>();
+        var movesTotals: { [id: string]: number } = {};
+        var moveIndex = 0;
+        var lastMove = _.max(players, p => p.moves.length).moves.length;
+        while (moveIndex < lastMove) {
+            var playerMoves = new Array<string>();
+            players.forEach(p => {
+                var moveDesc = ""
+                var move = p.moves.length > moveIndex ?
+                    p.moves[moveIndex] :
+                    null;
+                if (move) {
+                    var total = (p.userId in movesTotals) ? movesTotals[p.userId] : 0;
+                    var sum = move.words.length > 0 ?
+                        move.words.map(w => w.points).reduce((total, x) => total += x) :
+                        0;
+                    total += sum;
+                    movesTotals[p.userId] = total;
+                    switch (move.moveType) {
+                        case literki.MoveType.Exchange: moveDesc = `${total} (Wymiana)`; break;
+                        case literki.MoveType.Fold: moveDesc = `${total } (Pas)`; break;
+                        case literki.MoveType.WrongMove: moveDesc = `${total} (Błędny ruch)`; break;
+                        case literki.MoveType.CheckMoveFailed: moveDesc = `${total} (Błędne sprawdzenie)`; break;
+                        case literki.MoveType.Move: moveDesc = `${total} (${sum})`; break;
+                    }
+                }
+                playerMoves.push(moveDesc);
+            });
+            var moveModel = new MoveHistoryViewModel(playerMoves);
+            this.historyMoves.push(moveModel);
+            moveIndex++;
+        }
+   }
+
+    drawGameState(): void {
+        this.board.drawGameState();
+    }
+}
+
+class BoardController extends master.MasterControler<BoardModel> {
+
+    runState(state: literki.GameState): void {
         game.runState(state);
-        viewModel.board.drawGameState();
+        this.model.drawGameState();
     }
 
     init(): void {
@@ -570,7 +627,7 @@ class BoardViewModel extends Core.BaseViewModel {
         var refresh = refreshBoard || result.forceRefresh;
         this.refreshModel(result, refresh);
         if (refresh) {
-            this.refreshBoard();
+            this.model.refreshBoard();
         }
         if (applyBindings) {
             ko.applyBindings(this);
@@ -588,17 +645,9 @@ class BoardViewModel extends Core.BaseViewModel {
             dataType: "json",
             success: (result) => {
                 this.refreshModel(result);
-                this.refreshBoard();
+                this.model.refreshBoard();
             }
         });
-    }
-
-    refreshBindings(): void {
-        var newWords = game.getNewWords();
-        this.setNewWords(newWords);
-
-        var changeLetters = game.getExchangeLetters();
-        this.setChangeLetters(changeLetters);
     }
 
     protected refreshModel(result: any, fullRefresh: boolean = true): void {
@@ -606,17 +655,17 @@ class BoardViewModel extends Core.BaseViewModel {
 
         if (result.state) {
             if (!game) {
-                game = new Literki.GameRun(result.userId);
+                game = new literki.GameRun(result.userId);
             }
 
-            var state = Literki.GameState.fromJSON(<Literki.IGameState>result.state);
+            var state = literki.GameState.fromJSON(<literki.IGameState>result.state);
             game.state = state;
-            this.refreshPlayerModels();
+            this.model.refreshPlayerModels();
             if (fullRefresh) {
                 game.runState(state);
-                this.cleanNewWords();
-                this.cleanChangeLetters();
-                this.refreshHistoryMoves();
+                this.model.cleanNewWords();
+                this.model.cleanChangeLetters();
+                this.model.refreshHistoryMoves();
 
                 if (!result.errorMessage) {
                     this.hideDialogBox();
@@ -634,74 +683,32 @@ class BoardViewModel extends Core.BaseViewModel {
         }
     }
 
-    private refreshPlayerModels(): void {
-        if (this.allPlayers().length == game.getPlayers().length) {
-            this.allPlayers().forEach(p => p.findAndRefresh(<Literki.GamePlayer[]>game.getPlayers(), game.getCurrentPlayer()));
-        } else {
-            this.allPlayers.removeAll();
-            this.playerCount(game.getPlayers().length);
-            this.getAllPlayers();
-        }
-    }
-
-    private refreshHistoryMoves(): void {
-        this.historyMoves.removeAll();
-        var players = game.getPlayers();
-        var moves = new Array<MoveHistoryViewModel>();
-        var movesTotals: { [id: string]: number } = {};
-        var moveIndex = 0;
-        var lastMove = _.max(players, p => p.moves.length).moves.length;
-        while (moveIndex < lastMove) {
-            var playerMoves = new Array<string>();
-            players.forEach(p => {
-                var moveDesc = ""
-                var move = p.moves.length > moveIndex ?
-                    p.moves[moveIndex] :
-                    null;
-                if (move) {
-                    var total = (p.userId in movesTotals) ? movesTotals[p.userId] : 0;
-                    var sum = move.words.length > 0 ?
-                        move.words.map(w => w.points).reduce((total, x) => total += x) :
-                        0;
-                    total += sum;
-                    movesTotals[p.userId] = total;
-                    switch (move.moveType) {
-                        case Literki.MoveType.Exchange: moveDesc = `${total} (Wymiana)`; break;
-                        case Literki.MoveType.Fold: moveDesc = `${total } (Pas)`; break;
-                        case Literki.MoveType.WrongMove: moveDesc = `${total} (Błędny ruch)`; break;
-                        case Literki.MoveType.CheckMoveFailed: moveDesc = `${total} (Błędne sprawdzenie)`; break;
-                        case Literki.MoveType.Move: moveDesc = `${total} (${sum})`; break;
-                    }
-                }
-                playerMoves.push(moveDesc);
-            });
-            var moveModel = new MoveHistoryViewModel(playerMoves);
-            this.historyMoves.push(moveModel);
-            moveIndex++;
-        }
-    }
 }
 
-export function init(): void {
+var game: literki.GameRun;
+var controller = new BoardController();
 
-    $.ajaxSetup({ cache: false });
+export function init(): void {
+    master.init();
+
     $("#tabsDiv").tabs();
 
     var debugLabel = <HTMLLabelElement>document.getElementById("debugLabel");
 
-    viewModel = new BoardViewModel();
-    viewModel.board = new Board("boardDiv");
-    viewModel.init();
+    var model = new BoardModel();
+    model.board = new Board("boardDiv");
+    controller.model = model;
+    controller.init();
 
     setInterval(() => {
         debugLabel.textContent =
-            `Screen: ${screen.availWidth} X ${screen.availHeight},  Window: ${window.innerWidth} X ${window.innerHeight} ${new Date().toLocaleTimeString() }`;
-        viewModel.alive();
+        `Screen: ${screen.availWidth} X ${screen.availHeight},  Window: ${window.innerWidth} X ${window.innerHeight} ${new Date().toLocaleTimeString() }`;
+        controller.alive();
     }, 1000);
 }
 
 window.onresize = () => {
-    viewModel.refreshBoard();
+    controller.model.refreshBoard();
 }
 
 

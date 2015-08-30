@@ -1,22 +1,24 @@
-﻿import Core = require('./core');
-import Literki = require('./scripts/literki');
+﻿import master = require('./master');
+import literki = require('./scripts/literki');
 import ko = require('knockout');
 import $ = require('jquery');
 import moment = require('moment');
 
 class GameViewModel {
     gameId: number;
-    runState: Literki.GameRunState;
+    runState: literki.GameRunState;
     creationDate: string;
     joinAction(): string {
-        return this.runState == Literki.GameRunState.Created ? "Dołącz" : "Obserwuj";
+        return this.runState == literki.GameRunState.Created ? "Dołącz" : "Obserwuj";
     }
 }
 
-class MainViewModel extends Core.BaseViewModel {
+class MainModel extends master.MasterModel {
 
-    private self = this;
     games = ko.observableArray<GameViewModel>();
+}
+
+class MainController extends master.MasterControler<MainModel> {
 
     init(): void {
         $.ajax({
@@ -34,13 +36,13 @@ class MainViewModel extends Core.BaseViewModel {
         super.refreshModel(result);
 
         var games: Array<any> = result.games;
-        this.games.removeAll();
+        this.model.games.removeAll();
         games.forEach(g => {
             var gameModel = new GameViewModel();
             gameModel.gameId = g.gameId;
             gameModel.creationDate = g.creationDate ? moment(g.creationDate).format("DD.MM.YYYY hh:mm") : "";
             gameModel.runState = g.runState;
-            this.games.push(gameModel);
+            this.model.games.push(gameModel);
         });
     }
 
@@ -62,12 +64,15 @@ class MainViewModel extends Core.BaseViewModel {
     }
 }
 
+var controller = new MainController();
+
 export function init(): void  {
-    $.ajaxSetup({ cache: false });
-    $("#boardDiv").hide();
-    $("#infoDiv").css("float", "right");
-    var viewModel = new MainViewModel();
-    viewModel.init();
+    master.init();
+    master.hideBoardDiv();
+    
+    var model = new MainModel();
+    controller.model = model;
+    controller.init();
 }
     
     

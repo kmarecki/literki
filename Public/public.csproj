@@ -62,7 +62,7 @@
     <TypeScriptCompile Include="main.ts" />
     <TypeScriptCompile Include="scripts\system.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
-    <TypeScriptCompile Include="core.ts" />
+    <TypeScriptCompile Include="master.ts" />
     <TypeScriptCompile Include="typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\kineticjs\kineticjs.d.ts" />

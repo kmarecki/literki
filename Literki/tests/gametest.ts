@@ -12,16 +12,14 @@ var request = requestModule.defaults({
     jar: true
 });
 
-import server = require('../server');
 import literki = require('../scripts/literki');
 import gamestates = require('./gamestates');
-
-var repo = server.getGameRepository();
+import helper = require('./helper');
 
 describe('Player2 move Suite', () => {
     var initState = gamestates.player2MoveState;
-    before((done) => beforeTestSuite(done, initState));
-    after((done) => afterTestSuite(done));
+    before((done) => helper.beforeTestSuite(done, initState));
+    after((done) => helper.afterTestSuite(done));
 
     it('/server/alive Player1', (done) => {
         callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/server/alive', undefined, (error, response, body) => {
@@ -142,8 +140,8 @@ describe('Player2 move Suite', () => {
 
 describe('Player2 good move check Suite', () => {
     var initState = gamestates.player2MoveState;
-    before((done) => beforeTestSuite(done, initState));
-    after((done) => afterTestSuite(done));
+    before((done) => helper.beforeTestSuite(done, initState));
+    after((done) => helper.afterTestSuite(done));
 
     it('/game/move Player2', (done) => {
         var data = {
@@ -214,8 +212,8 @@ describe('Player2 good move check Suite', () => {
 
 describe('Player2 wrong move check Suite', () => {
     var initState = gamestates.player2MoveState;
-    before((done) => beforeTestSuite(done, initState));
-    after((done) => afterTestSuite(done));
+    before((done) => helper.beforeTestSuite(done, initState));
+    after((done) => helper.afterTestSuite(done));
 
     it('/game/move Player2', (done) => {
         var data = {
@@ -285,8 +283,8 @@ describe('Player2 wrong move check Suite', () => {
 
 describe('Player2 not allowed move check Suite', () => {
     var initState = gamestates.player2MoveState;
-    before((done) => beforeTestSuite(done, initState));
-    after((done) => afterTestSuite(done));
+    before((done) => helper.beforeTestSuite(done, initState));
+    after((done) => helper.afterTestSuite(done));
 
     it('/game/move Player2', (done) => {
         var data = {
@@ -328,8 +326,8 @@ describe('Player2 not allowed move check Suite', () => {
 
 describe('Player2 fold Suite', () => {
     var initState = gamestates.player2MoveState;
-    before((done) => beforeTestSuite(done, initState));
-    after((done) => afterTestSuite(done));
+    before((done) => helper.beforeTestSuite(done, initState));
+    after((done) => helper.afterTestSuite(done));
 
     it('/game/fold Player2', (done) => {
         var data = createRequestData(initState);
@@ -355,8 +353,8 @@ describe('Player2 fold Suite', () => {
 
 describe('Player2 change letters Suite', () => {
     var initState = gamestates.player2MoveState;
-    before((done) => beforeTestSuite(done, initState));
-    after((done) => afterTestSuite(done));
+    before((done) => helper.beforeTestSuite(done, initState));
+    after((done) => helper.afterTestSuite(done));
 
     it('/game/exchange Player2', (done) => {
         var data = {
@@ -388,16 +386,6 @@ describe('Player2 change letters Suite', () => {
     });
 });
 
-function beforeTestSuite(done: any, state: literki.IGameState): void {
-    server.start();
-    state.players.forEach(p => p.lastSeen = new Date());
-    repo.saveState(state, err => done(err));
-}
-
-function afterTestSuite(done: any): void {
-    server.stop();
-    repo.removeAllStates(err => done(err));
-}
 
 function createRequestData(state: literki.IGameState): any {
     var data = {

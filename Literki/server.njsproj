@@ -41,9 +41,11 @@
     <Content Include="styles\board.less" />
     <Content Include="styles\jquery-ui.less" />
     <Content Include="views\board.jade" />
-    <Content Include="views\layout.jade" />
+    <Content Include="views\master.jade" />
     <Content Include="views\login.jade" />
     <Content Include="views\main.jade" />
+    <Content Include="views\newgame.jade" />
+    <Content Include="views\profile.jade" />
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
     <TypeScriptCompile Include="scripts\db.ts" />
@@ -59,6 +61,7 @@
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>
     <TypeScriptCompile Include="tests\gamestates.ts" />
+    <TypeScriptCompile Include="tests\helper.ts" />
     <TypeScriptCompile Include="typings\async\async.d.ts" />
     <TypeScriptCompile Include="typings\body-parser\body-parser.d.ts" />
     <TypeScriptCompile Include="typings\cookie-parser\cookie-parser.d.ts" />

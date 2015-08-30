@@ -1,4 +1,4 @@
-﻿extends ./layout.jade
+﻿extends ./master.jade
 
 block stylesheets
     link(rel='stylesheet', href='styles/jquery-ui.css', type='text/css')
@@ -15,7 +15,7 @@ block info
         tr
           th Słowo
           th Punkty
-      tbody(data-bind='foreach: newWords')
+      tbody(data-bind='foreach: model.newWords')
         tr
           td
             label(data-bind='text: word')
@@ -28,11 +28,11 @@ block info
       tbody
         tr
           td
-            label(data-bind='text: changeLetters')
+            label(data-bind='text: model.changeLetters')
     table
-      tbody(data-bind='foreach: getPlayersRow()')
+      tbody(data-bind='foreach: model.getPlayersRow()')
         tr
-          // ko foreach: $parent.getPlayers($data * 2, ($data + 1) * 2)
+          // ko foreach: $parent.model.getPlayers($data * 2, ($data + 1) * 2)
           td
             div(data-bind="css: playerCss")
               table
@@ -59,11 +59,11 @@ block info
       #historyDiv
         table.tableBorders
           thead
-            tr(data-bind='foreach:  allPlayers')
+            tr(data-bind='foreach: model.allPlayers')
               th.tableBorders
                 label(data-bind='text: playerName')
           tbody
-            // ko foreach: historyMoves
+            // ko foreach: model.historyMoves
             tr(data-bind='foreach: playerMoves')
               td.tableBorders
                 label(data-bind='text: $data')
@@ -72,7 +72,7 @@ block info
         label Czat
      
     #messageDiv
-      p(data-bind='text: errorMessage') Test
+      p(data-bind='text: model.errorMessage') Test
     #buttonsDiv
       button.commandButton(data-bind='click: refreshClick') Odśwież
       button.commandButton(data-bind='click: startClick') Start

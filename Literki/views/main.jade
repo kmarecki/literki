@@ -1,4 +1,4 @@
-﻿extends ./layout.jade
+﻿extends ./master.jade
 
 block stylesheets
     link(rel='stylesheet', href='styles/app.css', type='text/css')
@@ -19,7 +19,7 @@ block info
           th Data utworzenia
           th 
       tbody()
-        // ko foreach: games
+        // ko foreach: model.games
         tr
           td
             a(data-bind="attr: { href: 'board.html?gameId=' + gameId }, text: gameId")
