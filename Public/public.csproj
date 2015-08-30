@@ -46,6 +46,8 @@
     <Content Include="board-conf.js" />
     <Content Include="images\scrabble.jpg" />
     <Content Include="images\scrabble_small.jpg" />
+    <Content Include="newgame-conf.js" />
+    <Content Include="profile-conf.js" />
     <Content Include="main-conf.js" />
     <Content Include="scripts\jquery-ui.js" />
     <Content Include="scripts\jquery.js" />
@@ -59,6 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="board.ts" />
+    <TypeScriptCompile Include="newgame.ts" />
+    <TypeScriptCompile Include="profile.ts" />
     <TypeScriptCompile Include="main.ts" />
     <TypeScriptCompile Include="scripts\system.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
