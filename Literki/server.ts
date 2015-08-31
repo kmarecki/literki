@@ -123,7 +123,11 @@ var auth = (req, res, next) => {
     res.json({ errorMessage: "Błąd uwierzytelnienia użytkownika." });
 };
 
-app.get('/:pageName.html', (req, res) => {
+app.get('/login.html', (req, res) => {
+    res.render('login', { title: 'login' });
+});
+
+app.get('/:pageName.html', auth, (req, res) => {
     res.render(req.params.pageName, { title: req.params.pageName });
 });
 

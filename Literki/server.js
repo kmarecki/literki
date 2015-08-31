@@ -95,7 +95,10 @@ var auth = function (req, res, next) {
     }
     res.json({ errorMessage: "Błąd uwierzytelnienia użytkownika." });
 };
-app.get('/:pageName.html', function (req, res) {
+app.get('/login.html', function (req, res) {
+    res.render('login', { title: 'login' });
+});
+app.get('/:pageName.html', auth, function (req, res) {
     res.render(req.params.pageName, { title: req.params.pageName });
 });
 app.get('/game/new', auth, function (req, res) {

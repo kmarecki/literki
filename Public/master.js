@@ -77,13 +77,13 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
             dialogbox.draggable();
             this.dialogBoxCallback = callback;
         };
-        MasterControler.prototype.cancelClick = function () {
+        MasterControler.prototype.dialog_cancelClick = function () {
             this.hideDialogBox();
             if (this.dialogBoxCallback) {
                 this.dialogBoxCallback(false);
             }
         };
-        MasterControler.prototype.okClick = function () {
+        MasterControler.prototype.dialog_okClick = function () {
             this.hideDialogBox();
             if (this.dialogBoxCallback) {
                 this.dialogBoxCallback(true);

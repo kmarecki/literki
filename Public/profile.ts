@@ -11,19 +11,28 @@ class ProfileModel extends master.MasterModel {
 class ProfileController extends master.MasterControler<ProfileModel> {
 
     init(): void {
-        $.ajax({
-            type: "GET",
-            url: "/player/get",
-            dataType: "json",
-            success: (result) => {
-                this.refreshModel(result);
-                ko.applyBindings(this);
-            }
-        });
+        //$.ajax({
+        //    type: "GET",
+        //    url: "/player/get",
+        //    dataType: "json",
+        //    success: (result) => {
+        //        this.refreshModel(result);
+        //        ko.applyBindings(this);
+        //    }
+        //});
+        ko.applyBindings(this);
     }
 
     refreshModel(result: any): void {
         super.refreshModel(result);
+    }
+
+    protected cancelClick(): void {
+        history.back();
+    }
+
+    protected okClick(): void {
+        history.back();
     }
 }
 

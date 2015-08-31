@@ -1,10 +1,10 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './master', 'knockout'], function (require, exports, master, ko) {
+define(["require", "exports", './master', 'knockout', 'jquery'], function (require, exports, master, ko, $) {
     var NewGameModel = (function (_super) {
         __extends(NewGameModel, _super);
         function NewGameModel() {
@@ -22,6 +22,27 @@ define(["require", "exports", './master', 'knockout'], function (require, export
         };
         NewGameController.prototype.refreshModel = function (result) {
             _super.prototype.refreshModel.call(this, result);
+        };
+        NewGameController.prototype.cancelClick = function () {
+            history.back();
+        };
+        NewGameController.prototype.newGameClick = function () {
+            var _this = this;
+            $.ajax({
+                type: "GET",
+                url: "/game/new",
+                dataType: "json",
+                success: function (result) {
+                    if (result.state) {
+                        var gameId = result.state.gameId;
+                        var url = "board.html?gameId=" + gameId + "&join=1";
+                        location.href = url;
+                    }
+                    else {
+                        _this.showErrorDialogBox("Nie udało się utworzyć nowej gry");
+                    }
+                }
+            });
         };
         return NewGameController;
     })(master.MasterControler);

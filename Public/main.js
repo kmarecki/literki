@@ -1,4 +1,4 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -9,7 +9,7 @@ define(["require", "exports", './master', './scripts/literki', 'knockout', 'jque
         function GameViewModel() {
         }
         GameViewModel.prototype.joinAction = function () {
-            return this.runState == 0 /* Created */ ? "Dołącz" : "Obserwuj";
+            return this.runState == literki.GameRunState.Created ? "Dołącz" : "Obserwuj";
         };
         return GameViewModel;
     })();
@@ -49,24 +49,6 @@ define(["require", "exports", './master', './scripts/literki', 'knockout', 'jque
                 gameModel.creationDate = g.creationDate ? moment(g.creationDate).format("DD.MM.YYYY hh:mm") : "";
                 gameModel.runState = g.runState;
                 _this.model.games.push(gameModel);
-            });
-        };
-        MainController.prototype.newGameClick = function () {
-            var _this = this;
-            $.ajax({
-                type: "GET",
-                url: "/game/new",
-                dataType: "json",
-                success: function (result) {
-                    if (result.state) {
-                        var gameId = result.state.gameId;
-                        var url = "board.html?gameId=" + gameId + "&join=1";
-                        location.href = url;
-                    }
-                    else {
-                        _this.showErrorDialogBox("Nie udało się utworzyć nowej gry");
-                    }
-                }
             });
         };
         return MainController;

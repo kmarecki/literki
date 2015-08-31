@@ -1,10 +1,10 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './master', 'knockout', 'jquery'], function (require, exports, master, ko, $) {
+define(["require", "exports", './master', 'knockout'], function (require, exports, master, ko) {
     var ProfileModel = (function (_super) {
         __extends(ProfileModel, _super);
         function ProfileModel() {
@@ -18,19 +18,25 @@ define(["require", "exports", './master', 'knockout', 'jquery'], function (requi
             _super.apply(this, arguments);
         }
         ProfileController.prototype.init = function () {
-            var _this = this;
-            $.ajax({
-                type: "GET",
-                url: "/player/get",
-                dataType: "json",
-                success: function (result) {
-                    _this.refreshModel(result);
-                    ko.applyBindings(_this);
-                }
-            });
+            //$.ajax({
+            //    type: "GET",
+            //    url: "/player/get",
+            //    dataType: "json",
+            //    success: (result) => {
+            //        this.refreshModel(result);
+            //        ko.applyBindings(this);
+            //    }
+            //});
+            ko.applyBindings(this);
         };
         ProfileController.prototype.refreshModel = function (result) {
             _super.prototype.refreshModel.call(this, result);
+        };
+        ProfileController.prototype.cancelClick = function () {
+            history.back();
+        };
+        ProfileController.prototype.okClick = function () {
+            history.back();
         };
         return ProfileController;
     })(master.MasterControler);

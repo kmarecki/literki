@@ -98,14 +98,14 @@ export class MasterControler<TModel extends MasterModel> {
         this.dialogBoxCallback = callback;
     }
 
-    protected cancelClick(): void {
+    protected dialog_cancelClick(): void {
         this.hideDialogBox();
         if (this.dialogBoxCallback) {
             this.dialogBoxCallback(false);
         }
     }
 
-    protected okClick(): void {
+    protected dialog_okClick(): void {
         this.hideDialogBox();
         if (this.dialogBoxCallback) {
             this.dialogBoxCallback(true);
