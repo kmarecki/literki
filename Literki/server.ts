@@ -140,7 +140,7 @@ app.get('/game/new', auth, (req, res) => {
     var players = new Array<literki.GamePlayer>();
     players.push(player);
    
-    var game = new literki_server.GameRun_Server(req.user.googleId);
+    var game = new literki_server.GameRun_Server(req.user.profileId);
     game.newGame(players);
     var state: literki.IGameState = game.state;
 

@@ -108,7 +108,7 @@ app.get('/game/new', auth, function (req, res) {
     player.remainingTime = 15 * 60;
     var players = new Array();
     players.push(player);
-    var game = new literki_server.GameRun_Server(req.user.googleId);
+    var game = new literki_server.GameRun_Server(req.user.profileId);
     game.newGame(players);
     var state = game.state;
     repo.newState(state, function (err, gameId) {

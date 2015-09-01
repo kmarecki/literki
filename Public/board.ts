@@ -98,8 +98,14 @@ class Board {
                 if (value == null || value.trim() != "") {
                     var bonus = game.board.getFieldBonus(x, y);
                     var fieldColor = this.bonusColors[bonus];
+                    var context = canvas.getContext('2d');
+                    //var centerX = xpos + this.FIELD_SIZE / 2;
+                    //var centerY = ypos + this.FIELD_SIZE / 2;
+                    //var radius = this.FIELD_SIZE / 2;
+
                     context.beginPath();
                     context.rect(xpos, ypos, this.FIELD_SIZE, this.FIELD_SIZE);
+                    //context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
                     context.fillStyle = fieldColor;
                     context.fill();
                     if (bonus == literki.BoardFieldBonus.Start) {
@@ -246,6 +252,15 @@ class Board {
             strokeWidth: this.LINE_WIDTH,
             cornerRadius: 5
         });
+
+        //var letterRect = new Kinetic.Circle({
+        //    x: this.FIELD_SIZE / 2,
+        //    y: this.FIELD_SIZE / 2,
+        //    radius: this.FIELD_SIZE /2,
+        //    fill: backgroundColor,
+        //    stroke: "black",
+        //    strokeWidth: this.LINE_WIDTH,
+        //});
 
         var letterText = new Kinetic.Text({
             width: this.FIELD_SIZE,

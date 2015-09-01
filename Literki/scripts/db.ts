@@ -5,7 +5,7 @@ import mongoose = require('mongoose');
 import literki = require('./literki');
 
 interface UserProfile {
-    googleId: string;
+    authId: string;
     userName: string;
 }
 
@@ -87,13 +87,13 @@ export class GameRepository {
         });
     }
 
-    loadOrCreateUser(googleId: number, userName: string, callback: (err: Error, user: UserProfile) => any): void {
-        this.User.findOne({ googleId: googleId }).exec((err, result) => {
+    loadOrCreateUser(profileId: number, userName: string, callback: (err: Error, user: UserProfile) => any): void {
+        this.User.findOne({ profileId: profileId }).exec((err, result) => {
             if (err) {
                 console.log(err);
             }
             if (result == null && err == null) {
-                this.User.create({ googleId: googleId, userName: userName }, callback);
+                this.User.create({ profileId: profileId, userName: userName }, callback);
             } else {
                 callback(err, result);
             }
@@ -197,7 +197,7 @@ export class GameRepository {
 
     private addUserProfileSchema(): void {
         var schema = new mongoose.Schema({
-            googleId: String,
+            authId: String,
             userName: String
         });
         this.User = mongoose.model<UserProfilModel>("UserProfile", schema);

@@ -1,7 +1,7 @@
 /// <reference path=".\typings\kineticjs\kineticjs.d.ts"/>
 /// <reference path=".\typings\jqueryui\jqueryui.d.ts" />
 /// <amd-dependency path="./scripts/jquery-ui" />
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -25,12 +25,12 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             this.initalizeFields();
         }
         Board.prototype.initalizeFields = function () {
-            this.bonusColors[literki.BoardFieldBonus.DoubleLetter] = "lightblue";
-            this.bonusColors[literki.BoardFieldBonus.DoubleWord] = "lightpink";
-            this.bonusColors[literki.BoardFieldBonus.TripleLetter] = "blue";
-            this.bonusColors[literki.BoardFieldBonus.TripleWord] = "red";
-            this.bonusColors[literki.BoardFieldBonus.Start] = "lightpink";
-            this.bonusColors[literki.BoardFieldBonus.None] = "darkgreen";
+            this.bonusColors[1 /* DoubleLetter */] = "lightblue";
+            this.bonusColors[3 /* DoubleWord */] = "lightpink";
+            this.bonusColors[2 /* TripleLetter */] = "blue";
+            this.bonusColors[4 /* TripleWord */] = "red";
+            this.bonusColors[5 /* Start */] = "lightpink";
+            this.bonusColors[0 /* None */] = "darkgreen";
         };
         Board.prototype.setupDisplay = function () {
             var containerElem = $("#" + this.container);
@@ -60,11 +60,9 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             var context = canvas.getContext("2d");
             var backgroundColor = "#FFFFCC";
             //background
-            context.beginPath(),
-                context.rect(0, 0, canvas.width, canvas.height);
+            context.beginPath(), context.rect(0, 0, canvas.width, canvas.height);
             context.fillStyle = backgroundColor;
             context.fill();
-            //board fields
             for (var x = 0; x < literki.ROW_SIZE; x++) {
                 for (var y = 0; y < literki.ROW_SIZE; y++) {
                     var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
@@ -73,11 +71,16 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                     if (value == null || value.trim() != "") {
                         var bonus = game.board.getFieldBonus(x, y);
                         var fieldColor = this.bonusColors[bonus];
+                        var context = canvas.getContext('2d');
+                        //var centerX = xpos + this.FIELD_SIZE / 2;
+                        //var centerY = ypos + this.FIELD_SIZE / 2;
+                        //var radius = this.FIELD_SIZE / 2;
                         context.beginPath();
                         context.rect(xpos, ypos, this.FIELD_SIZE, this.FIELD_SIZE);
+                        //context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
                         context.fillStyle = fieldColor;
                         context.fill();
-                        if (bonus == literki.BoardFieldBonus.Start) {
+                        if (bonus == 5 /* Start */) {
                             var star = new Kinetic.Star({
                                 x: xpos + this.FIELD_SIZE / 2,
                                 y: ypos + this.FIELD_SIZE / 2,
@@ -91,7 +94,6 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                     }
                 }
             }
-            //vertical lines
             for (var x = this.BOARD_MARGIN; x <= this.MAX_LINES + this.LINE_WIDTH; x += this.FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(x, this.BOARD_MARGIN);
@@ -100,7 +102,6 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                 context.strokeStyle = "black";
                 context.stroke();
             }
-            //horizontal lines
             for (var y = this.BOARD_MARGIN; y <= this.MAX_LINES + this.LINE_WIDTH; y += this.FIELD_SIZE) {
                 context.beginPath();
                 context.moveTo(this.BOARD_MARGIN, y);
@@ -116,7 +117,6 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
-            //letters field lines
             for (var x = 1; x < literki.MAX_LETTERS; x++) {
                 context.beginPath();
                 context.moveTo(this.BOARD_MARGIN + x * this.FIELD_SIZE, this.LETTERS_TOP);
@@ -131,7 +131,6 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             context.fill();
             context.strokeStyle = "black";
             context.stroke();
-            //change letters field lines
             for (var x = 1; x < literki.MAX_LETTERS; x++) {
                 context.beginPath();
                 context.moveTo(this.CHANGE_LETTERS_LEFT + x * this.FIELD_SIZE, this.LETTERS_TOP);
@@ -139,7 +138,6 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                 context.strokeStyle = "black";
                 context.stroke();
             }
-            //letter fields
             for (var x = 0; x < literki.ROW_SIZE; x++) {
                 for (var y = 0; y < literki.ROW_SIZE; y++) {
                     var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
@@ -189,7 +187,7 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                     if (x < currentUser.freeLetters.length) {
                         var letter = currentUser.freeLetters[x];
                         var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
-                        var movable = game.isCurrentPlayer() && game.state.playState == literki.GamePlayState.PlayerMove;
+                        var movable = game.isCurrentPlayer() && game.state.playState == 0 /* PlayerMove */;
                         var letterGroup = this.getLetterGroup(xpos, this.LETTERS_TOP, letter, x, movable);
                         foregroundLayer.add(letterGroup);
                     }
@@ -208,6 +206,14 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                 strokeWidth: this.LINE_WIDTH,
                 cornerRadius: 5
             });
+            //var letterRect = new Kinetic.Circle({
+            //    x: this.FIELD_SIZE / 2,
+            //    y: this.FIELD_SIZE / 2,
+            //    radius: this.FIELD_SIZE /2,
+            //    fill: backgroundColor,
+            //    stroke: "black",
+            //    strokeWidth: this.LINE_WIDTH,
+            //});
             var letterText = new Kinetic.Text({
                 width: this.FIELD_SIZE,
                 height: this.FIELD_SIZE,
@@ -257,16 +263,16 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                     tween.play();
                     if (isFieldFree) {
                         switch (dragEnd.endType) {
-                            case literki.LetterPositionType.BoardField: {
+                            case 0 /* BoardField */: {
                                 game.putLetterOnBoard(letter, index, dragEnd.fieldX, dragEnd.fieldY);
                                 controller.model.refreshBindings();
                                 break;
                             }
-                            case literki.LetterPositionType.ExchangeLetter:
+                            case 1 /* ExchangeLetter */:
                                 game.addLetterToExchange(letter, index);
                                 controller.model.refreshBindings();
                                 break;
-                            case literki.LetterPositionType.FreeLetter:
+                            case 2 /* FreeLetter */:
                                 game.removeLetter(letter, index);
                                 controller.model.refreshBindings();
                                 break;
@@ -305,9 +311,9 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                 x += this.BOARD_MARGIN;
                 y = this.LETTERS_TOP;
             }
-            var endType = literki.LetterPositionType.BoardField;
+            var endType = 0 /* BoardField */;
             if (fieldY >= literki.ROW_SIZE) {
-                endType = fieldX > literki.ROW_SIZE / 2 ? literki.LetterPositionType.ExchangeLetter : literki.LetterPositionType.FreeLetter;
+                endType = fieldX > literki.ROW_SIZE / 2 ? 1 /* ExchangeLetter */ : 2 /* FreeLetter */;
             }
             fieldX = Math.floor(x / this.FIELD_SIZE);
             fieldY = Math.floor(y / this.FIELD_SIZE);
@@ -315,9 +321,7 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
         };
         Board.prototype.normalizeDragEndPositionX = function (x) {
             var lastTileX = (literki.ROW_SIZE - 1) * this.FIELD_SIZE;
-            return x >= 0 ?
-                (x >= lastTileX ? lastTileX : x) :
-                0;
+            return x >= 0 ? (x >= lastTileX ? lastTileX : x) : 0;
         };
         Board.prototype.normalizeDragEndPositionY = function (y) {
             return y >= 0 ? y : 0;
@@ -443,31 +447,27 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                 var playerMoves = new Array();
                 players.forEach(function (p) {
                     var moveDesc = "";
-                    var move = p.moves.length > moveIndex ?
-                        p.moves[moveIndex] :
-                        null;
+                    var move = p.moves.length > moveIndex ? p.moves[moveIndex] : null;
                     if (move) {
                         var total = (p.userId in movesTotals) ? movesTotals[p.userId] : 0;
-                        var sum = move.words.length > 0 ?
-                            move.words.map(function (w) { return w.points; }).reduce(function (total, x) { return total += x; }) :
-                            0;
+                        var sum = move.words.length > 0 ? move.words.map(function (w) { return w.points; }).reduce(function (total, x) { return total += x; }) : 0;
                         total += sum;
                         movesTotals[p.userId] = total;
                         switch (move.moveType) {
-                            case literki.MoveType.Exchange:
-                                moveDesc = total + " (Wymiana)";
+                            case 2 /* Exchange */:
+                                moveDesc = "" + total + " (Wymiana)";
                                 break;
-                            case literki.MoveType.Fold:
-                                moveDesc = total + " (Pas)";
+                            case 1 /* Fold */:
+                                moveDesc = "" + total + " (Pas)";
                                 break;
-                            case literki.MoveType.WrongMove:
-                                moveDesc = total + " (B\u0142\u0119dny ruch)";
+                            case 3 /* WrongMove */:
+                                moveDesc = "" + total + " (Błędny ruch)";
                                 break;
-                            case literki.MoveType.CheckMoveFailed:
-                                moveDesc = total + " (B\u0142\u0119dne sprawdzenie)";
+                            case 4 /* CheckMoveFailed */:
+                                moveDesc = "" + total + " (Błędne sprawdzenie)";
                                 break;
-                            case literki.MoveType.Move:
-                                moveDesc = total + " (" + sum + ")";
+                            case 0 /* Move */:
+                                moveDesc = "" + total + " (" + sum + ")";
                                 break;
                         }
                     }
@@ -611,7 +611,7 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                             });
                         }
                         if (game.isWaitingForMoveApproval()) {
-                            this.showPersistentInfoDialogBox("Oczekiwanie na akceptacj\u0119 ruchu przez gracza " + game.getNextPlayer().playerName + ".");
+                            this.showPersistentInfoDialogBox("Oczekiwanie na akceptację ruchu przez gracza " + game.getNextPlayer().playerName + ".");
                         }
                     }
                 }
@@ -630,8 +630,7 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
         controller.model = model;
         controller.init();
         setInterval(function () {
-            debugLabel.textContent =
-                "Screen: " + screen.availWidth + " X " + screen.availHeight + ",  Window: " + window.innerWidth + " X " + window.innerHeight + " " + new Date().toLocaleTimeString();
+            debugLabel.textContent = "Screen: " + screen.availWidth + " X " + screen.availHeight + ",  Window: " + window.innerWidth + " X " + window.innerHeight + " " + new Date().toLocaleTimeString();
             controller.alive();
         }, 1000);
     }
