@@ -9,7 +9,14 @@ block scripts
 
 block info
   h3 Profil gracza
+  div.formLayout
+    label Nazwa użytkownika
+    input(data-bind='textInput: userName', type='text')
+    br
+    label Adres email
+    input(data-bind='textInput: email', type='text')
+    br
 
 block buttons
-  button.commandButton.cancelBackground(data-bind='click:cancelClick') Anuluj
-  button.commandButton.acceptSize(data-bind='click:cancelClick') Zmień
+  button.commandButton.cancelBackground(data-bind='click: cancelClick') Anuluj
+  button.commandButton.acceptSize(data-bind='click: cancelClick') Zmień

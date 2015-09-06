@@ -181,7 +181,7 @@ app.get('/game/get', auth, (req, res) => {
     });
 });
 
-app.get('/game/join', auth,(req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.join())));
+app.get('/game/join', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.join())));
 app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.start())));
 app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.pause())));
 app.get('/game/fold', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.fold())));
@@ -198,6 +198,14 @@ app.post('/game/approve', auth, (req, res) => {
 app.post('/game/move', auth, (req, res) => {
     var move = <literki.GameMove> req.body;
     simpleGameMethodCall(req, res, (game, req, call) => call(game.makeMove(move)), move.gameId);
+});
+
+app.get('player/get', auth, (req, res) => {
+
+});
+
+app.post('player/update', auth, (req, res) => {
+
 });
 
 app.post('/player/alive', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => {

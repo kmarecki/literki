@@ -171,7 +171,8 @@ var GameRepository = (function () {
     GameRepository.prototype.addUserProfileSchema = function () {
         var schema = new mongoose.Schema({
             authId: String,
-            userName: String
+            userName: String,
+            email: String
         });
         this.User = mongoose.model("UserProfile", schema);
     };

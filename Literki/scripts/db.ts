@@ -7,6 +7,7 @@ import literki = require('./literki');
 interface UserProfile {
     authId: string;
     userName: string;
+    email: string;
 }
 
 interface DictionaryWord {
@@ -198,7 +199,8 @@ export class GameRepository {
     private addUserProfileSchema(): void {
         var schema = new mongoose.Schema({
             authId: String,
-            userName: String
+            userName: String,
+            email: String
         });
         this.User = mongoose.model<UserProfilModel>("UserProfile", schema);
     }
