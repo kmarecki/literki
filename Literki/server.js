@@ -170,6 +170,19 @@ app.get('/player/get', auth, function (req, res) {
     });
 });
 app.post('/player/update', auth, function (req, res) {
+    var userProfile = req.body;
+    repo.saveUser(userProfile, function (err) {
+        if (err != null) {
+            var errorMessage = util.formatError(err);
+            res.json({ errorMessage: errorMessage });
+        }
+        repo.loadUser(req.user.id, function (err, userProfile) {
+            if (err != null) {
+                var errorMessage = util.formatError(err);
+            }
+            res.json({ userProfile: userProfile, errorMessage: errorMessage });
+        });
+    });
 });
 app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) {
     var forceRefresh = game.getCurrentPlayer().userId != req.body.currentPlayerId ||

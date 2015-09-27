@@ -62,7 +62,7 @@ export class GameRepository {
     }
 
     saveState(state: literki.IGameState, callback: (err: Error) => any): void {
-        this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true },(err) => {
+        this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, (err) => {
             if (err) {
                 console.log(err);
             }
@@ -101,6 +101,14 @@ export class GameRepository {
         });
     }
 
+    saveUser(user: entities.UserProfile, callback: (err: Error) => any): void {
+        this.User.findOneAndUpdate({ authId: user.authId }, user, undefined, (err) => {
+            if (err) {
+                console.log(err);
+            }
+            callback(err);
+        });
+    }
 
     removeAllUsers(callback: (err: Error) => any): void {
         this.User.remove({}, (err) => {

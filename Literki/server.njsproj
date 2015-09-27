@@ -70,6 +70,7 @@
     <TypeScriptCompile Include="typings\express\express.d.ts" />
     <TypeScriptCompile Include="typings\form-data\form-data.d.ts" />
     <TypeScriptCompile Include="typings\i18next\i18next.d.ts" />
+    <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\mocha\mocha.d.ts" />
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
@@ -84,6 +85,7 @@
     <Folder Include="styles\" />
     <Folder Include="typings\form-data\" />
     <Folder Include="typings\i18next\" />
+    <Folder Include="typings\jquery\" />
     <Folder Include="typings\mocha\" />
     <Folder Include="typings\request\" />
     <Folder Include="typings\winston\" />

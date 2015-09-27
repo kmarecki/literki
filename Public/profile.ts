@@ -16,6 +16,8 @@ class LanguageModel {
 }
 
 class ProfileModel extends master.MasterModel {
+    private entity: entities.UserProfile;
+
     userName = ko.observable("");
     email = ko.observable("");
     defaultLanguage = ko.observable<LanguageModel>();
@@ -29,20 +31,24 @@ class ProfileModel extends master.MasterModel {
         super();
         this.defaultLanguage(this.availableLanguages()[1]);
     }
+
+    fromEntity(userProfile: entities.UserProfile): void {
+        this.entity = userProfile;
+
+        this.userName(userProfile.userName);
+        this.email(userProfile.email);
+    }
+
+    toEntity(): entities.UserProfile {
+        this.entity.email = this.email();
+        this.entity.userName = this.userName();
+        return this.entity;
+    }
 }
 
 class ProfileController extends master.MasterControler<ProfileModel> {
 
     init(): void {
-        //$.ajax({
-        //    type: "GET",
-        //    url: "/player/get",
-        //    dataType: "json",
-        //    success: (result) => {
-        //        this.refreshModel(result);
-        //        ko.applyBindings(this);
-        //    }
-        //});
         super.callGETMethod("/player/get", undefined, (result) => {
             this.refreshModel(result);
             ko.applyBindings(this);
@@ -53,16 +59,19 @@ class ProfileController extends master.MasterControler<ProfileModel> {
         super.refreshModel(result);
         var userProfile = <entities.UserProfile>result.userProfile;
 
-        this.model.userName(userProfile.userName);
-        this.model.email(userProfile.email);
+        this.model.fromEntity(userProfile);
     }
+
 
     protected cancelClick(): void {
         history.back();
     }
 
     protected okClick(): void {
-        history.back();
+        var userProfile = this.model.toEntity();
+        super.callPOSTMethod("/player/update", userProfile, (result) => {
+            history.back();
+        });
     }
 }
 

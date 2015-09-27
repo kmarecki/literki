@@ -210,7 +210,19 @@ app.get('/player/get', auth, (req, res) => {
 });
 
 app.post('/player/update', auth, (req, res) => {
-
+    var userProfile = req.body;
+    repo.saveUser(userProfile, (err) => {
+        if (err != null) {
+            var errorMessage = util.formatError(err);
+            res.json({ errorMessage: errorMessage });
+        }
+        repo.loadUser(req.user.id, (err, userProfile) => {
+            if (err != null) {
+                var errorMessage = util.formatError(err);
+            }
+            res.json({ userProfile: userProfile, errorMessage: errorMessage });
+        });
+    });
 });
 
 app.post('/player/alive', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => {

@@ -89,6 +89,14 @@ var GameRepository = (function () {
             callback(err, result);
         });
     };
+    GameRepository.prototype.saveUser = function (user, callback) {
+        this.User.findOneAndUpdate({ authId: user.authId }, user, undefined, function (err) {
+            if (err) {
+                console.log(err);
+            }
+            callback(err);
+        });
+    };
     GameRepository.prototype.removeAllUsers = function (callback) {
         this.User.remove({}, function (err) {
             if (err) {
