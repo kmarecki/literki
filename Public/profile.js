@@ -1,4 +1,4 @@
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -59,9 +59,13 @@ define(["require", "exports", './master', 'knockout'], function (require, export
             history.back();
         };
         ProfileController.prototype.okClick = function () {
+            var _this = this;
             var userProfile = this.model.toEntity();
             _super.prototype.callPOSTMethod.call(this, "/player/update", userProfile, function (result) {
-                history.back();
+                _this.refreshModel(result);
+                if (!result.errorMessage) {
+                    history.back();
+                }
             });
         };
         return ProfileController;

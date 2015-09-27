@@ -132,29 +132,36 @@ app.get('/:pageName.html', auth, (req, res) => {
 });
 
 app.get('/game/new', auth, (req, res) => {
-    var player = new literki.GamePlayer();
-    player.userId = req.user.id;
-    player.playerName = "Irenka";
-    player.remainingTime = 15 * 60;
-   
-    var players = new Array<literki.GamePlayer>();
-    players.push(player);
-   
-    var game = new literki_server.GameRun_Server(req.user.profileId);
-    game.newGame(players);
-    var state: literki.IGameState = game.state;
-
-    repo.newState(state,(err, gameId) => {
-        var errorMessages = '';
+    repo.loadUser(req.user.id, (err, user) => {
         if (err != null) {
-            errorMessages = util.formatError(err);
+            var errorMessages = util.formatError(err);
+            res.json({ errorMessage: errorMessages });
+        } else {
+            var player = new literki.GamePlayer();
+            player.userId = user.id;
+            player.playerName = user.userName
+            player.remainingTime = 15 * 60;
+
+            var players = new Array<literki.GamePlayer>();
+            players.push(player);
+
+            var game = new literki_server.GameRun_Server(req.user.profileId);
+            game.newGame(players);
+            var state: literki.IGameState = game.state;
+
+            repo.newState(state, (err, gameId) => {
+                var errorMessages = '';
+                if (err != null) {
+                    errorMessages = util.formatError(err);
+                }
+                repo.loadState(gameId, (err, state) => {
+                    if (err != null) {
+                        errorMessages = errorMessages.concat(util.formatError(err));
+                    }
+                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
+                });
+            });
         }
-        repo.loadState(gameId,(err, state) => {
-            if (err != null) {
-                errorMessages = errorMessages.concat(util.formatError(err));
-            }
-            res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
-        });
     });
 });
 
@@ -215,13 +222,14 @@ app.post('/player/update', auth, (req, res) => {
         if (err != null) {
             var errorMessage = util.formatError(err);
             res.json({ errorMessage: errorMessage });
+        } else {
+            repo.loadUser(req.user.id, (err, userProfile) => {
+                if (err != null) {
+                    var errorMessage = util.formatError(err);
+                }
+                res.json({ userProfile: userProfile, errorMessage: errorMessage });
+            });
         }
-        repo.loadUser(req.user.id, (err, userProfile) => {
-            if (err != null) {
-                var errorMessage = util.formatError(err);
-            }
-            res.json({ userProfile: userProfile, errorMessage: errorMessage });
-        });
     });
 });
 

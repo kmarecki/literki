@@ -70,7 +70,10 @@ class ProfileController extends master.MasterControler<ProfileModel> {
     protected okClick(): void {
         var userProfile = this.model.toEntity();
         super.callPOSTMethod("/player/update", userProfile, (result) => {
-            history.back();
+            this.refreshModel(result);
+            if (!result.errorMessage) {
+                history.back();
+            }
         });
     }
 }

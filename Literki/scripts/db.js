@@ -67,14 +67,14 @@ var GameRepository = (function () {
             callback(err);
         });
     };
-    GameRepository.prototype.loadOrCreateUser = function (profileId, userName, callback) {
+    GameRepository.prototype.loadOrCreateUser = function (authId, userName, callback) {
         var _this = this;
-        this.User.findOne({ profileId: profileId }).exec(function (err, result) {
+        this.User.findOne({ authId: authId }).exec(function (err, result) {
             if (err) {
                 console.log(err);
             }
             if (result == null && err == null) {
-                _this.User.create({ profileId: profileId, userName: userName }, callback);
+                _this.User.create({ authId: authId, userName: userName }, callback);
             }
             else {
                 callback(err, result);
@@ -90,7 +90,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.saveUser = function (user, callback) {
-        this.User.findOneAndUpdate({ authId: user.authId }, user, undefined, function (err) {
+        this.User.findOneAndUpdate({ _id: user._id }, user, { new: true }, function (err) {
             if (err) {
                 console.log(err);
             }

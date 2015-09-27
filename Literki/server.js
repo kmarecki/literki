@@ -102,26 +102,34 @@ app.get('/:pageName.html', auth, function (req, res) {
     res.render(req.params.pageName, { title: req.params.pageName });
 });
 app.get('/game/new', auth, function (req, res) {
-    var player = new literki.GamePlayer();
-    player.userId = req.user.id;
-    player.playerName = "Irenka";
-    player.remainingTime = 15 * 60;
-    var players = new Array();
-    players.push(player);
-    var game = new literki_server.GameRun_Server(req.user.profileId);
-    game.newGame(players);
-    var state = game.state;
-    repo.newState(state, function (err, gameId) {
-        var errorMessages = '';
+    repo.loadUser(req.user.id, function (err, user) {
         if (err != null) {
-            errorMessages = util.formatError(err);
+            var errorMessages = util.formatError(err);
+            res.json({ errorMessage: errorMessages });
         }
-        repo.loadState(gameId, function (err, state) {
-            if (err != null) {
-                errorMessages = errorMessages.concat(util.formatError(err));
-            }
-            res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
-        });
+        else {
+            var player = new literki.GamePlayer();
+            player.userId = user.id;
+            player.playerName = user.userName;
+            player.remainingTime = 15 * 60;
+            var players = new Array();
+            players.push(player);
+            var game = new literki_server.GameRun_Server(req.user.profileId);
+            game.newGame(players);
+            var state = game.state;
+            repo.newState(state, function (err, gameId) {
+                var errorMessages = '';
+                if (err != null) {
+                    errorMessages = util.formatError(err);
+                }
+                repo.loadState(gameId, function (err, state) {
+                    if (err != null) {
+                        errorMessages = errorMessages.concat(util.formatError(err));
+                    }
+                    res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
+                });
+            });
+        }
     });
 });
 app.get('/game/list', auth, function (req, res) {
@@ -176,12 +184,14 @@ app.post('/player/update', auth, function (req, res) {
             var errorMessage = util.formatError(err);
             res.json({ errorMessage: errorMessage });
         }
-        repo.loadUser(req.user.id, function (err, userProfile) {
-            if (err != null) {
-                var errorMessage = util.formatError(err);
-            }
-            res.json({ userProfile: userProfile, errorMessage: errorMessage });
-        });
+        else {
+            repo.loadUser(req.user.id, function (err, userProfile) {
+                if (err != null) {
+                    var errorMessage = util.formatError(err);
+                }
+                res.json({ userProfile: userProfile, errorMessage: errorMessage });
+            });
+        }
     });
 });
 app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) {

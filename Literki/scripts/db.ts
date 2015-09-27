@@ -6,13 +6,13 @@ import entities = require('./entities');
 import literki = require('./literki');
 
 interface GameStateModel extends literki.IGameState, mongoose.Document { }
-interface UserProfilModel extends entities.UserProfile, mongoose.Document { }
+interface UserProfileModel extends entities.UserProfile, mongoose.Document { }
 interface DictionaryWordModel extends entities.DictionaryWord, mongoose.Document { }
 
 export class GameRepository {
     
     GameState: mongoose.Model<GameStateModel>;
-    User: mongoose.Model<UserProfilModel>;
+    User: mongoose.Model<UserProfileModel>;
     DictionaryWord: mongoose.Model<DictionaryWordModel>;
 
     open(uri: string): void {
@@ -79,20 +79,20 @@ export class GameRepository {
         });
     }
 
-    loadOrCreateUser(profileId: number, userName: string, callback: (err: Error, user: entities.UserProfile) => any): void {
-        this.User.findOne({ profileId: profileId }).exec((err, result) => {
+    loadOrCreateUser(authId: number, userName: string, callback: (err: Error, user: entities.UserProfile) => any): void {
+        this.User.findOne({ authId: authId }).exec((err, result) => {
             if (err) {
                 console.log(err);
             }
             if (result == null && err == null) {
-                this.User.create({ profileId: profileId, userName: userName }, callback);
+                this.User.create({ authId: authId, userName: userName }, callback);
             } else {
                 callback(err, result);
             }
         });
     }
 
-    loadUser(id: number, callback: (err: Error, user: entities.UserProfile) => any): void {
+    loadUser(id: number, callback: (err: Error, user: UserProfileModel) => any): void {
         this.User.findOne({ _id: id }).exec((err, result) => {
             if (err) {
                 console.log(err);
@@ -101,8 +101,8 @@ export class GameRepository {
         });
     }
 
-    saveUser(user: entities.UserProfile, callback: (err: Error) => any): void {
-        this.User.findOneAndUpdate({ authId: user.authId }, user, undefined, (err) => {
+    saveUser(user: UserProfileModel, callback: (err: Error) => any): void {
+        this.User.findOneAndUpdate({ _id: user._id }, user, { new: true }, (err) => {
             if (err) {
                 console.log(err);
             }
@@ -202,7 +202,7 @@ export class GameRepository {
             email: String,
             defaultLanguage: String
         });
-        this.User = mongoose.model<UserProfilModel>("UserProfile", schema);
+        this.User = mongoose.model<UserProfileModel>("UserProfile", schema);
     }
 
     private addWordsDictionarySchema(): void {
