@@ -538,29 +538,14 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             if (refreshBoard === void 0) { refreshBoard = true; }
             if (data === void 0) { data = { gameId: game.state.gameId }; }
             if (applyBindings === void 0) { applyBindings = false; }
-            $.ajax({
-                type: "GET",
-                url: name,
-                data: data,
-                dataType: "json",
-                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings); },
-                error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
-            });
+            _super.prototype.callGETMethod.call(this, name, data, function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings); });
         };
         BoardController.prototype.callPOSTMethod = function (name, refreshBoard, data, applyBindings) {
             var _this = this;
             if (refreshBoard === void 0) { refreshBoard = true; }
             if (data === void 0) { data = { gameId: game.state.gameId }; }
             if (applyBindings === void 0) { applyBindings = false; }
-            $.ajax({
-                type: "POST",
-                url: name,
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                dataType: "json",
-                success: function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings); },
-                error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
-            });
+            _super.prototype.callPOSTMethod.call(this, name, data, function (result) { return _this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings); });
         };
         BoardController.prototype.refreshAfterHTMLMethodCall = function (result, refreshBoard, applyBindings) {
             var refresh = refreshBoard || result.forceRefresh;

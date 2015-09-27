@@ -11,11 +11,14 @@ block info
   h3 Profil gracza
   div.formLayout
     label Nazwa użytkownika
-    input(data-bind='textInput: userName', type='text')
+    input(data-bind='textInput: model.userName', type='text')
     br
     label Adres email
-    input(data-bind='textInput: email', type='text')
+    input(data-bind='textInput: model.email', type='text')
     br
+    label Domyślny język
+    select(data-bind="options: model.availableLanguages, optionsText: 'description', value model.defaultLanguage")
+
 
 block buttons
   button.commandButton.cancelBackground(data-bind='click: cancelClick') Anuluj

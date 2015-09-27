@@ -615,27 +615,12 @@ class BoardController extends master.MasterControler<BoardModel> {
     }
 
 
-    private callGETMethod(name: string, refreshBoard: boolean = true, data: any = { gameId: game.state.gameId }, applyBindings: boolean = false): void {
-        $.ajax({
-            type: "GET",
-            url: name,
-            data: data,
-            dataType: "json",
-            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings),
-            error: (xhr, ajaxOptions, thrownError) => this.ajaxErrorHandler(xhr, ajaxOptions, thrownError)
-        });
+    protected callGETMethod(name: string, refreshBoard: boolean = true, data: any = { gameId: game.state.gameId }, applyBindings: boolean = false): void {
+        super.callGETMethod(name, data, (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings));
     }
 
-    private callPOSTMethod(name: string, refreshBoard: boolean = true, data: any = { gameId: game.state.gameId }, applyBindings: boolean = false): void {
-        $.ajax({
-            type: "POST",
-            url: name,
-            contentType: "application/json",
-            data: JSON.stringify(data),
-            dataType: "json",
-            success: (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings),
-            error: (xhr, ajaxOptions, thrownError) => this.ajaxErrorHandler(xhr, ajaxOptions, thrownError)
-        });
+    protected callPOSTMethod(name: string, refreshBoard: boolean = true, data: any = { gameId: game.state.gameId }, applyBindings: boolean = false): void {
+        super.callPOSTMethod(name, data, (result) => this.refreshAfterHTMLMethodCall(result, refreshBoard, applyBindings));
     }
 
     private refreshAfterHTMLMethodCall(result: any, refreshBoard: boolean, applyBindings: boolean): void  {

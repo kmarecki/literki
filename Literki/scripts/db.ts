@@ -2,21 +2,12 @@
 /// <reference path=".\literki.ts"/>
 
 import mongoose = require('mongoose');
+import entities = require('./entities');
 import literki = require('./literki');
 
-interface UserProfile {
-    authId: string;
-    userName: string;
-    email: string;
-}
-
-interface DictionaryWord {
-    word: string;
-}
-
 interface GameStateModel extends literki.IGameState, mongoose.Document { }
-interface UserProfilModel extends UserProfile, mongoose.Document { }
-interface DictionaryWordModel extends DictionaryWord, mongoose.Document { }
+interface UserProfilModel extends entities.UserProfile, mongoose.Document { }
+interface DictionaryWordModel extends entities.DictionaryWord, mongoose.Document { }
 
 export class GameRepository {
     
@@ -88,7 +79,7 @@ export class GameRepository {
         });
     }
 
-    loadOrCreateUser(profileId: number, userName: string, callback: (err: Error, user: UserProfile) => any): void {
+    loadOrCreateUser(profileId: number, userName: string, callback: (err: Error, user: entities.UserProfile) => any): void {
         this.User.findOne({ profileId: profileId }).exec((err, result) => {
             if (err) {
                 console.log(err);
@@ -101,7 +92,7 @@ export class GameRepository {
         });
     }
 
-    loadUser(id: number, callback: (err: Error, user: UserProfile) => any): void {
+    loadUser(id: number, callback: (err: Error, user: entities.UserProfile) => any): void {
         this.User.findOne({ _id: id }).exec((err, result) => {
             if (err) {
                 console.log(err);
@@ -200,7 +191,8 @@ export class GameRepository {
         var schema = new mongoose.Schema({
             authId: String,
             userName: String,
-            email: String
+            email: String,
+            defaultLanguage: String
         });
         this.User = mongoose.model<UserProfilModel>("UserProfile", schema);
     }

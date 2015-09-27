@@ -99,6 +99,29 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
             var message = xhr.responseText ? xhr.responseText : "Brak połączenia z serwerem gry.";
             this.showErrorDialogBox(message);
         };
+        MasterControler.prototype.callGETMethod = function (name, data, success) {
+            var _this = this;
+            $.ajax({
+                type: "GET",
+                url: name,
+                data: data,
+                dataType: "json",
+                success: function (result) { return success(result); },
+                error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
+            });
+        };
+        MasterControler.prototype.callPOSTMethod = function (name, data, success) {
+            var _this = this;
+            $.ajax({
+                type: "POST",
+                url: name,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                dataType: "json",
+                success: function (result) { return success(result); },
+                error: function (xhr, ajaxOptions, thrownError) { return _this.ajaxErrorHandler(xhr, ajaxOptions, thrownError); }
+            });
+        };
         return MasterControler;
     })();
     exports.MasterControler = MasterControler;

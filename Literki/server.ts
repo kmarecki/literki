@@ -200,11 +200,16 @@ app.post('/game/move', auth, (req, res) => {
     simpleGameMethodCall(req, res, (game, req, call) => call(game.makeMove(move)), move.gameId);
 });
 
-app.get('player/get', auth, (req, res) => {
-
+app.get('/player/get', auth, (req, res) => {
+    repo.loadUser(req.user.id, (err, userProfile) => {
+        if (err != null) {
+            var errorMessage = util.formatError(err);
+        }
+        res.json({ userProfile: userProfile, errorMessage: errorMessage });
+    });
 });
 
-app.post('player/update', auth, (req, res) => {
+app.post('/player/update', auth, (req, res) => {
 
 });
 

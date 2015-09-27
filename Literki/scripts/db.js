@@ -172,7 +172,8 @@ var GameRepository = (function () {
         var schema = new mongoose.Schema({
             authId: String,
             userName: String,
-            email: String
+            email: String,
+            defaultLanguage: String
         });
         this.User = mongoose.model("UserProfile", schema);
     };

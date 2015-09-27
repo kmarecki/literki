@@ -161,6 +161,16 @@ app.post('/game/move', auth, function (req, res) {
     var move = req.body;
     simpleGameMethodCall(req, res, function (game, req, call) { return call(game.makeMove(move)); }, move.gameId);
 });
+app.get('/player/get', auth, function (req, res) {
+    repo.loadUser(req.user.id, function (err, userProfile) {
+        if (err != null) {
+            var errorMessage = util.formatError(err);
+        }
+        res.json({ userProfile: userProfile, errorMessage: errorMessage });
+    });
+});
+app.post('/player/update', auth, function (req, res) {
+});
 app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) {
     var forceRefresh = game.getCurrentPlayer().userId != req.body.currentPlayerId ||
         game.state.playState != req.body.playState ||

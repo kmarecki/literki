@@ -124,6 +124,29 @@ export class MasterControler<TModel extends MasterModel> {
         var message = xhr.responseText ? xhr.responseText : "Brak połączenia z serwerem gry.";
         this.showErrorDialogBox(message);
     }
+
+    protected callGETMethod(name: string, data: any, success: (result: any) => any): void {
+        $.ajax({
+            type: "GET",
+            url: name,
+            data: data,
+            dataType: "json",
+            success: (result) => success(result),
+            error: (xhr, ajaxOptions, thrownError) => this.ajaxErrorHandler(xhr, ajaxOptions, thrownError)
+        });
+    }
+
+    protected callPOSTMethod(name: string, data: any, success: (result: any) => any): void {
+        $.ajax({
+            type: "POST",
+            url: name,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            dataType: "json",
+            success: (result) => success(result),
+            error: (xhr, ajaxOptions, thrownError) => this.ajaxErrorHandler(xhr, ajaxOptions, thrownError)
+        });
+    }
 }
 
 export function init(): void {
