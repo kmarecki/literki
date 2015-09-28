@@ -197,7 +197,7 @@ app.post('/game/approve', auth, (req, res) => {
     var approve = req.body.approve;
     simpleGameMethodCall(req, res, (game, req, call) => {
         game.renderMove();
-        repo.existWords(game.getNewWords().map(w => w.word), (err, exists) => {
+        repo.existWords(game.getNewWords().map(w => w.word), "pl", (err, exists) => {
             call(game.approveMove(approve, exists));
         });
     }, req.body.gameId);

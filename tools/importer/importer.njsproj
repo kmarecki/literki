@@ -37,6 +37,7 @@
   <ItemGroup>
     <Content Include="config\default.json" />
     <Content Include="config\test.json" />
+    <Content Include="words-en.txt" />
     <Content Include="words.txt" />
     <TypeScriptCompile Include="app.ts" />
     <Content Include="package.json" />

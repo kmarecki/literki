@@ -105,24 +105,24 @@ var GameRepository = (function () {
             callback(err);
         });
     };
-    GameRepository.prototype.addWord = function (word, callback) {
-        this.DictionaryWord.create({ word: word }, function (err, result) {
+    GameRepository.prototype.addWord = function (word, lang, callback) {
+        this.DictionaryWord.create({ word: word, lang: lang }, function (err, result) {
             if (err) {
                 console.log(err);
             }
             callback(err);
         });
     };
-    GameRepository.prototype.removeAllWords = function (callback) {
-        this.DictionaryWord.remove({}, function (err) {
+    GameRepository.prototype.removeAllWords = function (lang, callback) {
+        this.DictionaryWord.remove({ lang: lang }, function (err) {
             if (err) {
                 console.log(err);
             }
             callback(err);
         });
     };
-    GameRepository.prototype.existWords = function (words, callback) {
-        this.DictionaryWord.find({ word: { $in: words } }, { _id: 1 }, undefined, function (err, result) {
+    GameRepository.prototype.existWords = function (words, lang, callback) {
+        this.DictionaryWord.find({ $and: [{ word: { $in: words } }, { lang: lang }] }, { _id: 1 }, undefined, function (err, result) {
             if (err) {
                 console.log(err);
             }
@@ -187,7 +187,8 @@ var GameRepository = (function () {
     };
     GameRepository.prototype.addWordsDictionarySchema = function () {
         var schema = new mongoose.Schema({
-            word: { type: String, index: true }
+            word: { type: String, index: true },
+            lang: { type: String, index: true }
         });
         this.DictionaryWord = mongoose.model("DictionaryWord", schema);
     };

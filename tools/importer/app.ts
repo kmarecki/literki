@@ -8,12 +8,13 @@ import db = require('../../Literki/scripts/db');
 import util = require('../../Literki/scripts/util');
 
 var fileName = process.argv[2];
+var lang = process.argv[3];
 console.log(`Importowanie pliku ${fileName}`);
 
 var uri = config.MongoDb.uri;
 var repo = new db.GameRepository();
 repo.open(uri);
-repo.removeAllWords((err) => {
+repo.removeAllWords(lang, (err) => {
     if (!err) {
        
         var liner = util.createLiner();
@@ -26,7 +27,7 @@ repo.removeAllWords((err) => {
                 () => line = liner.read(),
                 (callback) => {
                     console.log(line);
-                    repo.addWord(line, callback);
+                    repo.addWord(line, lang, callback);
                 },
                 (err) => {
                     if (err) {

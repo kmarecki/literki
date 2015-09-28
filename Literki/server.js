@@ -160,7 +160,7 @@ app.post('/game/approve', auth, function (req, res) {
     var approve = req.body.approve;
     simpleGameMethodCall(req, res, function (game, req, call) {
         game.renderMove();
-        repo.existWords(game.getNewWords().map(function (w) { return w.word; }), function (err, exists) {
+        repo.existWords(game.getNewWords().map(function (w) { return w.word; }), "pl", function (err, exists) {
             call(game.approveMove(approve, exists));
         });
     }, req.body.gameId);

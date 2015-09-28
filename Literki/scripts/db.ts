@@ -119,8 +119,8 @@ export class GameRepository {
         });
     }
 
-    addWord(word: string, callback: (err: Error) => any): void {
-        this.DictionaryWord.create({ word: word }, (err, result) => {
+    addWord(word: string, lang: string, callback: (err: Error) => any): void {
+        this.DictionaryWord.create({ word: word, lang: lang }, (err, result) => {
             if(err) {
                 console.log(err);
             }
@@ -128,8 +128,8 @@ export class GameRepository {
         });
     }
 
-    removeAllWords(callback: (err: Error) => any): void {
-        this.DictionaryWord.remove({}, (err) => {
+    removeAllWords(lang: string, callback: (err: Error) => any): void {
+        this.DictionaryWord.remove({ lang: lang }, (err) => {
             if (err) {
                 console.log(err);
             }
@@ -137,8 +137,8 @@ export class GameRepository {
         });
     }
 
-    existWords(words: string[], callback: (err: Error, exists: boolean) => any): void {
-        this.DictionaryWord.find({ word: { $in: words } }, { _id: 1 }, undefined, (err, result) => {
+    existWords(words: string[], lang: string, callback: (err: Error, exists: boolean) => any): void {
+        this.DictionaryWord.find({ $and: [{ word: { $in: words } }, { lang: lang }] }, { _id: 1 }, undefined, (err, result) => {
             if (err) {
                 console.log(err);
             }
@@ -207,7 +207,8 @@ export class GameRepository {
 
     private addWordsDictionarySchema(): void {
         var schema = new mongoose.Schema({
-            word: { type: String, index: true }
+            word: { type: String, index: true },
+            lang: { type: String, index: true }
         });
         this.DictionaryWord = mongoose.model<DictionaryWordModel>("DictionaryWord", schema);
     }
