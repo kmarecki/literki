@@ -4,11 +4,34 @@ var mongoose = require('mongoose');
 var literki = require('./literki');
 var GameRepository = (function () {
     function GameRepository() {
+        this.connected = false;
     }
     GameRepository.prototype.open = function (uri) {
-        this.connect(uri);
+        var _this = this;
+        this.uri = uri;
+        mongoose.connection.on('connected', function () {
+            console.log('Mongoose default connection open to ' + _this.uri);
+            _this.connected = true;
+        });
+        mongoose.connection.on('error', function (err) {
+            console.log('Mongoose default connection error: ' + err);
+        });
+        mongoose.connection.on('disconnected', function () {
+            console.log('Mongoose default connection disconnected');
+            this.connected = false;
+        });
+        process.on('SIGINT', function () {
+            mongoose.connection.close(function () {
+                console.log('Mongoose default connection disconnected through app termination');
+                process.exit(0);
+            });
+        });
+        this.addGameStateSchema();
+        this.addUserProfileSchema();
+        this.addWordsDictionarySchema();
     };
     GameRepository.prototype.allGames = function (callback) {
+        this.connect();
         this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, creationDate: 1, _id: 0 }, function (err, result) {
             if (err != null) {
                 console.log(err);
@@ -18,6 +41,7 @@ var GameRepository = (function () {
     };
     GameRepository.prototype.newState = function (state, callback) {
         var _this = this;
+        this.connect();
         var gameId = this.getMaxGameId(function (err, result) {
             if (result) {
                 var newGameId = result != -1 ? result + 1 : 1;
@@ -41,6 +65,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.loadState = function (gameId, callback) {
+        this.connect();
         this.GameState.findOne({ gameId: gameId }).exec(function (err, result) {
             if (err == null && result != null) {
                 callback(null, result);
@@ -52,6 +77,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.saveState = function (state, callback) {
+        this.connect();
         this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, function (err) {
             if (err) {
                 console.log(err);
@@ -60,6 +86,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.removeAllStates = function (callback) {
+        this.connect();
         this.GameState.remove({}, function (err) {
             if (err) {
                 console.log(err);
@@ -69,6 +96,7 @@ var GameRepository = (function () {
     };
     GameRepository.prototype.loadOrCreateUser = function (authId, userName, callback) {
         var _this = this;
+        this.connect();
         this.User.findOne({ authId: authId }).exec(function (err, result) {
             if (err) {
                 console.log(err);
@@ -82,6 +110,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.loadUser = function (id, callback) {
+        this.connect();
         this.User.findOne({ _id: id }).exec(function (err, result) {
             if (err) {
                 console.log(err);
@@ -90,6 +119,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.saveUser = function (user, callback) {
+        this.connect();
         this.User.findOneAndUpdate({ _id: user._id }, user, { new: true }, function (err) {
             if (err) {
                 console.log(err);
@@ -98,6 +128,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.removeAllUsers = function (callback) {
+        this.connect();
         this.User.remove({}, function (err) {
             if (err) {
                 console.log(err);
@@ -106,6 +137,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.addWord = function (word, lang, callback) {
+        this.connect();
         this.DictionaryWord.create({ word: word, lang: lang }, function (err, result) {
             if (err) {
                 console.log(err);
@@ -114,6 +146,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.removeAllWords = function (lang, callback) {
+        this.connect();
         this.DictionaryWord.remove({ lang: lang }, function (err) {
             if (err) {
                 console.log(err);
@@ -122,6 +155,7 @@ var GameRepository = (function () {
         });
     };
     GameRepository.prototype.existWords = function (words, lang, callback) {
+        this.connect();
         this.DictionaryWord.find({ $and: [{ word: { $in: words } }, { lang: lang }] }, { _id: 1 }, undefined, function (err, result) {
             if (err) {
                 console.log(err);
@@ -129,11 +163,11 @@ var GameRepository = (function () {
             callback(err, result.length == words.length ? true : false);
         });
     };
-    GameRepository.prototype.connect = function (uri) {
-        mongoose.connect(uri);
-        this.addGameStateSchema();
-        this.addUserProfileSchema();
-        this.addWordsDictionarySchema();
+    GameRepository.prototype.connect = function () {
+        if (this.connected) {
+            return;
+        }
+        mongoose.connect(this.uri);
     };
     GameRepository.prototype.addGameStateSchema = function () {
         var schema = new mongoose.Schema({

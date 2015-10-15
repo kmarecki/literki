@@ -11,15 +11,39 @@ interface DictionaryWordModel extends entities.DictionaryWord, mongoose.Document
 
 export class GameRepository {
     
+    private connected = false; 
+    private uri: string;
+
     GameState: mongoose.Model<GameStateModel>;
     User: mongoose.Model<UserProfileModel>;
     DictionaryWord: mongoose.Model<DictionaryWordModel>;
 
     open(uri: string): void {
-        this.connect(uri);
+        this.uri = uri;
+        mongoose.connection.on('connected', () => {
+            console.log('Mongoose default connection open to ' + this.uri);
+            this.connected = true;
+        });
+        mongoose.connection.on('error', (err) => {
+            console.log('Mongoose default connection error: ' + err);
+        });
+        mongoose.connection.on('disconnected', function () {
+            console.log('Mongoose default connection disconnected');
+            this.connected = false;
+        });
+        process.on('SIGINT', function () {
+            mongoose.connection.close(function () {
+                console.log('Mongoose default connection disconnected through app termination');
+                process.exit(0);
+            });
+        }); 
+        this.addGameStateSchema();
+        this.addUserProfileSchema();
+        this.addWordsDictionarySchema();
     }
 
     allGames(callback: (err: Error, games: any) => any): void {
+        this.connect();
         this.GameState.find({ $query: {}, $orderby: { gameId: 1 } }, { gameId: 1, runState: 1, creationDate: 1, _id: 0 }, (err, result) => {
             if (err != null) {
                 console.log(err);
@@ -29,6 +53,7 @@ export class GameRepository {
     }
 
     newState(state: literki.IGameState, callback: (err: Error, gameId: number) => any): void {
+        this.connect();
         var gameId = this.getMaxGameId((err, result) => {
             if (result) {
                 var newGameId = result != -1 ? result + 1 : 1;
@@ -51,6 +76,7 @@ export class GameRepository {
     }
 
     loadState(gameId: number, callback: (err: Error, state: literki.IGameState) => any): void {
+        this.connect();
         this.GameState.findOne({ gameId: gameId }).exec((err, result) => {
             if (err == null && result != null) {
                 callback(null, result);
@@ -62,6 +88,7 @@ export class GameRepository {
     }
 
     saveState(state: literki.IGameState, callback: (err: Error) => any): void {
+        this.connect();
         this.GameState.findOneAndUpdate({ gameId: state.gameId }, state, { upsert: true }, (err) => {
             if (err) {
                 console.log(err);
@@ -71,6 +98,7 @@ export class GameRepository {
     }
 
     removeAllStates(callback: (err: Error) => any): void {
+        this.connect();
         this.GameState.remove({}, (err) => {
             if (err) {
                 console.log(err);
@@ -80,6 +108,7 @@ export class GameRepository {
     }
 
     loadOrCreateUser(authId: number, userName: string, callback: (err: Error, user: entities.UserProfile) => any): void {
+        this.connect();
         this.User.findOne({ authId: authId }).exec((err, result) => {
             if (err) {
                 console.log(err);
@@ -93,6 +122,7 @@ export class GameRepository {
     }
 
     loadUser(id: number, callback: (err: Error, user: UserProfileModel) => any): void {
+        this.connect();
         this.User.findOne({ _id: id }).exec((err, result) => {
             if (err) {
                 console.log(err);
@@ -102,6 +132,7 @@ export class GameRepository {
     }
 
     saveUser(user: UserProfileModel, callback: (err: Error) => any): void {
+        this.connect();
         this.User.findOneAndUpdate({ _id: user._id }, user, { new: true }, (err) => {
             if (err) {
                 console.log(err);
@@ -111,6 +142,7 @@ export class GameRepository {
     }
 
     removeAllUsers(callback: (err: Error) => any): void {
+        this.connect();
         this.User.remove({}, (err) => {
             if (err) {
                 console.log(err);
@@ -120,6 +152,7 @@ export class GameRepository {
     }
 
     addWord(word: string, lang: string, callback: (err: Error) => any): void {
+        this.connect();
         this.DictionaryWord.create({ word: word, lang: lang }, (err, result) => {
             if(err) {
                 console.log(err);
@@ -129,6 +162,7 @@ export class GameRepository {
     }
 
     removeAllWords(lang: string, callback: (err: Error) => any): void {
+        this.connect();
         this.DictionaryWord.remove({ lang: lang }, (err) => {
             if (err) {
                 console.log(err);
@@ -138,6 +172,7 @@ export class GameRepository {
     }
 
     existWords(words: string[], lang: string, callback: (err: Error, exists: boolean) => any): void {
+        this.connect();
         this.DictionaryWord.find({ $and: [{ word: { $in: words } }, { lang: lang }] }, { _id: 1 }, undefined, (err, result) => {
             if (err) {
                 console.log(err);
@@ -146,11 +181,12 @@ export class GameRepository {
         });
     }
 
-    private connect(uri: string): void {
-        mongoose.connect(uri);
-        this.addGameStateSchema();
-        this.addUserProfileSchema();
-        this.addWordsDictionarySchema();
+    private connect(): void {
+        if (this.connected) {
+            return;
+        }
+
+        mongoose.connect(this.uri);
     }
 
     private addGameStateSchema(): void {

@@ -232,11 +232,6 @@ export class GameRun_Server extends literki.GameRun {
         this.nextPlayer();
     }
 
-    private isValidWord(word: string): boolean {
-        //Dummy validation for tests
-        return false;
-    }
-
     private nextPlayer(): void {
         this.pickLetters(this.state.currentPlayerIndex);
         this.state.currentPlayerIndex = this.getNextPlayerIndex();

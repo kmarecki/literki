@@ -225,10 +225,6 @@ var GameRun_Server = (function (_super) {
         this.getCurrentPlayer().moves.push(moveHistory);
         this.nextPlayer();
     };
-    GameRun_Server.prototype.isValidWord = function (word) {
-        //Dummy validation for tests
-        return false;
-    };
     GameRun_Server.prototype.nextPlayer = function () {
         this.pickLetters(this.state.currentPlayerIndex);
         this.state.currentPlayerIndex = this.getNextPlayerIndex();

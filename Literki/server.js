@@ -25,6 +25,10 @@ app.use(lessMiddleware(__dirname, {
     dest: __dirname + '/../Public'
 }));
 app.use(express.static(__dirname + '/../Public'));
+app.use(function (err, req, res, next) {
+    console.error(err);
+    res.status(500).send('Something broke!');
+});
 app.set('view engine', 'jade');
 app.locals.pretty = true;
 var uri = config.MongoDb.uri;
