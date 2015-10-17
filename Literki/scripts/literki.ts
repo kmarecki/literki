@@ -491,7 +491,8 @@ export class GameRun {
     }
 
     isFieldValid(x: number, y: number): boolean {
-        return this.board.isBoardEmpty() || (this.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y));
+        return (x == ROW_CENTER && y == ROW_CENTER && !this.board.isFieldFree(ROW_CENTER, ROW_CENTER))
+            || this.board.hasFieldNeighbour(x, y);
     }
 
     isBoardValid(): boolean {

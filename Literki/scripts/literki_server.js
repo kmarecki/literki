@@ -61,13 +61,15 @@ var GameRun_Server = (function (_super) {
         if (this.isCurrentPlayer()) {
             var result = GameMethodResult.Undefined;
             move.freeLetters.forEach(function (field) {
-                if (!_this.isFieldValid(field.x, field.y)) {
-                    result = new GameMethodResult("Niedozwolony ruch");
-                }
                 _this.putLetterOnBoard(field.letter, field.index, field.x, field.y);
                 var playersFreeLetters = _this.getCurrentPlayer().freeLetters;
                 var index = playersFreeLetters.indexOf(field.letter);
                 playersFreeLetters.splice(index, 1);
+            });
+            move.freeLetters.forEach(function (field) {
+                if (!_this.isFieldValid(field.x, field.y)) {
+                    result = new GameMethodResult("Niedozwolony ruch");
+                }
             });
             if (!this.isBoardValid()) {
                 result = new GameMethodResult("Niedozwolony ruch");

@@ -58,13 +58,16 @@ export class GameRun_Server extends literki.GameRun {
         if (this.isCurrentPlayer()) {
             var result = GameMethodResult.Undefined;
             move.freeLetters.forEach(field => {
-                if (!this.isFieldValid(field.x, field.y)) {
-                    result = new GameMethodResult("Niedozwolony ruch");
-                }
                 this.putLetterOnBoard(field.letter, field.index, field.x, field.y);
                 var playersFreeLetters = this.getCurrentPlayer().freeLetters;
                 var index = playersFreeLetters.indexOf(field.letter);
                 playersFreeLetters.splice(index, 1);
+            });
+
+            move.freeLetters.forEach(field => {
+                if (!this.isFieldValid(field.x, field.y)) {
+                    result = new GameMethodResult("Niedozwolony ruch");
+                }
             });
 
             if (!this.isBoardValid()) {

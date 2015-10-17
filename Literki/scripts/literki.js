@@ -398,7 +398,8 @@ var GameRun = (function () {
         return this.board.isFieldFree(x, y);
     };
     GameRun.prototype.isFieldValid = function (x, y) {
-        return this.board.isBoardEmpty() || (this.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y));
+        return (x == exports.ROW_CENTER && y == exports.ROW_CENTER && !this.board.isFieldFree(exports.ROW_CENTER, exports.ROW_CENTER))
+            || this.board.hasFieldNeighbour(x, y);
     };
     GameRun.prototype.isBoardValid = function () {
         return this.board.isBoardValid();

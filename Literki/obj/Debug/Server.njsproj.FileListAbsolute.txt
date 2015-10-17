@@ -3,3 +3,4 @@ C:\Users\Krzys\Documents\Visual Studio 2013\Projects\Literki\Literki\bin\Microso
 C:\Users\Administrator\githome\literki\Literki\bin\Microsoft.NodejsTools.WebRole.dll
 C:\Users\Administrator\githome\literki\Literki\obj\Debug\server.njsprojResolveAssemblyReference.cache
 E:\githome\literki\Literki\bin\Microsoft.NodejsTools.WebRole.dll
+E:\githome\literki\Literki\obj\Debug\server.njsprojResolveAssemblyReference.cache

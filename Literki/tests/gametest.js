@@ -39,6 +39,25 @@ describe('Player1 start game Suite', function () {
             done();
         });
     });
+    it('/game/move Player1 wrong move 1 letter', function (done) {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                    "letter": "c",
+                    "index": 0,
+                    "x": 7,
+                    "y": 5,
+                    "positionType": 0
+                }]
+        };
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, function (error, response, body) {
+            var game = processPOSTbody(body, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            done();
+        });
+    });
     it('/game/move Player1 move', function (done) {
         var data = {
             "gameId": initState.gameId,
@@ -76,6 +95,26 @@ describe('Player1 start game Suite', function () {
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
             assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
             done();
+        });
+        it('/game/move Player1 move 1 letter', function (done) {
+            var data = {
+                "gameId": initState.gameId,
+                "freeLetters": [{
+                        "letter": "i",
+                        "index": 0,
+                        "x": 7,
+                        "y": 7,
+                        "positionType": 0
+                    }]
+            };
+            callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, function (error, response, body) {
+                var game = processPOSTbody(body, true);
+                assert.equal(game.isCurrentPlayer(), true);
+                assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
+                assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
+                assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
+                done();
+            });
         });
     });
 });

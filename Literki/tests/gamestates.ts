@@ -22,7 +22,7 @@ export var player1StartGame =
             "remainingTime": 748.1209999999987,
             "lastSeen": new Date("2015-10-15 19:31:40.09"),
             "moves": [],
-            "freeLetters": ["c", "e", "n", "ć", "d", "y", "z"]
+            "freeLetters": ["c", "e", "n", "ć", "d", "i", "z"]
         },  {
                 "userId": "55abc5edad046414050204e4",
                 "playerName": "Krzyś",
