@@ -16,6 +16,80 @@ import literki = require('../scripts/literki');
 import gamestates = require('./gamestates');
 import helper = require('./helper');
 
+describe('Player1 start game Suite', () => {
+    var initState = gamestates.player1StartGame;
+    before((done) => helper.beforeTestSuite(done, initState));
+    after((done) => helper.afterTestSuite(done));
+
+    it('/game/move Player1 wrong move', (done) => {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                "letter": "c",
+                "index": 0,
+                "x": 7,
+                "y": 5,
+                "positionType": 0
+            }, {
+                    "letter": "e",
+                    "index": 1,
+                    "x": 7,
+                    "y": 6,
+                    "positionType": 0
+                }]
+        };
+
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
+            var game = processPOSTbody(body, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            done();
+        });
+    });
+
+    it('/game/move Player1 move', (done) => {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                "letter": "c",
+                "index": 0,
+                "x": 7,
+                "y": 5,
+                "positionType": 0
+            }, {
+                    "letter": "e",
+                    "index": 1,
+                    "x": 7,
+                    "y": 6,
+                    "positionType": 0
+                }, {
+                    "letter": "n",
+                    "index": 2,
+                    "x": 7,
+                    "y": 7,
+                    "positionType": 0
+                }, {
+                    "letter": "y",
+                    "index": 5,
+                    "x": 7,
+                    "y": 8,
+                    "positionType": 0
+                }
+            ]
+        };
+
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
+            assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
+            assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
+            done();
+        });
+    });
+});
+
 describe('Player2 move Suite', () => {
     var initState = gamestates.player2MoveState;
     before((done) => helper.beforeTestSuite(done, initState));
@@ -422,9 +496,11 @@ function callPOSTMethod(userName: string, id: string, path: string, data: any, c
     });
 }
 
-function processGETbody(body: any): literki.GameRun {
+function processGETbody(body: any, skipErrorChecking: boolean = false): literki.GameRun {
     var result = JSON.parse(body);
-    assert.equal(result.errorMessage, undefined);
+    if (!skipErrorChecking) {
+        assert.equal(result.errorMessage, undefined);
+    }
 
     var state = literki.GameState.fromJSON(result.state);
     var game = new literki.GameRun(result.userId);
@@ -432,10 +508,12 @@ function processGETbody(body: any): literki.GameRun {
     return game;
 }
 
-function processPOSTbody(body: any): literki.GameRun {
+function processPOSTbody(body: any, skipErrorChecking: boolean = false): literki.GameRun {
     //request automatic parses body as JSON
     var result = body;
-    assert.equal(result.errorMessage, undefined);
+    if (!skipErrorChecking) {
+        assert.equal(result.errorMessage, undefined);
+    }
    
     var state = literki.GameState.fromJSON(result.state);
     var game = new literki.GameRun(result.userId);

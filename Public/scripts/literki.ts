@@ -2,6 +2,7 @@
 import _ = require('underscore');
 
 export var ROW_SIZE = 15;
+export var ROW_CENTER = 7;
 export var MAX_LETTERS = 7;
 export var CLIENT_TIMEOUT = 5000;
 
@@ -153,6 +154,18 @@ export class BoardFields {
             }
         });
         return result;
+    }
+
+    isBoardEmpty(): boolean {
+        return !_.any(this.fields, (iter) => {
+            return _.any(iter, (iter2) => {
+                return iter2 != null && iter2.value != null;
+            });
+        });
+    }
+
+    isBoardValid(): boolean {
+        return !this.isFieldFree(ROW_CENTER, ROW_CENTER);
     }
 }
 
@@ -478,7 +491,11 @@ export class GameRun {
     }
 
     isFieldValid(x: number, y: number): boolean {
-        return this.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y);
+        return this.board.isBoardEmpty() || (this.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y));
+    }
+
+    isBoardValid(): boolean {
+        return this.board.isBoardValid();
     }
 
     addLetterToExchange(letter: string, index: number): void {

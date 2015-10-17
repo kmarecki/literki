@@ -66,8 +66,12 @@ export class GameRun_Server extends literki.GameRun {
                 var index = playersFreeLetters.indexOf(field.letter);
                 playersFreeLetters.splice(index, 1);
             });
-            
-            this.updateStateAfterPlayerAction(move, PlayerActionType.Move);
+
+            if (!this.isBoardValid()) {
+                result = new GameMethodResult("Niedozwolony ruch");
+            } else {
+                this.updateStateAfterPlayerAction(move, PlayerActionType.Move);
+            }
             return result;
         }
         return this.UNATHORIZED_ACCESS;

@@ -1,6 +1,7 @@
 /// <reference path="..\typings\underscore\underscore.d.ts"/>
 var _ = require('underscore');
 exports.ROW_SIZE = 15;
+exports.ROW_CENTER = 7;
 exports.MAX_LETTERS = 7;
 exports.CLIENT_TIMEOUT = 5000;
 var LetterDefinition = (function () {
@@ -143,6 +144,16 @@ var BoardFields = (function () {
             }
         });
         return result;
+    };
+    BoardFields.prototype.isBoardEmpty = function () {
+        return !_.any(this.fields, function (iter) {
+            return _.any(iter, function (iter2) {
+                return iter2 != null && iter2.value != null;
+            });
+        });
+    };
+    BoardFields.prototype.isBoardValid = function () {
+        return !this.isFieldFree(exports.ROW_CENTER, exports.ROW_CENTER);
     };
     return BoardFields;
 })();
@@ -387,7 +398,10 @@ var GameRun = (function () {
         return this.board.isFieldFree(x, y);
     };
     GameRun.prototype.isFieldValid = function (x, y) {
-        return this.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y);
+        return this.board.isBoardEmpty() || (this.isFieldFree(x, y) && this.board.hasFieldNeighbour(x, y));
+    };
+    GameRun.prototype.isBoardValid = function () {
+        return this.board.isBoardValid();
     };
     GameRun.prototype.addLetterToExchange = function (letter, index) {
         this.cleanLetterOnBoard(letter, index);

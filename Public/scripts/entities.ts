@@ -7,4 +7,5 @@
 
 export interface DictionaryWord {
     word: string;
+    lang: string;
 }

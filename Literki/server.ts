@@ -255,23 +255,27 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
 
     repo.loadState(gameId, (err, state) => {
         var errorMessages;
-        if (err != null || !state) {
+        if (err || !state) {
             if (err) {
                 errorMessages = util.formatError(err);
             }
-            res.json({ state: state, errorMessage: errorMessages });
+            res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
         } else {
             var game = new literki_server.GameRun_Server(req.user.id);
             state = literki.GameState.fromJSON(state);
             game.runState(state);
             call(game, req, (result) => {
                 var errMsg = result.errorMessage;
-                if (errMsg != null) {
-                    res.json({ state: state, errorMessage: errMsg });
+                if (errMsg) {
+                    //to discard any changes to current game state
+                    repo.loadState(gameId, (err, unchangedState) => {
+                        unchangedState = literki.GameState.fromJSON(unchangedState);
+                        res.json({ state: unchangedState, userId: req.user.id, errorMessage: errMsg });
+                    });
                 } else {
                     state = game.state;
                     repo.saveState(state, (err) => {
-                        if (err != null) {
+                        if (err) {
                             errorMessages = errorMessages.concat(util.formatError(err));
                         }
                         res.json({ state: state, userId: req.user.id, forceRefresh: result.forceRefresh, errorMessage: errorMessages });

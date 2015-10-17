@@ -10,6 +10,75 @@ var request = requestModule.defaults({
 var literki = require('../scripts/literki');
 var gamestates = require('./gamestates');
 var helper = require('./helper');
+describe('Player1 start game Suite', function () {
+    var initState = gamestates.player1StartGame;
+    before(function (done) { return helper.beforeTestSuite(done, initState); });
+    after(function (done) { return helper.afterTestSuite(done); });
+    it('/game/move Player1 wrong move', function (done) {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                    "letter": "c",
+                    "index": 0,
+                    "x": 7,
+                    "y": 5,
+                    "positionType": 0
+                }, {
+                    "letter": "e",
+                    "index": 1,
+                    "x": 7,
+                    "y": 6,
+                    "positionType": 0
+                }]
+        };
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, function (error, response, body) {
+            var game = processPOSTbody(body, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            done();
+        });
+    });
+    it('/game/move Player1 move', function (done) {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                    "letter": "c",
+                    "index": 0,
+                    "x": 7,
+                    "y": 5,
+                    "positionType": 0
+                }, {
+                    "letter": "e",
+                    "index": 1,
+                    "x": 7,
+                    "y": 6,
+                    "positionType": 0
+                }, {
+                    "letter": "n",
+                    "index": 2,
+                    "x": 7,
+                    "y": 7,
+                    "positionType": 0
+                }, {
+                    "letter": "y",
+                    "index": 5,
+                    "x": 7,
+                    "y": 8,
+                    "positionType": 0
+                }
+            ]
+        };
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, function (error, response, body) {
+            var game = processPOSTbody(body);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
+            assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
+            assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
+            done();
+        });
+    });
+});
 describe('Player2 move Suite', function () {
     var initState = gamestates.player2MoveState;
     before(function (done) { return helper.beforeTestSuite(done, initState); });
@@ -374,18 +443,24 @@ function callPOSTMethod(userName, id, path, data, call) {
         request.post(methodPath, { json: data }, function (error, response, body) { return call(error, response, body); });
     });
 }
-function processGETbody(body) {
+function processGETbody(body, skipErrorChecking) {
+    if (skipErrorChecking === void 0) { skipErrorChecking = false; }
     var result = JSON.parse(body);
-    assert.equal(result.errorMessage, undefined);
+    if (!skipErrorChecking) {
+        assert.equal(result.errorMessage, undefined);
+    }
     var state = literki.GameState.fromJSON(result.state);
     var game = new literki.GameRun(result.userId);
     game.runState(state);
     return game;
 }
-function processPOSTbody(body) {
+function processPOSTbody(body, skipErrorChecking) {
+    if (skipErrorChecking === void 0) { skipErrorChecking = false; }
     //request automatic parses body as JSON
     var result = body;
-    assert.equal(result.errorMessage, undefined);
+    if (!skipErrorChecking) {
+        assert.equal(result.errorMessage, undefined);
+    }
     var state = literki.GameState.fromJSON(result.state);
     var game = new literki.GameRun(result.userId);
     game.runState(state);
