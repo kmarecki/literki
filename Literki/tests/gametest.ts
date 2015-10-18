@@ -17,7 +17,7 @@ import gamestates = require('./gamestates');
 import helper = require('./helper');
 
 describe('Player1 start game Suite', () => {
-    var initState = gamestates.player1StartGame;
+    var initState = helper.loadState(gamestates.player1StartGame);
     before((done) => helper.beforeTestSuite(done, initState));
     after((done) => helper.afterTestSuite(done));
 
@@ -134,7 +134,7 @@ describe('Player1 start game Suite', () => {
 });
 
 describe('Player2 move Suite', () => {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before((done) => helper.beforeTestSuite(done, initState));
     after((done) => helper.afterTestSuite(done));
 
@@ -180,7 +180,7 @@ describe('Player2 move Suite', () => {
     });
 
     it('/player/alive Player2', (done) => {
-        var data = createAliveRequestData(gamestates.player2MoveState);
+        var data = createAliveRequestData(helper.loadState(gamestates.player2Move));
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
@@ -256,7 +256,7 @@ describe('Player2 move Suite', () => {
 });
 
 describe('Player2 good move check Suite', () => {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before((done) => helper.beforeTestSuite(done, initState));
     after((done) => helper.afterTestSuite(done));
 
@@ -328,7 +328,7 @@ describe('Player2 good move check Suite', () => {
 });
 
 describe('Player2 wrong move check Suite', () => {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before((done) => helper.beforeTestSuite(done, initState));
     after((done) => helper.afterTestSuite(done));
 
@@ -399,7 +399,7 @@ describe('Player2 wrong move check Suite', () => {
 });
 
 describe('Player2 not allowed move check Suite', () => {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before((done) => helper.beforeTestSuite(done, initState));
     after((done) => helper.afterTestSuite(done));
 
@@ -428,7 +428,7 @@ describe('Player2 not allowed move check Suite', () => {
     });
 
     it('/player/alive Player2', (done) => {
-        var data = createAliveRequestData(gamestates.player2MoveState);
+        var data = createAliveRequestData(helper.loadState(gamestates.player2Move));
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
             var game = processPOSTbody(body);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
@@ -442,7 +442,7 @@ describe('Player2 not allowed move check Suite', () => {
 });
 
 describe('Player2 fold Suite', () => {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before((done) => helper.beforeTestSuite(done, initState));
     after((done) => helper.afterTestSuite(done));
 
@@ -469,7 +469,7 @@ describe('Player2 fold Suite', () => {
 });
 
 describe('Player2 change letters Suite', () => {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before((done) => helper.beforeTestSuite(done, initState));
     after((done) => helper.afterTestSuite(done));
 
@@ -503,6 +503,69 @@ describe('Player2 change letters Suite', () => {
     });
 });
 
+describe('Player2 edge move Suite', () => {
+    var initState = helper.loadState(gamestates.player2EdgeMove);
+    before((done) => helper.beforeTestSuite(done, initState));
+    after((done) => helper.afterTestSuite(done));
+
+    it('/game/move Player2 edge move', (done) => {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                "letter": "o",
+                "index": 0,
+                "x": 12,
+                "y": 6,
+                "positionType": 0
+            }, {
+                "letter": "z",
+                "index": 2,
+                "x": 13,
+                "y": 6,
+                "positionType": 0
+            }, {
+                "letter": "i",
+                "index": 3,
+                "x": 14,
+                "y": 6,
+                "positionType": 0
+            }]
+        };
+
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = processPOSTbody(body, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
+            assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
+            assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
+            done();
+        });
+    });
+
+    it('/game/approve Player1 not', (done) => {
+        var data = {
+            gameId: initState.gameId,
+            approve: false
+        }
+
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            done();
+        });
+    });
+
+    it('/player/alive Player2 after Player1 wrong check', (done) => {
+        var data = createAliveRequestData(initState);
+        data.playState = literki.GamePlayState.MoveApproval;
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = processPOSTbody(body);
+            assert.equal(game.isCurrentPlayer(), true);
+            //assert.equal(body.forceRefresh, true);
+            done();
+        });
+    });
+});
 
 function createRequestData(state: literki.IGameState): any {
     var data = {

@@ -11,7 +11,7 @@ var literki = require('../scripts/literki');
 var gamestates = require('./gamestates');
 var helper = require('./helper');
 describe('Player1 start game Suite', function () {
-    var initState = gamestates.player1StartGame;
+    var initState = helper.loadState(gamestates.player1StartGame);
     before(function (done) { return helper.beforeTestSuite(done, initState); });
     after(function (done) { return helper.afterTestSuite(done); });
     it('/game/move Player1 wrong move', function (done) {
@@ -119,7 +119,7 @@ describe('Player1 start game Suite', function () {
     });
 });
 describe('Player2 move Suite', function () {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before(function (done) { return helper.beforeTestSuite(done, initState); });
     after(function (done) { return helper.afterTestSuite(done); });
     it('/server/alive Player1', function (done) {
@@ -160,7 +160,7 @@ describe('Player2 move Suite', function () {
         });
     });
     it('/player/alive Player2', function (done) {
-        var data = createAliveRequestData(gamestates.player2MoveState);
+        var data = createAliveRequestData(helper.loadState(gamestates.player2Move));
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
             var game = processPOSTbody(body);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
@@ -229,7 +229,7 @@ describe('Player2 move Suite', function () {
     });
 });
 describe('Player2 good move check Suite', function () {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before(function (done) { return helper.beforeTestSuite(done, initState); });
     after(function (done) { return helper.afterTestSuite(done); });
     it('/game/move Player2', function (done) {
@@ -294,7 +294,7 @@ describe('Player2 good move check Suite', function () {
     });
 });
 describe('Player2 wrong move check Suite', function () {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before(function (done) { return helper.beforeTestSuite(done, initState); });
     after(function (done) { return helper.afterTestSuite(done); });
     it('/game/move Player2', function (done) {
@@ -358,7 +358,7 @@ describe('Player2 wrong move check Suite', function () {
     });
 });
 describe('Player2 not allowed move check Suite', function () {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before(function (done) { return helper.beforeTestSuite(done, initState); });
     after(function (done) { return helper.afterTestSuite(done); });
     it('/game/move Player2', function (done) {
@@ -384,7 +384,7 @@ describe('Player2 not allowed move check Suite', function () {
         });
     });
     it('/player/alive Player2', function (done) {
-        var data = createAliveRequestData(gamestates.player2MoveState);
+        var data = createAliveRequestData(helper.loadState(gamestates.player2Move));
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
             var game = processPOSTbody(body);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
@@ -396,7 +396,7 @@ describe('Player2 not allowed move check Suite', function () {
     });
 });
 describe('Player2 fold Suite', function () {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before(function (done) { return helper.beforeTestSuite(done, initState); });
     after(function (done) { return helper.afterTestSuite(done); });
     it('/game/fold Player2', function (done) {
@@ -419,7 +419,7 @@ describe('Player2 fold Suite', function () {
     });
 });
 describe('Player2 change letters Suite', function () {
-    var initState = gamestates.player2MoveState;
+    var initState = helper.loadState(gamestates.player2Move);
     before(function (done) { return helper.beforeTestSuite(done, initState); });
     after(function (done) { return helper.afterTestSuite(done); });
     it('/game/exchange Player2', function (done) {
@@ -446,6 +446,64 @@ describe('Player2 change letters Suite', function () {
             var game = processPOSTbody(body);
             assert.equal(body.forceRefresh, true);
             assert.equal(game.isCurrentPlayer(), true);
+            done();
+        });
+    });
+});
+describe('Player2 edge move Suite', function () {
+    var initState = helper.loadState(gamestates.player2EdgeMove);
+    before(function (done) { return helper.beforeTestSuite(done, initState); });
+    after(function (done) { return helper.afterTestSuite(done); });
+    it('/game/move Player2 edge move', function (done) {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                    "letter": "o",
+                    "index": 0,
+                    "x": 12,
+                    "y": 6,
+                    "positionType": 0
+                }, {
+                    "letter": "z",
+                    "index": 2,
+                    "x": 13,
+                    "y": 6,
+                    "positionType": 0
+                }, {
+                    "letter": "i",
+                    "index": 3,
+                    "x": 14,
+                    "y": 6,
+                    "positionType": 0
+                }]
+        };
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, function (error, response, body) {
+            var game = processPOSTbody(body, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
+            assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
+            assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
+            done();
+        });
+    });
+    it('/game/approve Player1 not', function (done) {
+        var data = {
+            gameId: initState.gameId,
+            approve: false
+        };
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, function (error, response, body) {
+            var game = processPOSTbody(body);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            done();
+        });
+    });
+    it('/player/alive Player2 after Player1 wrong check', function (done) {
+        var data = createAliveRequestData(initState);
+        data.playState = literki.GamePlayState.MoveApproval;
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
+            var game = processPOSTbody(body);
+            assert.equal(game.isCurrentPlayer(), true);
+            //assert.equal(body.forceRefresh, true);
             done();
         });
     });

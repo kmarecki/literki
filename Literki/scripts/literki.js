@@ -134,10 +134,7 @@ var BoardFields = (function () {
         var result = false;
         var fields = [{ x: x - 1, y: y }, { x: x + 1, y: y }, { x: x, y: y - 1 }, { x: x, y: y + 1 }];
         fields.forEach(function (field) {
-            if (field.y >= exports.ROW_SIZE) {
-                result = true;
-            }
-            else if (field.x >= 0 && field.y >= 0) {
+            if (field.x >= 0 && field.x < exports.ROW_SIZE && field.y >= 0 && field.y < exports.ROW_SIZE) {
                 if (!_this.isFieldFree(field.x, field.y)) {
                     result = true;
                 }
@@ -261,7 +258,8 @@ var GameState = (function () {
     GameState.fromJSON = function (json) {
         var state = new GameState();
         state.gameId = json.gameId;
-        state.creationDate = json.creationDate;
+        state.creationDate = new Date(json.creationDate.toString());
+        ;
         state.runState = json.runState;
         state.playState = json.playState;
         state.currentPlayerIndex = json.currentPlayerIndex;

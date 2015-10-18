@@ -145,9 +145,7 @@ export class BoardFields {
         var result = false;
         var fields = [{ x: x - 1, y: y }, { x: x + 1, y: y }, { x: x, y: y - 1 }, { x: x, y: y + 1 }];
         fields.forEach(field => {
-            if (field.y >= ROW_SIZE) {
-                result = true;
-            } else if (field.x >= 0 && field.y >= 0) {
+           if (field.x >= 0 && field.x < ROW_SIZE && field.y >= 0 && field.y < ROW_SIZE) {
                 if (!this.isFieldFree(field.x, field.y)) {
                     result = true;
                 }
@@ -322,7 +320,7 @@ export class GameState implements IGameState {
     static fromJSON(json: IGameState): GameState {
         var state = new GameState();
         state.gameId = json.gameId;
-        state.creationDate = json.creationDate;
+        state.creationDate = new Date(json.creationDate.toString());;
         state.runState = json.runState;
         state.playState = json.playState;
         state.currentPlayerIndex = json.currentPlayerIndex;

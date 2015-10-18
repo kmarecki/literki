@@ -40,6 +40,9 @@
     <Content Include="styles\app.less" />
     <Content Include="styles\board.less" />
     <Content Include="styles\jquery-ui.less" />
+    <Content Include="tests\states\player1StartGame.json" />
+    <Content Include="tests\states\player2EdgeMove.json" />
+    <Content Include="tests\states\player2Move.json" />
     <Content Include="views\board.jade" />
     <Content Include="views\master.jade" />
     <Content Include="views\login.jade" />
@@ -57,6 +60,7 @@
     <Content Include="config\production.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="tools\test-cases.ts" />
     <TypeScriptCompile Include="tests\gametest.ts">
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
@@ -83,6 +87,8 @@
     <Folder Include="config\" />
     <Folder Include="tests\" />
     <Folder Include="styles\" />
+    <Folder Include="tests\states\" />
+    <Folder Include="tools\" />
     <Folder Include="typings\form-data\" />
     <Folder Include="typings\i18next\" />
     <Folder Include="typings\jquery\" />
