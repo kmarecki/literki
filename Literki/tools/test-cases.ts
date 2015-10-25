@@ -1,4 +1,6 @@
-﻿var config = require('config');
+﻿process.env['NODE_CONFIG_DIR'] = '../config';
+
+var config = require('config');
 
 import db = require('../scripts/db');
 import fs = require('fs');

@@ -107,15 +107,23 @@ var BoardFields = (function () {
         });
     };
     BoardFields.prototype.createIfNotExists = function (x, y) {
-        return this.fields[x][y] != null ? this.fields[x][y] : (this.fields[x][y] = new BoardField());
+        return this.fields[x][y] ? this.fields[x][y] : (this.fields[x][y] = new BoardField());
+    };
+    BoardFields.prototype.checkIndexes = function (x, y) {
+        if (x < 0 || x >= exports.ROW_SIZE || y < 0 || y >= exports.ROW_SIZE) {
+            throw new RangeError("x:" + x + ", y:" + y);
+        }
     };
     BoardFields.prototype.getFieldBonus = function (x, y) {
-        return this.fields[x][y] != null ? this.fields[x][y].fieldBonus : BoardFieldBonus.None;
+        this.checkIndexes(x, y);
+        return this.fields[x][y] ? this.fields[x][y].fieldBonus : BoardFieldBonus.None;
     };
     BoardFields.prototype.getFieldValue = function (x, y) {
+        this.checkIndexes(x, y);
         return this.fields[x][y] != null ? this.fields[x][y].value : null;
     };
     BoardFields.prototype.setFieldValue = function (x, y, value) {
+        this.checkIndexes(x, y);
         var field = this.createIfNotExists(x, y);
         field.value = value;
     };
@@ -431,7 +439,7 @@ var GameRun = (function () {
             var xWord = letter.x - 1;
             var yWord = letter.y;
             //search left
-            while (x > 0) {
+            while (x >= 0) {
                 searchLetter = _this.board.getFieldValue(x, y);
                 if (searchLetter != null) {
                     word = searchLetter.concat(word);
@@ -453,6 +461,9 @@ var GameRun = (function () {
                     break;
             }
             if (word.length > 1) {
+                if (xWord < 0) {
+                    throw new RangeError(word + ", x:" + xWord + ", y:" + y);
+                }
                 gameWord = _this.createGameWord(word, xWord, y, GameMoveDirection.Horizontal);
                 _this.addGameWord(words, gameWord);
             }
@@ -461,7 +472,7 @@ var GameRun = (function () {
             var x = letter.x;
             var y = letter.y - 1;
             //search up
-            while (y > 0) {
+            while (y >= 0) {
                 searchLetter = _this.board.getFieldValue(x, y);
                 if (searchLetter != null) {
                     word = searchLetter.concat(word);
@@ -483,6 +494,9 @@ var GameRun = (function () {
                     break;
             }
             if (word.length > 1) {
+                if (yWord < 0) {
+                    throw new RangeError(word + ", x:" + x + ", y:" + yWord);
+                }
                 var gameWord = _this.createGameWord(word, x, yWord, GameMoveDirection.Vertical);
                 _this.addGameWord(words, gameWord);
             }

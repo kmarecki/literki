@@ -42,6 +42,7 @@
     <Content Include="styles\jquery-ui.less" />
     <Content Include="tests\states\player1StartGame.json" />
     <Content Include="tests\states\player2EdgeMove.json" />
+    <Content Include="tests\states\player2LeftEdgeMove.json" />
     <Content Include="tests\states\player2Move.json" />
     <Content Include="views\board.jade" />
     <Content Include="views\master.jade" />

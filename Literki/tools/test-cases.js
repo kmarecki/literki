@@ -1,3 +1,4 @@
+process.env['NODE_CONFIG_DIR'] = '../config';
 var config = require('config');
 var db = require('../scripts/db');
 var fs = require('fs');
