@@ -1,0 +1,517 @@
+{
+    "gameId": 2,
+    "currentPlayerIndex": 1,
+    "creationDate": "2015-10-17T20:11:33.000Z",
+    "runState": 1,
+    "playState": 0,
+    "currentMove": null,
+    "remainingLetters": [],
+    "players": [
+        {
+            "userId": "55aaca395dd86414102b50df",
+            "playerName": "Krzysztof Marecki",
+            "remainingTime": -0.7130000000006615,
+            "lastSeen": "2015-10-25T20:02:39.596Z",
+            "moves": [
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "bo",
+                            "x": 6,
+                            "y": 7,
+                            "points": 8,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 3,
+                    "words": []
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "ras",
+                            "x": 9,
+                            "y": 8,
+                            "points": 3,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "niżu",
+                            "x": 11,
+                            "y": 10,
+                            "points": 20,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 4,
+                    "words": []
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "żal",
+                            "x": 11,
+                            "y": 12,
+                            "points": 16,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "leń",
+                            "x": 13,
+                            "y": 12,
+                            "points": 20,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "ros",
+                            "x": 9,
+                            "y": 4,
+                            "points": 5,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 4,
+                    "words": []
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "dawną",
+                            "x": 11,
+                            "y": 4,
+                            "points": 11,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "miny",
+                            "x": 14,
+                            "y": 5,
+                            "points": 18,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "ag",
+                            "x": 11,
+                            "y": 5,
+                            "points": 4,
+                            "direction": 1
+                        },
+                        {
+                            "word": "go",
+                            "x": 12,
+                            "y": 5,
+                            "points": 4,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "jam",
+                            "x": 8,
+                            "y": 12,
+                            "points": 6,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "maź",
+                            "x": 3,
+                            "y": 11,
+                            "points": 12,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "koc",
+                            "x": 0,
+                            "y": 12,
+                            "points": 15,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "lano",
+                            "x": 1,
+                            "y": 9,
+                            "points": 9,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "zaś",
+                            "x": 0,
+                            "y": 10,
+                            "points": 7,
+                            "direction": 1
+                        },
+                        {
+                            "word": "eś",
+                            "x": 2,
+                            "y": 9,
+                            "points": 6,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "pic",
+                            "x": 3,
+                            "y": 7,
+                            "points": 7,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "pi",
+                            "x": 3,
+                            "y": 7,
+                            "points": 3,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "drę",
+                            "x": 4,
+                            "y": 3,
+                            "points": 8,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "fory",
+                            "x": 4,
+                            "y": 1,
+                            "points": 11,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "co",
+                            "x": 5,
+                            "y": 0,
+                            "points": 3,
+                            "direction": 0
+                        }
+                    ]
+                }
+            ],
+            "freeLetters": [
+                "ł",
+                "n",
+                "e",
+                "w",
+                "s",
+                "y",
+                null
+            ]
+        },
+        {
+            "userId": "55abc5edad046414050204e4",
+            "playerName": "Krzyś",
+            "remainingTime": -1.08799999999918,
+            "lastSeen": "2015-10-25T20:02:09.000Z",
+            "moves": [
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "lotu",
+                            "x": 7,
+                            "y": 6,
+                            "points": 8,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "zupa",
+                            "x": 6,
+                            "y": 9,
+                            "points": 9,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "sen",
+                            "x": 9,
+                            "y": 10,
+                            "points": 6,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "hu",
+                            "x": 10,
+                            "y": 13,
+                            "points": 6,
+                            "direction": 1
+                        },
+                        {
+                            "word": "ha",
+                            "x": 10,
+                            "y": 13,
+                            "points": 4,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 2,
+                    "words": []
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "lis",
+                            "x": 7,
+                            "y": 6,
+                            "points": 5,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "ziej",
+                            "x": 6,
+                            "y": 9,
+                            "points": 9,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "ród",
+                            "x": 9,
+                            "y": 4,
+                            "points": 16,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 3,
+                    "words": []
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "wozi",
+                            "x": 11,
+                            "y": 6,
+                            "points": 5,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "jaj",
+                            "x": 6,
+                            "y": 12,
+                            "points": 10,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 4,
+                    "words": []
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "myte",
+                            "x": 3,
+                            "y": 11,
+                            "points": 14,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "kota",
+                            "x": 0,
+                            "y": 12,
+                            "points": 12,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 1,
+                    "words": []
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "lecz",
+                            "x": 1,
+                            "y": 9,
+                            "points": 6,
+                            "direction": 1
+                        }
+                    ]
+                },
+                {
+                    "moveType": 4,
+                    "words": []
+                },
+                {
+                    "moveType": 4,
+                    "words": []
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "deski",
+                            "x": 4,
+                            "y": 3,
+                            "points": 14,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "rwę",
+                            "x": 6,
+                            "y": 1,
+                            "points": 8,
+                            "direction": 0
+                        }
+                    ]
+                },
+                {
+                    "moveType": 0,
+                    "words": [
+                        {
+                            "word": "bił",
+                            "x": 7,
+                            "y": 0,
+                            "points": 21,
+                            "direction": 1
+                        },
+                        {
+                            "word": "by",
+                            "x": 7,
+                            "y": 0,
+                            "points": 15,
+                            "direction": 0
+                        }
+                    ]
+                }
+            ],
+            "freeLetters": [
+                "p",
+                "g",
+                "i",
+                "k",
+                "w",
+                null,
+                null
+            ]
+        }
+    ]
+}

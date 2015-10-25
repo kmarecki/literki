@@ -232,10 +232,12 @@ class Board {
             for (var x = 0; x < literki.MAX_LETTERS; x++) {
                 if (x < currentUser.freeLetters.length) {
                     var letter = currentUser.freeLetters[x];
-                    var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
-                    var movable = game.isCurrentPlayer() && game.state.playState == literki.GamePlayState.PlayerMove;
-                    var letterGroup = this.getLetterGroup(xpos, this.LETTERS_TOP, letter, x, movable);
-                    foregroundLayer.add(letterGroup);
+                    if (letter) {
+                        var xpos = this.BOARD_MARGIN + x * this.FIELD_SIZE;
+                        var movable = game.isCurrentPlayer() && game.state.playState == literki.GamePlayState.PlayerMove;
+                        var letterGroup = this.getLetterGroup(xpos, this.LETTERS_TOP, letter, x, movable);
+                        foregroundLayer.add(letterGroup);
+                    }
                 }
             }
 
@@ -301,9 +303,9 @@ class Board {
                 dragStart = this.getLetterPosition(letterGroup);
             });
 
-            letterGroup.on('dragend', (e) => {
+            letterGroup.on('dragend', (e) => { 
                 var dragEnd = this.getLetterPosition(letterGroup);
-                var isFieldFree = game.isFieldFree(dragEnd.fieldX, dragEnd.fieldY);
+                var isFieldFree = dragEnd.endType != literki.LetterPositionType.BoardField || game.isFieldFree(dragEnd.fieldX, dragEnd.fieldY);
                 if (!isFieldFree) {
                     dragEnd = dragStart;
                 }

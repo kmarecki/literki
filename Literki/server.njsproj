@@ -44,6 +44,7 @@
     <Content Include="tests\states\player2EdgeMove.json" />
     <Content Include="tests\states\player2LeftEdgeMove.json" />
     <Content Include="tests\states\player2Move.json" />
+    <Content Include="tests\states\player2NoRemainingLettersMove.json" />
     <Content Include="views\board.jade" />
     <Content Include="views\master.jade" />
     <Content Include="views\login.jade" />

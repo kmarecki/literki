@@ -503,16 +503,16 @@ describe('Player2 left edge move Suite', function () {
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
             var game = processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
-            //assert.equal(body.forceRefresh, true);
+            assert.equal(body.forceRefresh, true);
             done();
         });
     });
 });
-describe('Player2 edge move Suite', function () {
+describe('Player2 left edge move Suite', function () {
     var initState = helper.loadState(gamestates.player2EdgeMove);
     before(function (done) { return helper.beforeTestSuite(done, initState); });
     after(function (done) { return helper.afterTestSuite(done); });
-    it('/game/move Player2 edge move', function (done) {
+    it('/game/move Player2 left edge move', function (done) {
         var data = {
             "gameId": initState.gameId,
             "freeLetters": [{
@@ -561,7 +561,59 @@ describe('Player2 edge move Suite', function () {
         callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
             var game = processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
-            //assert.equal(body.forceRefresh, true);
+            assert.equal(body.forceRefresh, true);
+            done();
+        });
+    });
+});
+describe('Player2 no remaining letter move Suite', function () {
+    var initState = helper.loadState(gamestates.player2NoRemainingLettersMove);
+    before(function (done) { return helper.beforeTestSuite(done, initState); });
+    after(function (done) { return helper.afterTestSuite(done); });
+    it('/game/move Player2 no remaining letter move', function (done) {
+        var data = {
+            "gameId": initState.gameId,
+            "freeLetters": [{
+                    "letter": "p",
+                    "index": 0,
+                    "x": 3,
+                    "y": 5,
+                    "positionType": 0
+                }, {
+                    "letter": "i",
+                    "index": 2,
+                    "x": 5,
+                    "y": 5,
+                    "positionType": 0
+                },]
+        };
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, function (error, response, body) {
+            var game = processPOSTbody(body, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
+            assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
+            assert.equal(game.state.currentMove.freeLetters.length, data.freeLetters.length);
+            done();
+        });
+    });
+    it('/game/approve Player1 not', function (done) {
+        var data = {
+            gameId: initState.gameId,
+            approve: false
+        };
+        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, function (error, response, body) {
+            var game = processPOSTbody(body);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
+            done();
+        });
+    });
+    it('/player/alive Player2 after Player1 wrong check', function (done) {
+        var data = createAliveRequestData(initState);
+        data.playState = literki.GamePlayState.MoveApproval;
+        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, function (error, response, body) {
+            var game = processPOSTbody(body);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(body.forceRefresh, true);
             done();
         });
     });

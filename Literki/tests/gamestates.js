@@ -12,4 +12,5 @@ exports.player1StartGame = 'player1StartGame';
 exports.player2Move = 'player2Move';
 exports.player2EdgeMove = 'player2EdgeMove';
 exports.player2LeftEdgeMove = 'player2LeftEdgeMove';
+exports.player2NoRemainingLettersMove = 'player2NoRemainingLettersMove';
 //# sourceMappingURL=gamestates.js.map

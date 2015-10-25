@@ -148,15 +148,23 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             });
         };
         BoardFields.prototype.createIfNotExists = function (x, y) {
-            return this.fields[x][y] != null ? this.fields[x][y] : (this.fields[x][y] = new BoardField());
+            return this.fields[x][y] ? this.fields[x][y] : (this.fields[x][y] = new BoardField());
+        };
+        BoardFields.prototype.checkIndexes = function (x, y) {
+            if (x < 0 || x >= exports.ROW_SIZE || y < 0 || y >= exports.ROW_SIZE) {
+                throw new RangeError("x:" + x + ", y:" + y);
+            }
         };
         BoardFields.prototype.getFieldBonus = function (x, y) {
-            return this.fields[x][y] != null ? this.fields[x][y].fieldBonus : 0 /* None */;
+            this.checkIndexes(x, y);
+            return this.fields[x][y] ? this.fields[x][y].fieldBonus : 0 /* None */;
         };
         BoardFields.prototype.getFieldValue = function (x, y) {
+            this.checkIndexes(x, y);
             return this.fields[x][y] != null ? this.fields[x][y].value : null;
         };
         BoardFields.prototype.setFieldValue = function (x, y, value) {
+            this.checkIndexes(x, y);
             var field = this.createIfNotExists(x, y);
             field.value = value;
         };
@@ -467,7 +475,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                 var y = letter.y;
                 var xWord = letter.x - 1;
                 var yWord = letter.y;
-                while (x > 0) {
+                while (x >= 0) {
                     searchLetter = _this.board.getFieldValue(x, y);
                     if (searchLetter != null) {
                         word = searchLetter.concat(word);
@@ -489,6 +497,9 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                         break;
                 }
                 if (word.length > 1) {
+                    if (xWord < 0) {
+                        throw new RangeError("" + word + ", x:" + xWord + ", y:" + y);
+                    }
                     gameWord = _this.createGameWord(word, xWord, y, 1 /* Horizontal */);
                     _this.addGameWord(words, gameWord);
                 }
@@ -496,7 +507,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                 word = letter.letter;
                 var x = letter.x;
                 var y = letter.y - 1;
-                while (y > 0) {
+                while (y >= 0) {
                     searchLetter = _this.board.getFieldValue(x, y);
                     if (searchLetter != null) {
                         word = searchLetter.concat(word);
@@ -518,6 +529,9 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                         break;
                 }
                 if (word.length > 1) {
+                    if (yWord < 0) {
+                        throw new RangeError("" + word + ", x:" + x + ", y:" + yWord);
+                    }
                     var gameWord = _this.createGameWord(word, x, yWord, 0 /* Vertical */);
                     _this.addGameWord(words, gameWord);
                 }
