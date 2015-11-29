@@ -22,7 +22,7 @@
     <OutputPath>.</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
-    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectView>ShowAllFiles</ProjectView>
     <NodejsPort>1337</NodejsPort>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
@@ -40,6 +40,7 @@
     <Content Include="styles\app.less" />
     <Content Include="styles\board.less" />
     <Content Include="styles\jquery-ui.less" />
+    <Content Include="tests\states\player1EndGame.json" />
     <Content Include="tests\states\player1StartGame.json" />
     <Content Include="tests\states\player2EdgeMove.json" />
     <Content Include="tests\states\player2LeftEdgeMove.json" />
@@ -52,6 +53,7 @@
     <Content Include="views\newgame.jade" />
     <Content Include="views\profile.jade" />
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="tests\gamestates.ts" />
     <TypeScriptCompile Include="scripts\entities.ts" />
     <TypeScriptCompile Include="scripts\literki.ts" />
     <TypeScriptCompile Include="scripts\db.ts" />
@@ -62,13 +64,18 @@
     <Content Include="config\production.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <TypeScriptCompile Include="tools\test-cases.ts" />
     <TypeScriptCompile Include="tests\gametest.ts">
+      <TestFramework>Mocha</TestFramework>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="tests\player1EndGame.ts">
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="tests\gamestates.ts" />
-    <TypeScriptCompile Include="tests\helper.ts" />
+    <TypeScriptCompile Include="tools\test-cases.ts" />
+    <TypeScriptCompile Include="tests\helper.ts">
+      <TestFramework>
+      </TestFramework>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="typings\async\async.d.ts" />
     <TypeScriptCompile Include="typings\body-parser\body-parser.d.ts" />
     <TypeScriptCompile Include="typings\cookie-parser\cookie-parser.d.ts" />

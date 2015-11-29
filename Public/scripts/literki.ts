@@ -632,6 +632,10 @@ export class GameRun {
         );
     }
 
+    public isFinished(): boolean {
+        return this.state.runState == GameRunState.Finished;
+    }
+
 
     private createGameWord(word: string, x: number, y: number, direction: GameMoveDirection): GameWord {
         var points = this.countPoints(x, y, word.length, direction);

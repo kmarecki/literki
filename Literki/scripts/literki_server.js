@@ -2,8 +2,7 @@
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var _ = require('underscore');
 var literki = require('./literki');
@@ -14,7 +13,7 @@ var PlayerActionType;
     PlayerActionType[PlayerActionType["MoveCheck"] = 2] = "MoveCheck";
 })(PlayerActionType || (PlayerActionType = {}));
 var GameMethodResult = (function () {
-    function GameMethodResult(errorMessage) {
+    function GameMethodResult(errorMessage, forceRefresh) {
         this.errorMessage = errorMessage;
     }
     GameMethodResult.Undefined = new GameMethodResult();
@@ -38,23 +37,41 @@ var GameRun_Server = (function (_super) {
     GameRun_Server.prototype.alive = function () {
         if (this.getCurrentUser()) {
             var now = new Date();
-            if (this.isCurrentPlayer() &&
-                this.state.runState == literki.GameRunState.Running &&
-                this.state.playState == literki.GamePlayState.PlayerMove &&
-                _.every(this.state.players, function (player) { return player.isAlive(); })) {
-                var remainingTime = this.getCurrentPlayer().remainingTime;
-                if (remainingTime > 0) {
-                    var span = (now.getTime() - this.getCurrentPlayer().lastSeen.getTime());
-                    //Otherwise remainingTime can be zeroed after reconect after game is paused
-                    if (span < literki.CLIENT_TIMEOUT) {
-                        remainingTime -= (span / 1000);
-                        this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+            if (this.checkGame()) {
+                if (this.isCurrentPlayer() &&
+                    this.state.runState == literki.GameRunState.Running &&
+                    this.state.playState == literki.GamePlayState.PlayerMove &&
+                    _.every(this.state.players, function (player) { return player.isAlive(); })) {
+                    var remainingTime = this.getCurrentPlayer().remainingTime;
+                    if (remainingTime > 0) {
+                        var span = (now.getTime() - this.getCurrentPlayer().lastSeen.getTime());
+                        //Otherwise remainingTime can be zeroed after reconect after game is paused
+                        if (span < literki.CLIENT_TIMEOUT) {
+                            remainingTime -= (span / 1000);
+                            this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+                        }
                     }
                 }
             }
             this.getCurrentUser().lastSeen = now;
         }
         return GameMethodResult.Undefined;
+    };
+    GameRun_Server.prototype.checkGame = function () {
+        if (this.state.runState != literki.GameRunState.Finished) {
+            if (this.noMoreActivePlayers()) {
+                this.endGame();
+                return false;
+            }
+        }
+        return true;
+    };
+    GameRun_Server.prototype.noMoreActivePlayers = function () {
+        return _.all(this.state.players, function (p) { return p.remainingTime < 0; });
+    };
+    GameRun_Server.prototype.endGame = function () {
+        this.state.runState = literki.GameRunState.Finished;
+        this.state.playState = literki.GamePlayState.None;
     };
     GameRun_Server.prototype.makeMove = function (move) {
         var _this = this;

@@ -680,6 +680,10 @@ class BoardController extends master.MasterControler<BoardModel> {
                     if (game.isWaitingForMoveApproval()) {
                         this.showPersistentInfoDialogBox(`Oczekiwanie na akceptację ruchu przez gracza ${game.getNextPlayer().playerName}.`);
                     }
+
+                    if (game.isFinished()) {
+                        this.showPersistentInfoDialogBox('Gra została zakończona');
+                    }
                 }
             }
         }

@@ -13,6 +13,7 @@ export var player2 = {
 }
 
 export var player1StartGame = 'player1StartGame';
+export var player1EndGame = 'player1EndGame';
 export var player2Move = 'player2Move';
 export var player2EdgeMove = 'player2EdgeMove';
 export var player2LeftEdgeMove = 'player2LeftEdgeMove';

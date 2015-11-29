@@ -528,6 +528,9 @@ var GameRun = (function () {
             this.state.runState == GameRunState.Running &&
             this.state.playState == GamePlayState.MoveApproval);
     };
+    GameRun.prototype.isFinished = function () {
+        return this.state.runState == GameRunState.Finished;
+    };
     GameRun.prototype.createGameWord = function (word, x, y, direction) {
         var points = this.countPoints(x, y, word.length, direction);
         var gameWord = new GameWord(word, x, y, direction, points);

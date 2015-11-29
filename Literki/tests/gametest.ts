@@ -39,8 +39,8 @@ describe('Player1 start game Suite', () => {
                 }]
         };
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body, true);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body, true);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
@@ -60,8 +60,8 @@ describe('Player1 start game Suite', () => {
             }]
         };
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body, true);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body, true);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
@@ -100,8 +100,8 @@ describe('Player1 start game Suite', () => {
             ]
         };
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -121,8 +121,8 @@ describe('Player1 start game Suite', () => {
                 }]
             };
 
-            callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
-                var game = processPOSTbody(body, true);
+            helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
+                var game = helper.processPOSTbody(body, true);
                 assert.equal(game.isCurrentPlayer(), true);
                 assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
                 assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -139,7 +139,7 @@ describe('Player2 move Suite', () => {
     after((done) => helper.afterTestSuite(done));
 
     it('/server/alive Player1', (done) => {
-        callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/server/alive', undefined, (error, response, body) => {
+        helper.callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/server/alive', undefined, (error, response, body) => {
             var result = JSON.parse(body);
             assert.equal(result.errorMessage, undefined);
             done();
@@ -147,9 +147,9 @@ describe('Player2 move Suite', () => {
     });
 
     it('/game/get Player1', (done) => {
-        var data = createRequestData(initState);
-        callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/game/get', data, (error, response, body) => {
-            var game = processGETbody(body);
+        var data = helper.createRequestData(initState);
+        helper.callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/game/get', data, (error, response, body) => {
+            var game = helper.processGETbody(body);
             assert.equal(game.isNextPlayer(), true);
             assert.equal((<literki.GamePlayer>game.getCurrentUser()).isAlive(), true);
             assert.deepEqual(game.getCurrentUser().freeLetters, initState.players[0].freeLetters);
@@ -158,9 +158,9 @@ describe('Player2 move Suite', () => {
     });
 
     it('/game/get Player2', (done) => {
-        var data = createRequestData(initState);
-        callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/get', data, (error, response, body) => {
-            var game = processGETbody(body);
+        var data = helper.createRequestData(initState);
+        helper.callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/get', data, (error, response, body) => {
+            var game = helper.processGETbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal((<literki.GamePlayer>game.getCurrentUser()).isAlive(), true);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
@@ -170,9 +170,9 @@ describe('Player2 move Suite', () => {
     });
 
     it('/player/alive Player1', (done) => {
-        var data = createAliveRequestData(initState);
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        var data = helper.createAliveRequestData(initState);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.getCurrentUser().remainingTime == initState.players[0].remainingTime, true);
             assert.equal(body.forceRefresh, false);
             done();
@@ -180,9 +180,9 @@ describe('Player2 move Suite', () => {
     });
 
     it('/player/alive Player2', (done) => {
-        var data = createAliveRequestData(helper.loadState(gamestates.player2Move));
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        var data = helper.createAliveRequestData(helper.loadState(gamestates.player2Move));
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
             assert.equal(body.forceRefresh, false);
             done();
@@ -207,8 +207,8 @@ describe('Player2 move Suite', () => {
              }]
         };
 
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -223,17 +223,17 @@ describe('Player2 move Suite', () => {
             approve: true
         }
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {    
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {    
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
         });
     });
 
     it('/player/alive Player1 after Player2 move', (done) => {
-        var data = createAliveRequestData(initState, 0);
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        var data = helper.createAliveRequestData(initState, 0);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[0].remainingTime, true);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
@@ -243,9 +243,9 @@ describe('Player2 move Suite', () => {
     });
 
     it('/player/alive Player2 after Player2 move', (done) => {
-        var data = createAliveRequestData(initState);
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        var data = helper.createAliveRequestData(initState);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Move);
             assert.equal(game.isNextPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
@@ -278,8 +278,8 @@ describe('Player2 good move check Suite', () => {
                 }]
         };
 
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -294,18 +294,18 @@ describe('Player2 good move check Suite', () => {
             approve: false
         }
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
         });
     });
 
     it('/player/alive Player1 after Player2 good move', (done) => {
-        var data = createAliveRequestData(initState);
+        var data = helper.createAliveRequestData(initState);
         data.playState = literki.GamePlayState.MoveApproval;
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.players[0].moves[2].moveType, literki.MoveType.CheckMoveFailed);
             assert.equal(game.isNextPlayer(), true);
             assert.equal(body.forceRefresh, true);
@@ -314,10 +314,10 @@ describe('Player2 good move check Suite', () => {
     });
 
     it('/player/alive Player2 after Player2 good move', (done) => {
-        var data = createAliveRequestData(initState);
+        var data = helper.createAliveRequestData(initState);
         data.playState = literki.GamePlayState.MoveApproval;
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Move);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
@@ -350,8 +350,8 @@ describe('Player2 wrong move check Suite', () => {
                 }]
         };
 
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -366,18 +366,18 @@ describe('Player2 wrong move check Suite', () => {
             approve: false
         }
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
         });
     });
 
     it('/player/alive Player1 after Player2 wrong move', (done) => {
-        var data = createAliveRequestData(initState);
+        var data = helper.createAliveRequestData(initState);
         data.playState = literki.GamePlayState.MoveApproval;
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(body.forceRefresh, true);
             done();
@@ -385,10 +385,10 @@ describe('Player2 wrong move check Suite', () => {
     });
 
     it('/player/alive Player2 after Player2 wrong move', (done) => {
-        var data = createAliveRequestData(initState);
+        var data = helper.createAliveRequestData(initState);
         data.playState = literki.GamePlayState.MoveApproval;
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.WrongMove);
             assert.equal(game.isNextPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
@@ -421,16 +421,16 @@ describe('Player2 not allowed move check Suite', () => {
                 }]
         };
 
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
             assert.notEqual(body.errorMessage, undefined);
             done();
         });
     });
 
     it('/player/alive Player2', (done) => {
-        var data = createAliveRequestData(helper.loadState(gamestates.player2Move));
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        var data = helper.createAliveRequestData(helper.loadState(gamestates.player2Move));
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.getCurrentUser().remainingTime < initState.players[1].remainingTime, true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
@@ -447,9 +447,9 @@ describe('Player2 fold Suite', () => {
     after((done) => helper.afterTestSuite(done));
 
     it('/game/fold Player2', (done) => {
-        var data = createRequestData(initState);
-        callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/fold', data, (error, response, body) => {
-            var game = processGETbody(body);
+        var data = helper.createRequestData(initState);
+        helper.callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/fold', data, (error, response, body) => {
+            var game = helper.processGETbody(body);
             assert.equal(game.isNextPlayer(), true);
             assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Fold);
             done();
@@ -457,9 +457,9 @@ describe('Player2 fold Suite', () => {
     });
 
     it('/player/alive Player1 after Player2 folds', (done) => {
-        var data = createAliveRequestData(initState);
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        var data = helper.createAliveRequestData(initState);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(body.forceRefresh, true);
             assert.equal(game.isCurrentPlayer(), true);
             done();
@@ -482,8 +482,8 @@ describe('Player2 change letters Suite', () => {
                 initState.players[1].freeLetters[2]
             ]
         };
-        callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/exchange', data, (error, response, body) => {
-            var game = processGETbody(body);
+        helper.callGETMethod(gamestates.player2.userName, gamestates.player2.id, '/game/exchange', data, (error, response, body) => {
+            var game = helper.processGETbody(body);
             assert.equal(game.isNextPlayer(), true);
             assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Exchange);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
@@ -493,9 +493,9 @@ describe('Player2 change letters Suite', () => {
     });
 
     it('/player/alive Player1 after Player2 exchanges letters', (done) => {
-        var data = createAliveRequestData(initState);
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        var data = helper.createAliveRequestData(initState);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(body.forceRefresh, true);
             assert.equal(game.isCurrentPlayer(), true);
             done();
@@ -532,8 +532,8 @@ describe('Player2 left edge move Suite', () => {
             }]
         };
 
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body, true);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body, true);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -548,18 +548,18 @@ describe('Player2 left edge move Suite', () => {
             approve: false
         }
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
         });
     });
 
     it('/player/alive Player2 after Player1 wrong check', (done) => {
-        var data = createAliveRequestData(initState);
+        var data = helper.createAliveRequestData(initState);
         data.playState = literki.GamePlayState.MoveApproval;
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(body.forceRefresh, true);
             done();
@@ -596,8 +596,8 @@ describe('Player2 left edge move Suite', () => {
                 }]
         };
 
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body, true);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body, true);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -612,18 +612,18 @@ describe('Player2 left edge move Suite', () => {
             approve: false
         }
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
         });
     });
 
     it('/player/alive Player2 after Player1 wrong check', (done) => {
-        var data = createAliveRequestData(initState);
+        var data = helper.createAliveRequestData(initState);
         data.playState = literki.GamePlayState.MoveApproval;
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(body.forceRefresh, true);
             done();
@@ -654,8 +654,8 @@ describe('Player2 no remaining letter move Suite', () => {
                 },]
         };
 
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
-            var game = processPOSTbody(body, true);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body, true);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -670,18 +670,18 @@ describe('Player2 no remaining letter move Suite', () => {
             approve: false
         }
 
-        callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/approve', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
         });
     });
 
     it('/player/alive Player2 after Player1 wrong check', (done) => {
-        var data = createAliveRequestData(initState);
+        var data = helper.createAliveRequestData(initState);
         data.playState = literki.GamePlayState.MoveApproval;
-        callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
-            var game = processPOSTbody(body);
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(body.forceRefresh, true);
             done();
@@ -689,63 +689,5 @@ describe('Player2 no remaining letter move Suite', () => {
     });
 });
 
-function createRequestData(state: literki.IGameState): any {
-    var data = {
-        gameId: state.gameId
-    };
-    return data;
-}
 
-function createAliveRequestData(state: literki.IGameState, currentPlayerIndex: number = state.currentPlayerIndex): any {
-    var data = {
-        gameId: state.gameId,
-        currentPlayerId: state.players[currentPlayerIndex].userId,
-        playState: state.playState,
-        playersCount: state.players.length,
-    };
-    return data;
-}
-
-function callGETMethod(userName: string, id: string, path: string, data: any, call: (error, response: http.IncomingMessage, body) => void): void {
-    var authPath = `http://${userName}:${id}@localhost:1337/auth/http`;
-    request.get(authPath, (error, response, body) => {
-        assert.equal(body, 'Authentifaction successfull');
-        var methodPath = `http://localhost:1337${path}`;
-        request.get(methodPath, { qs: data }, (error, response, body) => call(error, response, body));
-    });
-}
-
-function callPOSTMethod(userName: string, id: string, path: string, data: any, call: (error, response: http.IncomingMessage, body) => void): void {
-    var authPath = `http://${userName}:${id}@localhost:1337/auth/http`;
-    request.get(authPath, (error, response, body) => {
-        assert.equal(body, 'Authentifaction successfull');
-        var methodPath = `http://localhost:1337${path}`;
-        request.post(methodPath, { json: data }, (error, response, body) => call(error, response, body));
-    });
-}
-
-function processGETbody(body: any, skipErrorChecking: boolean = false): literki.GameRun {
-    var result = JSON.parse(body);
-    if (!skipErrorChecking) {
-        assert.equal(result.errorMessage, undefined);
-    }
-
-    var state = literki.GameState.fromJSON(result.state);
-    var game = new literki.GameRun(result.userId);
-    game.runState(state);
-    return game;
-}
-
-function processPOSTbody(body: any, skipErrorChecking: boolean = false): literki.GameRun {
-    //request automatic parses body as JSON
-    var result = body;
-    if (!skipErrorChecking) {
-        assert.equal(result.errorMessage, undefined);
-    }
-   
-    var state = literki.GameState.fromJSON(result.state);
-    var game = new literki.GameRun(result.userId);
-    game.runState(state);
-    return game;
-}
 

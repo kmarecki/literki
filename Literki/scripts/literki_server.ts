@@ -13,7 +13,7 @@ export class GameMethodResult {
     errorMessage: string;
     forceRefresh: boolean;
 
-    constructor(errorMessage?: string) {
+    constructor(errorMessage?: string, forceRefresh?: boolean) {
         this.errorMessage = errorMessage;
     }
 
@@ -35,23 +35,44 @@ export class GameRun_Server extends literki.GameRun {
     alive(): GameMethodResult {
         if (this.getCurrentUser()) {
             var now = new Date();
-            if (this.isCurrentPlayer() &&
-                this.state.runState == literki.GameRunState.Running &&
-                this.state.playState == literki.GamePlayState.PlayerMove &&
-                _.every(this.state.players, player => (<literki.GamePlayer>player).isAlive())) {
-                var remainingTime = this.getCurrentPlayer().remainingTime;
-                if (remainingTime > 0) {
-                    var span = (now.getTime() - this.getCurrentPlayer().lastSeen.getTime());
-                    //Otherwise remainingTime can be zeroed after reconect after game is paused
-                    if (span < literki.CLIENT_TIMEOUT) {
-                        remainingTime -= (span / 1000);
-                        this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+            if (this.checkGame()) {
+                if (this.isCurrentPlayer() &&
+                    this.state.runState == literki.GameRunState.Running &&
+                    this.state.playState == literki.GamePlayState.PlayerMove &&
+                    _.every(this.state.players, player => (<literki.GamePlayer>player).isAlive())) {
+                    var remainingTime = this.getCurrentPlayer().remainingTime;
+                    if (remainingTime > 0) {
+                        var span = (now.getTime() - this.getCurrentPlayer().lastSeen.getTime());
+                        //Otherwise remainingTime can be zeroed after reconect after game is paused
+                        if (span < literki.CLIENT_TIMEOUT) {
+                            remainingTime -= (span / 1000);
+                            this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+                        }
                     }
                 }
             }
             this.getCurrentUser().lastSeen = now;
         }
         return GameMethodResult.Undefined;
+    }
+
+    private checkGame(): boolean {
+        if (this.state.runState != literki.GameRunState.Finished) {
+            if (this.noMoreActivePlayers()) {
+                this.endGame();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private noMoreActivePlayers(): boolean {
+        return _.all(this.state.players, p => p.remainingTime < 0);
+    }
+
+    private endGame(): void {
+        this.state.runState = literki.GameRunState.Finished;
+        this.state.playState = literki.GamePlayState.None;
     }
 
     makeMove(move: literki.GameMove): GameMethodResult {
