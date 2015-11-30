@@ -1,4 +1,6 @@
-﻿
+﻿process.env['NODE_ENV'] = 'test';
+process.env['NODE_CONFIG_DIR'] = '../config';
+
 import assert = require('assert');
 import fs = require('fs');
 import http = require('http');

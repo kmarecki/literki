@@ -1,3 +1,5 @@
+process.env['NODE_ENV'] = 'test';
+process.env['NODE_CONFIG_DIR'] = '../config';
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
