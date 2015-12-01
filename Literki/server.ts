@@ -237,11 +237,11 @@ app.post('/player/update', auth, (req, res) => {
 });
 
 app.post('/player/alive', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => {
+    var result = game.alive();
     var forceRefresh =
         game.getCurrentPlayer().userId != req.body.currentPlayerId ||
         game.state.playState != req.body.playState ||
         game.getPlayers().length != req.body.playersCount;
-    var result = game.alive();
     result.forceRefresh = forceRefresh;
     return call(result);
 }, req.body.gameId));

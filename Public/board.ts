@@ -546,6 +546,7 @@ class BoardModel extends master.MasterModel {
                         case literki.MoveType.Fold: moveDesc = `${total } (Pas)`; break;
                         case literki.MoveType.WrongMove: moveDesc = `${total} (Błędny ruch)`; break;
                         case literki.MoveType.CheckMoveFailed: moveDesc = `${total} (Błędne sprawdzenie)`; break;
+                        case literki.MoveType.SkipNoTimeLeft: moveDesc = `${total} (Brak czasu)`; break;
                         case literki.MoveType.Move: moveDesc = `${total} (${sum})`; break;
                     }
                 }

@@ -89,7 +89,7 @@ describe('Player2 no time left Suite', () => {
             ]
         };
 
-        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
+        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player1.id, '/game/move', data, (error, response, body) => {
             var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
@@ -105,7 +105,7 @@ describe('Player2 no time left Suite', () => {
             approve: true
         }
 
-        helper.callPOSTMethod(gamestates.player1.userName, gamestates.player2.id, '/game/approve', data, (error, response, body) => {
+        helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/approve', data, (error, response, body) => {
             var game = helper.processPOSTbody(body);
             assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             done();
@@ -125,13 +125,15 @@ describe('Player2 no time left Suite', () => {
     });
 
     it('/player/alive Player2 after Player1 move', (done) => {
-        var data = helper.createAliveRequestData(initState);
+        var data = helper.createAliveRequestData(initState, 0);
         helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/player/alive', data, (error, response, body) => {
             var game = helper.processPOSTbody(body);
-            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.Move);
+            assert.equal(game.state.players[1].moves[0].moveType, literki.MoveType.SkipNoTimeLeft);
+            assert.equal(game.state.players[1].moves[1].moveType, literki.MoveType.SkipNoTimeLeft);
             assert.equal(game.isNextPlayer(), true);
             assert.equal(game.getCurrentUser().remainingTime, 0);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
+            assert.equal(game.state.playState, literki.GamePlayState.PlayerMove);
             assert.equal(body.forceRefresh, false);
             done();
         });

@@ -50,9 +50,9 @@ var GameRun_Server = (function (_super) {
                             remainingTime -= (span / 1000);
                             if (remainingTime < 0) {
                                 remainingTime = 0;
-                                this.updateStateAfterMove(literki.MoveType.Fold);
                             }
-                            this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+                            this.getCurrentPlayer().remainingTime = remainingTime;
+                            this.checkCurrentPlayer();
                         }
                     }
                 }
@@ -76,6 +76,11 @@ var GameRun_Server = (function (_super) {
     GameRun_Server.prototype.endGame = function () {
         this.state.runState = literki.GameRunState.Finished;
         this.state.playState = literki.GamePlayState.None;
+    };
+    GameRun_Server.prototype.checkCurrentPlayer = function () {
+        if (this.getCurrentPlayer().remainingTime <= 0 && !this.noMoreActivePlayers()) {
+            this.updateStateAfterMove(literki.MoveType.SkipNoTimeLeft);
+        }
     };
     GameRun_Server.prototype.makeMove = function (move) {
         var _this = this;
@@ -252,6 +257,7 @@ var GameRun_Server = (function (_super) {
         this.getNewWords().forEach(function (p) { return moveHistory.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)); });
         this.getCurrentPlayer().moves.push(moveHistory);
         this.nextPlayer();
+        this.checkCurrentPlayer();
     };
     GameRun_Server.prototype.nextPlayer = function () {
         this.pickLetters(this.state.currentPlayerIndex);

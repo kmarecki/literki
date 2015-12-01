@@ -217,7 +217,8 @@ export enum MoveType {
     Fold,
     Exchange,
     WrongMove,
-    CheckMoveFailed
+    CheckMoveFailed,
+    SkipNoTimeLeft
 }
 
 export interface IGameMoveHistory {

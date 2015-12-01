@@ -190,6 +190,7 @@ exports.GameWord = GameWord;
     MoveType[MoveType["Exchange"] = 2] = "Exchange";
     MoveType[MoveType["WrongMove"] = 3] = "WrongMove";
     MoveType[MoveType["CheckMoveFailed"] = 4] = "CheckMoveFailed";
+    MoveType[MoveType["SkipNoTimeLeft"] = 5] = "SkipNoTimeLeft";
 })(exports.MoveType || (exports.MoveType = {}));
 var MoveType = exports.MoveType;
 var GameMoveHistory = (function () {

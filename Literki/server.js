@@ -199,10 +199,10 @@ app.post('/player/update', auth, function (req, res) {
     });
 });
 app.post('/player/alive', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) {
+    var result = game.alive();
     var forceRefresh = game.getCurrentPlayer().userId != req.body.currentPlayerId ||
         game.state.playState != req.body.playState ||
         game.getPlayers().length != req.body.playersCount;
-    var result = game.alive();
     result.forceRefresh = forceRefresh;
     return call(result);
 }, req.body.gameId); });

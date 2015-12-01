@@ -480,6 +480,9 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                             case literki.MoveType.CheckMoveFailed:
                                 moveDesc = total + " (B\u0142\u0119dne sprawdzenie)";
                                 break;
+                            case literki.MoveType.SkipNoTimeLeft:
+                                moveDesc = total + " (Brak czasu)";
+                                break;
                             case literki.MoveType.Move:
                                 moveDesc = total + " (" + sum + ")";
                                 break;

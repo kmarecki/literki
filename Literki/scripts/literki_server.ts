@@ -48,9 +48,9 @@ export class GameRun_Server extends literki.GameRun {
                             remainingTime -= (span / 1000);
                             if (remainingTime < 0) {
                                 remainingTime = 0;
-                                this.updateStateAfterMove(literki.MoveType.Fold);
                             }
-                            this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
+                            this.getCurrentPlayer().remainingTime = remainingTime;
+                            this.checkCurrentPlayer();
                         }
                     }
                 }
@@ -77,6 +77,12 @@ export class GameRun_Server extends literki.GameRun {
     private endGame(): void {
         this.state.runState = literki.GameRunState.Finished;
         this.state.playState = literki.GamePlayState.None;
+    }
+
+    private checkCurrentPlayer(): void {
+        if (this.getCurrentPlayer().remainingTime <= 0 && !this.noMoreActivePlayers()) {
+            this.updateStateAfterMove(literki.MoveType.SkipNoTimeLeft);
+        }
     }
 
     makeMove(move: literki.GameMove): GameMethodResult {
@@ -262,6 +268,7 @@ export class GameRun_Server extends literki.GameRun {
         this.getNewWords().forEach(p => moveHistory.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)));
         this.getCurrentPlayer().moves.push(moveHistory);
         this.nextPlayer();
+        this.checkCurrentPlayer();
     }
 
     private nextPlayer(): void {
