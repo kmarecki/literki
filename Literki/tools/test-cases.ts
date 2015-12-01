@@ -5,6 +5,7 @@ var config = require('config');
 import db = require('../scripts/db');
 import fs = require('fs');
 import path = require('path');
+
 import literki = require('../scripts/literki');
 import literki_server = require('../scripts/literki_server');
 import gamestates = require('../tests/gamestates');
@@ -24,8 +25,12 @@ repo.loadState(gameId, (err, state) => {
     }, 4);
     console.log(stateJSON);
 
-    var filePath = path.join("..","tests", "states", caseName + ".json");
+    var filePath = path.join('..','tests', 'states', caseName + '.json');
     fs.writeFileSync(filePath, stateJSON);
+
+    var testFilePath = path.join('..', 'tests', caseName + '.ts');
+    var testFileTemplate = fs.readFileSync('test-template.txt');
+    fs.writeFileSync(testFilePath, testFileTemplate);
     process.exit(0);
 });
 

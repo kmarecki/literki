@@ -18,3 +18,4 @@ export var player2Move = 'player2Move';
 export var player2EdgeMove = 'player2EdgeMove';
 export var player2LeftEdgeMove = 'player2LeftEdgeMove';
 export var player2NoRemainingLettersMove = 'player2NoRemainingLettersMove';
+export var player2NoTimeLeft = 'player2NoTimeLeft';

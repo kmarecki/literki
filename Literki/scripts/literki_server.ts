@@ -46,6 +46,10 @@ export class GameRun_Server extends literki.GameRun {
                         //Otherwise remainingTime can be zeroed after reconect after game is paused
                         if (span < literki.CLIENT_TIMEOUT) {
                             remainingTime -= (span / 1000);
+                            if (remainingTime < 0) {
+                                remainingTime = 0;
+                                this.updateStateAfterMove(literki.MoveType.Fold);
+                            }
                             this.state.players[this.state.currentPlayerIndex].remainingTime = remainingTime;
                         }
                     }

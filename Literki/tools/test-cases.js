@@ -16,8 +16,11 @@ repo.loadState(gameId, function (err, state) {
         return ['__v', '_id'].indexOf(key) == -1 ? value : undefined;
     }, 4);
     console.log(stateJSON);
-    var filePath = path.join("..", "tests", "states", caseName + ".json");
+    var filePath = path.join('..', 'tests', 'states', caseName + '.json');
     fs.writeFileSync(filePath, stateJSON);
+    var testFilePath = path.join('..', 'tests', caseName + '.ts');
+    var testFileTemplate = fs.readFileSync('test-template.txt');
+    fs.writeFileSync(testFilePath, testFileTemplate);
     process.exit(0);
 });
 //# sourceMappingURL=test-cases.js.map
