@@ -1,191 +1,200 @@
 ﻿html {
-    width: 100%;
-    height: 100%;
+	width: 100%;
+	height: 100%;
 }
+
+.formLayout {
+}
+
 body {
-    width: 100%;
-    height: 100%;
-    font-family: 'Segoe UI', sans-serif;
-    overflow:hidden;
-    background-image: url("../images/scrabble_small.jpg");
-    background-size:cover;
+	width: 100%;
+	height: 100%;
+	font-family: 'Segoe UI', sans-serif;
+	overflow: hidden;
+	background-image: url("../images/scrabble_small.jpg");
+	background-size: cover;
+}
+
+h3 {
+	margin: 2%;
 }
 
 span {
-    font-style: italic;
+	font-style: italic;
 }
 
 .left {
-    text-align: left;
+	text-align: left;
 }
 
 .right {
-    text-align: right;
+	text-align: right;
 }
 
 .underline {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 
 .center {
-    display:block;
-    text-align: center;
-}
- 
-button {
-
+	display: block;
+	text-align: center;
 }
 
 img {
-    max-width:100%;
-    max-height:100%;
-}
-
-a.button {
-    /*-webkit-appearance: button;*/
+	max-width: 100%;
+	max-height: 100%;
 }
 
 .commandButton {
-    background: #2cdb69;
-    background-image: linear-gradient(to bottom, #2cdb69, #184526);
-    border-radius: 28px;
-    font-family: Arial;
-    color: #ffffff;
-    font-size: 20px;
-    padding: 10px 20px 10px 20px;
-    text-decoration: none;
+	background: #2CDB69;
+	background-image: linear-gradient(to bottom, #2CDB69, #184526);
+	border-radius: 28px;
+	font-family: Arial;
+	color: #FFF;
+	font-size: 20px;
+	padding: 10px 20px 10px 20px;
+	text-decoration: none;
 }
 
 .commandButton:hover {
-    background: #32c965;
-    background-image: linear-gradient(to bottom, #32c965, #142b1b);
-    text-decoration: none;
+	background: #32C965;
+	background-image: linear-gradient(to bottom, #32C965, #142B1B);
+	text-decoration: none;
 }
 
-
 .cancelBackground {
-    background: #ff0000;
-    background-image: linear-gradient(to bottom, #ff0000, #900000);
+	background: #F00;
+	background-image: linear-gradient(to bottom, #F00, #900000);
 }
 
 .cancelBackground:hover {
-    background: blue;
-    background-image: linear-gradient(to bottom, #f00000, #700000);
-    text-decoration: none;
+	background: blue;
+	background-image: linear-gradient(to bottom, #F00000, #700000);
+	text-decoration: none;
 }
 
 .acceptSize {
-     font-size: 26px;
+	font-size: 26px;
 }
 
 .tableBorders {
-    border: 1px solid black;
-    border-collapse: collapse;
+	border: 1px solid black;
+	border-collapse: collapse;
 }
 
 #navigationbox {
-    background: #2cdb69;
-    background-image: linear-gradient(to bottom, #2cdb69, #184526);
-    color: #ffffff;
+	background: #2CDB69;
+	background-image: linear-gradient(to bottom, #2CDB69, #184526);
+	color: #FFF;
 	font-weight: bold;
-    text-align: right;
-    margin: 0px;
-    width: 100%;
-    height: 33px;
+	text-align: right;
+	margin: 0;
+	width: 100%;
+	height: 33px;
 }
 
 #navigationbox a {
-    color: #ffffff;
+	color: #FFF;
 	font-weight: bold;
 }
 
 #dialogoverlay {
-    display: none;
-    opacity: 0.6;
+	display: none;
+	opacity: 0.6;
 	position: fixed;
-	top: 0px;
-	left: 0px;
+	top: 0;
+	left: 0;
 	background: #184526;
 	width: 100%;
 	z-index: 9;
 }
+
 #dialogbox {
 	display: none;
 	position: fixed;
-	background: #194d2a;
-    border-style: solid;
-    border-color: #000000;
-	border-radius:7px; 
-	width:550px;
+	background: #194D2A;
+	border-style: solid;
+	border-color: #000;
+	border-radius: 7px;
+	width: 550px;
 	z-index: 10;
 }
 
-#dialogbox > div { 
-    background:#FFF; 
-    margin:8px;
+#dialogbox > div {
+	background: #FFF;
+	margin: 8px;
 }
 
-#dialogbox > div > #dialogboxhead { 
-    background:ivory; 
-    /*background-image: linear-gradient(to bottom right, silver, gray);*/ 
-    font-size:19px; 
-    font-weight:bold; 
-    padding:10px; 
-    color:#2d2d30; 
+#dialogbox > div > #dialogboxhead {
+	background: ivory;
+	font-size: 19px;
+	font-weight: bold;
+	padding: 10px;
+	color: #2D2D30;
 }
 
-#dialogbox > div > #dialogboxbody { 
-    background:#2cdb69; 
-    background-image: linear-gradient(to bottom, #184526, #2cdb69); 
-    padding:20px;
-    color:#FFF; 
+#dialogbox > div > #dialogboxbody {
+	background: #2EB459;
+	background-image: linear-gradient(to bottom, #184526, #2CDB69);
+	padding: 20px;
+	color: #FFF;
 }
 
-#dialogbox > div > #dialogboxfoot { 
-    background:ivory; 
-    /*background-image: linear-gradient(to bottom right, silver, gray);*/ 
-    padding:10px; 
-    text-align:right; 
+#dialogbox > div > #dialogboxfoot {
+	background: ivory;
+	padding: 10px;
+	text-align: right;
 }
 
-/*JQuery UI*/
-tabs-nohdr { 
-    padding: 0px; 
-    background: none; 
-    border-width: 0px; 
-} 
-tabs-nohdr .ui-tabs-nav { 
-    padding-left: 0px; 
-    background: transparent; 
-    border-width: 0px 0px 1px 0px; 
-    -moz-border-radius: 0px; 
-    -webkit-border-radius: 0px; 
-    border-radius: 0px; 
-} 
-tabs-nohdr .ui-tabs-panel { 
-    background: #f5f3e5; 
-    border-width: 0px 1px 1px 1px; 
+tabs-nohdr {
+	padding: 0;
+	background: none;
+	border-width: 0;
+}
+
+tabs-nohdr .ui-tabs-nav {
+	padding-left: 0;
+	background: transparent;
+	border-width: 0 0 1px 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+}
+
+tabs-nohdr .ui-tabs-panel {
+	background: #F5F3E5;
+	border-width: 0 1px 1px 1px;
 }
 
 .formLayout {
-    background-color: #f3f3f3;
-    border: solid 1px #a1a1a1;
-    padding: 10px;
-    width: 300px;
+	background-color: #2EB459;
+	border: solid 1px #A1A1A1;
+	border-radius: 10px;
+	margin: 2%;
+	padding: 5%;
 }
-    
-.formLayout label, .formLayout input {
-    display: block;
-    width: 120px;
-    float: left;
-    margin-bottom: 10px;
+
+.formLayout input {
+	display: block;
+	width: 172px;
+	float: left;
+	margin-bottom: 10px;
+	background-color: #FFC;
 }
- 
+
 .formLayout label {
-    text-align: right;
-    padding-right: 20px;
+	text-align: left;
+	padding-right: 20px;
+	display: block;
+	width: 172px;
+	float: left;
+	margin-bottom: 10px;
 }
- 
+
+.formLayout select {
+	background-color: #FFC;
+}
+
 .formLayout br {
-    clear: left;
+	clear: left;
 }
