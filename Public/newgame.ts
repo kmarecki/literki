@@ -6,6 +6,13 @@ import moment = require('moment');
 
 
 class NewGameModel extends master.MasterModel {
+   
+    playersLimit = ko.observable("");
+    timeLimit = ko.observable("");
+    
+    constructor() {
+        super();
+    }
 }
 
 class NewGameController extends master.MasterControler<NewGameModel> {

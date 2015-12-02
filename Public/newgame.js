@@ -7,7 +7,9 @@ define(["require", "exports", './master', 'knockout', 'jquery'], function (requi
     var NewGameModel = (function (_super) {
         __extends(NewGameModel, _super);
         function NewGameModel() {
-            _super.apply(this, arguments);
+            _super.call(this);
+            this.playersLimit = ko.observable("");
+            this.timeLimit = ko.observable("");
         }
         return NewGameModel;
     })(master.MasterModel);

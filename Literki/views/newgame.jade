@@ -9,6 +9,12 @@ block scripts
 
 block info
    h3 Nowa gra
+   div.formLayout
+    label Ilość graczy
+    input(data-bind='textInput: model.playersLimit', type='text')
+    br
+    label Limit czasu
+    input(data-bind='textInput: model.timeLimit', type='number', min='2', max='4')
 
 block buttons
   button.commandButton.cancelBackground(data-bind='click:cancelClick') Anuluj
