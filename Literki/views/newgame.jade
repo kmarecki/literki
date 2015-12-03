@@ -1,20 +1,21 @@
 ﻿extends ./master.jade
 
 block stylesheets
+  link(rel='stylesheet', href='styles/jquery-ui.css', type='text/css')
   link(rel='stylesheet', href='styles/app.css', type='text/css')
   link(rel='stylesheet', href='styles/board.css', type='text/css')
 
 block scripts
-   script(src='scripts/require.js', data-main='newgame-conf',)
+   script(src='scripts/require.js', data-main='newgame-conf')
 
 block info
    h3 Nowa gra
    div.formLayout
     label Ilość graczy
-    input(data-bind='textInput: model.playersLimit', type='text')
+    input.number(data-bind='textInput: model.playersCount', type='number', min='2', max='4')
     br
     label Limit czasu
-    input(data-bind='textInput: model.timeLimit', type='number', min='2', max='4')
+    select(data-bind="options: model.timeLimits, value model.timeLimit")
 
 block buttons
   button.commandButton.cancelBackground(data-bind='click:cancelClick') Anuluj

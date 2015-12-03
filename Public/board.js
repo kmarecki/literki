@@ -627,8 +627,8 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
     var game;
     var controller = new BoardController();
     function init() {
-        master.init();
         $("#tabsDiv").tabs();
+        master.init();
         var debugLabel = document.getElementById("debugLabel");
         var model = new BoardModel();
         model.board = new Board("boardDiv");

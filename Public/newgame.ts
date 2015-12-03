@@ -1,4 +1,6 @@
-﻿import master = require('./master');
+﻿/// <amd-dependency path="./scripts/jquery-ui" />
+
+import master = require('./master');
 import literki = require('./scripts/literki');
 import ko = require('knockout');
 import $ = require('jquery');
@@ -7,11 +9,21 @@ import moment = require('moment');
 
 class NewGameModel extends master.MasterModel {
    
-    playersLimit = ko.observable("");
+    playersCount = ko.observable("");
     timeLimit = ko.observable("");
+    timeLimits = ko.observableArray();
     
     constructor() {
         super();
+
+        this.initializeTimeLimits();
+    }
+
+    private initializeTimeLimits(): void {
+        for (var minutes = 5; minutes <= 30; minutes += 5) {
+            var limit = `${minutes} minut`;
+            this.timeLimits().push(limit);
+        }
     }
 }
 

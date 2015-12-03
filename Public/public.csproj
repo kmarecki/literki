@@ -58,6 +58,20 @@
     <Content Include="scripts\moment.js" />
     <Content Include="scripts\require.js" />
     <Content Include="scripts\underscore.js" />
+    <Content Include="styles\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="styles\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="styles\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="styles\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="styles\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="styles\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="styles\images\ui-bg_glass_75_ffffff_1x400.png" />
+    <Content Include="styles\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="styles\images\ui-bg_inset-soft_95_fef1ec_1x100.png" />
+    <Content Include="styles\images\ui-icons_222222_256x240.png" />
+    <Content Include="styles\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="styles\images\ui-icons_454545_256x240.png" />
+    <Content Include="styles\images\ui-icons_888888_256x240.png" />
+    <Content Include="styles\images\ui-icons_cd0a0a_256x240.png" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="board.ts" />
@@ -77,9 +91,7 @@
     <TypeScriptCompile Include="typings\requirejs\require.d.ts" />
     <TypeScriptCompile Include="typings\underscore\underscore.d.ts" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="styles\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>amd</TypeScriptModuleKind>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>

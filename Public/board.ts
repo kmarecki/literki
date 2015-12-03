@@ -696,9 +696,8 @@ var game: literki.GameRun;
 var controller = new BoardController();
 
 export function init(): void {
-    master.init();
-
     $("#tabsDiv").tabs();
+    master.init();
 
     var debugLabel = <HTMLLabelElement>document.getElementById("debugLabel");
 

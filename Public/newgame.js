@@ -1,16 +1,25 @@
+/// <amd-dependency path="./scripts/jquery-ui" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", './master', 'knockout', 'jquery'], function (require, exports, master, ko, $) {
+define(["require", "exports", './master', 'knockout', 'jquery', "./scripts/jquery-ui"], function (require, exports, master, ko, $) {
     var NewGameModel = (function (_super) {
         __extends(NewGameModel, _super);
         function NewGameModel() {
             _super.call(this);
-            this.playersLimit = ko.observable("");
+            this.playersCount = ko.observable("");
             this.timeLimit = ko.observable("");
+            this.timeLimits = ko.observableArray();
+            this.initializeTimeLimits();
         }
+        NewGameModel.prototype.initializeTimeLimits = function () {
+            for (var minutes = 5; minutes <= 30; minutes += 5) {
+                var limit = minutes + " minut";
+                this.timeLimits().push(limit);
+            }
+        };
         return NewGameModel;
     })(master.MasterModel);
     var NewGameController = (function (_super) {
