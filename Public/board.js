@@ -613,10 +613,10 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
                             });
                         }
                         if (game.isWaitingForMoveApproval()) {
-                            this.showPersistentInfoDialogBox("Oczekiwanie na akceptacj\u0119 ruchu przez gracza " + game.getNextPlayer().playerName + ".");
+                            this.showInfoDialogBox("Oczekiwanie na akceptacj\u0119 ruchu przez gracza " + game.getNextPlayer().playerName + ".");
                         }
                         if (game.isFinished()) {
-                            this.showPersistentInfoDialogBox('Gra została zakończona');
+                            this.showInfoDialogBox('Gra została zakończona');
                         }
                     }
                 }

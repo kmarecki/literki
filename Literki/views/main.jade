@@ -12,24 +12,25 @@ block board
 
 block info
   h3 Lista Gier
-  table
-    thead
-      tr
-        th Gra
-        th Data utworzenia
-        th 
-    tbody()
-      // ko foreach: model.games
-      tr
-        td
-          a(data-bind="attr: { href: 'board.html?gameId=' + gameId }, text: gameId")
-        td
-          label(data-bind='text: creationDate')
-        td
-          a.button(data-bind="attr: { href: 'board.html?gameId=' + gameId + '&join=1'}, text: joinAction()")
-      // /ko
-      tr
-        td
-        td
-        td
-          a.button(href='newgame.html') Nowa gra
+  div.formLayout
+    table
+      thead
+        tr
+          th Gra
+          th Data utworzenia
+          th 
+      tbody()
+        // ko foreach: model.games
+        tr
+          td
+            a(data-bind="attr: { href: 'board.html?gameId=' + gameId }, text: gameId")
+          td
+            label(data-bind='text: creationDate')
+          td
+            a.button(data-bind="attr: { href: 'board.html?gameId=' + gameId + '&join=1'}, text: joinAction()")
+        // /ko
+        tr
+          td
+          td
+          td
+            a.button(href='newgame.html') Nowa gra

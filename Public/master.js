@@ -30,8 +30,9 @@ define(["require", "exports", "knockout", "jquery"], function (require, exports,
                 showDialogOverlay: true
             });
         };
-        MasterControler.prototype.showPersistentInfoDialogBox = function (message) {
+        MasterControler.prototype.showInfoDialogBox = function (message) {
             this.showDialogBox(message, "Uwaga", null, {
+                showOkButton: true,
                 showDialogOverlay: true
             });
         };

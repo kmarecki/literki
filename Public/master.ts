@@ -36,8 +36,10 @@ export class MasterControler<TModel extends MasterModel> {
         });
     }
 
-    protected showPersistentInfoDialogBox(message: string): void {
+
+    protected showInfoDialogBox(message: string): void {
         this.showDialogBox(message, "Uwaga", null, {
+            showOkButton: true,
             showDialogOverlay: true
         });
     }

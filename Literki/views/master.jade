@@ -6,13 +6,14 @@ html(xmlns='http://www.w3.org/1999/xhtml')
     block stylesheets
     block scripts
   body
-    div.borderBox(id='boardDiv')
+    div.borderBox#boardDiv
       block board
-    div.borderBox(id='infoDiv')
+    div.borderBox#infoDiv
       div.contentBox
         #navigationbox
-          a(href="profile.html") Profil
-          a(href="/auth/google/signout") Wylogowanie
+          a(href='profile.html') Profil
+          a(href='main.html') Odejdź 
+          a(href="/auth/google/signout") Wyloguj
         h1.center Literki
         br
         block info
@@ -24,6 +25,6 @@ html(xmlns='http://www.w3.org/1999/xhtml')
         #dialogboxhead
         #dialogboxbody
         #dialogboxfoot
-          button.commandButton.cancelBackground(id="cancelButton", data-bind='click:dialog_cancelClick') Anuluj
-          button.commandButton(id="okButton", data-bind='click:dialog_okClick') OK
+          button.commandButton.cancelBackground#cancelButton(data-bind='click:dialog_cancelClick') Anuluj
+          button.commandButton#okButton(data-bind='click:dialog_okClick') OK
     #dialogoverlay
