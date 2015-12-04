@@ -8,6 +8,11 @@ block stylesheets
 block scripts
    script(src='scripts/require.js', data-main='board-conf')
 
+block navigation
+   a(href='profile.html') Profil
+   a(href='main.html') Odejdź 
+   a(href="/auth/google/signout") Wyloguj
+
 block info
   label#debugLabel
   table

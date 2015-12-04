@@ -5,7 +5,11 @@ block stylesheets
   link(rel='stylesheet', href='styles/board.css', type='text/css')
 
 block scripts
-   script(src='scripts/require.js', data-main='profile-conf',)
+   script(src='scripts/require.js', data-main='profile-conf')
+
+block navigation
+   a(href='profile.html') Profil
+   a(href="/auth/google/signout") Wyloguj
 
 block info
   h3 Profil gracza
