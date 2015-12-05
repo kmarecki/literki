@@ -8,7 +8,6 @@ block scripts
    script(src='scripts/require.js', data-main='profile-conf')
 
 block navigation
-   a(href='profile.html') Profil
    a(href="/auth/google/signout") Wyloguj
 
 block info
@@ -21,7 +20,7 @@ block info
     input(data-bind='textInput: model.email', type='text')
     br
     label Domyślny język
-    select(data-bind="options: model.availableLanguages, optionsText: 'description', value model.defaultLanguage")
+    select(data-bind="options: model.availableLanguages, optionsText: 'description', value: model.defaultLanguage, valueAllowUnset: true")
 
 
 block buttons

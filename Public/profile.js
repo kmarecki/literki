@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", './master', 'knockout'], function (require, exports, master, ko) {
+define(["require", "exports", 'underscore', './master', 'knockout'], function (require, exports, _, master, ko) {
     var LanguageModel = (function () {
         function LanguageModel(description, shortcut) {
             this.description = description;
@@ -23,16 +23,20 @@ define(["require", "exports", './master', 'knockout'], function (require, export
                 new LanguageModel("english", "en"),
                 new LanguageModel("deutsch", "de")
             ]);
-            this.defaultLanguage(this.availableLanguages()[1]);
         }
         ProfileModel.prototype.fromEntity = function (userProfile) {
             this.entity = userProfile;
             this.userName(userProfile.userName);
             this.email(userProfile.email);
+            this.defaultLanguage(_.find(this.availableLanguages(), function (lang) { return lang.shortcut == userProfile.defaultLanguage; }));
+            if (!this.defaultLanguage()) {
+                this.defaultLanguage(this.availableLanguages()[1]);
+            }
         };
         ProfileModel.prototype.toEntity = function () {
             this.entity.email = this.email();
             this.entity.userName = this.userName();
+            this.entity.defaultLanguage = this.defaultLanguage().shortcut;
             return this.entity;
         };
         return ProfileModel;

@@ -1,4 +1,7 @@
-﻿import master = require('./master');
+﻿/// <reference path="typings\underscore\underscore.d.ts"/>
+import _ = require('underscore');
+
+import master = require('./master');
 import ko = require('knockout');
 import $ = require('jquery');
 import moment = require('moment');
@@ -29,7 +32,6 @@ class ProfileModel extends master.MasterModel {
 
     constructor() {
         super();
-        this.defaultLanguage(this.availableLanguages()[1]);
     }
 
     fromEntity(userProfile: entities.UserProfile): void {
@@ -37,11 +39,16 @@ class ProfileModel extends master.MasterModel {
 
         this.userName(userProfile.userName);
         this.email(userProfile.email);
+        this.defaultLanguage(_.find(this.availableLanguages(), lang => lang.shortcut == userProfile.defaultLanguage));
+        if (!this.defaultLanguage()) {
+            this.defaultLanguage(this.availableLanguages()[1]);
+        }
     }
 
     toEntity(): entities.UserProfile {
         this.entity.email = this.email();
         this.entity.userName = this.userName();
+        this.entity.defaultLanguage = this.defaultLanguage().shortcut;
         return this.entity;
     }
 }
