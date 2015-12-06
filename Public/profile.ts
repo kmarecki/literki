@@ -1,9 +1,9 @@
 ﻿/// <reference path="typings\underscore\underscore.d.ts"/>
-import _ = require('underscore');
 
 import master = require('./master');
 import ko = require('knockout');
 import $ = require('jquery');
+import _ = require('underscore');
 import moment = require('moment');
 
 import entities = require('./scripts/entities');

@@ -18,28 +18,33 @@ var request = requestModule.defaults({
 
 var repo = server.getGameRepository();
 
-export function beforeTestSuite(done: any, state: literki.IGameState): void {
+export function serverStart(): void {
     server.start();
+}
+
+export function serverStop(): void {
+    server.stop();
+}
+
+export function beforeTestSuite(done: any, state: literki.IGameState): void {
+    serverStart();
     state.players.forEach(p => p.lastSeen = new Date());
     repo.saveState(state, err => done(err));
 }
 
 export function afterTestSuite(done: any): void {
-    server.stop();
-    repo.removeAllStates(err => done(err));
+    serverStop();
+    repo.removeAllStates(err => {
+        repo.removeAllUsers(err => {
+            done(err);
+        });
+    });
 }
-
 
 export function beforeProfileTestSuite(done: (Error, string) => any, profile: entities.UserProfile): void {
-    server.start();
+    serverStart();
     repo.loadOrCreateUser(profile.authId, profile.userName, (err, result) => done(err, result.id));
 }
-
-export function afterProfileTestSuite(done: any): void {
-    server.stop();
-    repo.removeAllUsers(err => done(err));
-}
-
 
 export function loadState(file: string): literki.IGameState {
     var filePath = path.join('states', file + '.json');

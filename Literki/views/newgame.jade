@@ -19,7 +19,7 @@ block info
     input.number(data-bind='textInput: model.playersCount', type='number', min='2', max='4')
     br
     label Limit czasu
-    select(data-bind="options: model.timeLimits, value model.timeLimit")
+    select(data-bind="options: model.timeLimits, optionsText: 'description', value: model.timeLimit")
 
 block buttons
   button.commandButton.cancelBackground(data-bind='click:cancelClick') Anuluj

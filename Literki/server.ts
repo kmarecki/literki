@@ -18,6 +18,7 @@ import passport = require('passport');
 
 import literki = require('./scripts/literki');
 import literki_server = require('./scripts/literki_server');
+import entities = require('./scripts/entities');
 import db = require('./scripts/db');
 import util = require('./scripts/util');
 
@@ -134,16 +135,17 @@ app.get('/:pageName.html', auth, (req, res) => {
     res.render(req.params.pageName, { title: req.params.pageName });
 });
 
-app.get('/game/new', auth, (req, res) => {
+app.post('/game/new', auth, (req, res) => {
     repo.loadUser(req.user.id, (err, user) => {
         if (err != null) {
             var errorMessages = util.formatError(err);
             res.json({ errorMessage: errorMessages });
         } else {
+            var request = <entities.NewGameRequest>req.body;
             var player = new literki.GamePlayer();
             player.userId = user.id;
             player.playerName = user.userName
-            player.remainingTime = 15 * 60;
+            player.remainingTime = request.timeLimit * 60;
 
             var players = new Array<literki.GamePlayer>();
             players.push(player);

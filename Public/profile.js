@@ -1,9 +1,10 @@
+/// <reference path="typings\underscore\underscore.d.ts"/>
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'underscore', './master', 'knockout'], function (require, exports, _, master, ko) {
+define(["require", "exports", './master', 'knockout', 'underscore'], function (require, exports, master, ko, _) {
     var LanguageModel = (function () {
         function LanguageModel(description, shortcut) {
             this.description = description;

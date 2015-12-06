@@ -105,17 +105,18 @@ app.get('/login.html', function (req, res) {
 app.get('/:pageName.html', auth, function (req, res) {
     res.render(req.params.pageName, { title: req.params.pageName });
 });
-app.get('/game/new', auth, function (req, res) {
+app.post('/game/new', auth, function (req, res) {
     repo.loadUser(req.user.id, function (err, user) {
         if (err != null) {
             var errorMessages = util.formatError(err);
             res.json({ errorMessage: errorMessages });
         }
         else {
+            var request = req.body;
             var player = new literki.GamePlayer();
             player.userId = user.id;
             player.playerName = user.userName;
-            player.remainingTime = 15 * 60;
+            player.remainingTime = request.timeLimit * 60;
             var players = new Array();
             players.push(player);
             var game = new literki_server.GameRun_Server(req.user.profileId);

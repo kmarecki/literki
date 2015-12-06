@@ -9,3 +9,8 @@ export interface DictionaryWord {
     word: string;
     lang: string;
 }
+
+export interface NewGameRequest {
+    playerCount: number
+    timeLimit: number;
+}

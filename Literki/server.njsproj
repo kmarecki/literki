@@ -55,6 +55,9 @@
     <Content Include="views\newgame.jade" />
     <Content Include="views\profile.jade" />
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="tests\player1NewGame.ts">
+      <TestFramework>Mocha</TestFramework>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="tests\player2EdgeMove.ts">
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
@@ -84,7 +87,9 @@
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="tests\playerProfile.ts" />
+    <TypeScriptCompile Include="tests\player1Profile.ts">
+      <TestFramework>Mocha</TestFramework>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="tests\player2NoTimeLeft.ts">
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>

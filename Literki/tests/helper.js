@@ -10,27 +10,34 @@ var request = requestModule.defaults({
     jar: true
 });
 var repo = server.getGameRepository();
-function beforeTestSuite(done, state) {
+function serverStart() {
     server.start();
+}
+exports.serverStart = serverStart;
+function serverStop() {
+    server.stop();
+}
+exports.serverStop = serverStop;
+function beforeTestSuite(done, state) {
+    serverStart();
     state.players.forEach(function (p) { return p.lastSeen = new Date(); });
     repo.saveState(state, function (err) { return done(err); });
 }
 exports.beforeTestSuite = beforeTestSuite;
 function afterTestSuite(done) {
-    server.stop();
-    repo.removeAllStates(function (err) { return done(err); });
+    serverStop();
+    repo.removeAllStates(function (err) {
+        repo.removeAllUsers(function (err) {
+            done(err);
+        });
+    });
 }
 exports.afterTestSuite = afterTestSuite;
 function beforeProfileTestSuite(done, profile) {
-    server.start();
+    serverStart();
     repo.loadOrCreateUser(profile.authId, profile.userName, function (err, result) { return done(err, result.id); });
 }
 exports.beforeProfileTestSuite = beforeProfileTestSuite;
-function afterProfileTestSuite(done) {
-    server.stop();
-    repo.removeAllUsers(function (err) { return done(err); });
-}
-exports.afterProfileTestSuite = afterProfileTestSuite;
 function loadState(file) {
     var filePath = path.join('states', file + '.json');
     var stateJSON = fs.readFileSync(filePath, 'utf8');

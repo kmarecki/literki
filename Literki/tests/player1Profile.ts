@@ -15,14 +15,15 @@ import gamestates = require('./gamestates');
 import helper = require('./helper');
 
 describe('Player1 profile Suite', () => {
-    var player = gamestates.player1;
+    //cloning to not mess with test data
+    var player = JSON.parse(JSON.stringify(gamestates.player1));
 
     before((done) => helper.beforeProfileTestSuite((err, id) => {
         player.id = id;
         done(err);
     }, player));
 
-    after((done) => helper.afterProfileTestSuite(done));
+    after((done) => helper.afterTestSuite(done));
     
     it('/player/get Player1', (done) => {
         helper.callGETMethod(player.userName, player.id, '/player/get', undefined, (error, response, body) => {
@@ -36,7 +37,6 @@ describe('Player1 profile Suite', () => {
     it('/player/update Player1', (done) => {
         var data = player;
         helper.callPOSTMethod(player.userName, player.id, '/player/update', data, (error, response, body) => {
-            console.log(JSON.stringify(body));
             var profile = processPOSTBody(body);
             assert.equal(profile.authId, player.authId);
             assert.equal(profile.defaultLanguage, player.defaultLanguage);
@@ -81,8 +81,6 @@ describe('Player1 profile Suite', () => {
             done();
         });
     });
-
-   
 });
 
 export function processGETBody(body: any, skipErrorChecking: boolean = false): entities.UserProfile {
