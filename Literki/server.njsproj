@@ -84,6 +84,7 @@
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="tests\playerProfile.ts" />
     <TypeScriptCompile Include="tests\player2NoTimeLeft.ts">
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>

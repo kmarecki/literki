@@ -4,12 +4,16 @@ export var player1 = {
     "id": "55aaca395dd86414102b50df",
     "authId": "106423093215393185264",
     "userName": "TestUser1",
+    "email": "player1@literki.org",
+    "defaultLanguage": "pl"
 }
 
 export var player2 = {
     "id": "55abc5edad046414050204e4",
     "authId": "105271845369319365892",
     "userName": "TestUser2",
+    "email": "player2@literki.org",
+    "defaultLanguage": "en"
 }
 
 export var player1StartGame = 'player1StartGame';

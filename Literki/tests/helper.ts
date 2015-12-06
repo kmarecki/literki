@@ -7,6 +7,7 @@ import http = require('http');
 import path = require('path');
 import server = require('../server');
 import literki = require('../scripts/literki');
+import entities = require('../scripts/entities');
 import gamestates = require('./gamestates');
 
 import requestModule = require('request');
@@ -27,6 +28,18 @@ export function afterTestSuite(done: any): void {
     server.stop();
     repo.removeAllStates(err => done(err));
 }
+
+
+export function beforeProfileTestSuite(done: (Error, string) => any, profile: entities.UserProfile): void {
+    server.start();
+    repo.loadOrCreateUser(profile.authId, profile.userName, (err, result) => done(err, result.id));
+}
+
+export function afterProfileTestSuite(done: any): void {
+    server.stop();
+    repo.removeAllUsers(err => done(err));
+}
+
 
 export function loadState(file: string): literki.IGameState {
     var filePath = path.join('states', file + '.json');

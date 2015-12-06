@@ -21,6 +21,16 @@ function afterTestSuite(done) {
     repo.removeAllStates(function (err) { return done(err); });
 }
 exports.afterTestSuite = afterTestSuite;
+function beforeProfileTestSuite(done, profile) {
+    server.start();
+    repo.loadOrCreateUser(profile.authId, profile.userName, function (err, result) { return done(err, result.id); });
+}
+exports.beforeProfileTestSuite = beforeProfileTestSuite;
+function afterProfileTestSuite(done) {
+    server.stop();
+    repo.removeAllUsers(function (err) { return done(err); });
+}
+exports.afterProfileTestSuite = afterProfileTestSuite;
 function loadState(file) {
     var filePath = path.join('states', file + '.json');
     var stateJSON = fs.readFileSync(filePath, 'utf8');

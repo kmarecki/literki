@@ -107,7 +107,7 @@ export class GameRepository {
         });
     }
 
-    loadOrCreateUser(authId: number, userName: string, callback: (err: Error, user: entities.UserProfile) => any): void {
+    loadOrCreateUser(authId: string, userName: string, callback: (err: Error, user: UserProfileModel) => any): void {
         this.connect();
         this.User.findOne({ authId: authId }).exec((err, result) => {
             if (err) {
