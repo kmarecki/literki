@@ -120,7 +120,7 @@ var GameRepository = (function () {
     };
     GameRepository.prototype.saveUser = function (user, callback) {
         this.connect();
-        this.User.findOneAndUpdate({ _id: user._id }, user, { new: true }, function (err) {
+        this.User.findOneAndUpdate({ _id: user.id }, user, { new: true }, function (err) {
             if (err) {
                 console.log(err);
             }

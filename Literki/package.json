@@ -17,7 +17,7 @@
     "jade": "^1.11.0",
     "less-middleware": "^2.0.1",
     "mocha": "^2.2.5",
-    "mongoose": "^4.0.6",
+    "mongoose": "^4.2.9",
     "passport": "^0.2.2",
     "passport-google-openidconnect": "0.0.4",
     "passport-http": "^0.3.0",

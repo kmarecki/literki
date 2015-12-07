@@ -133,7 +133,7 @@ export class GameRepository {
 
     saveUser(user: UserProfileModel, callback: (err: Error) => any): void {
         this.connect();
-        this.User.findOneAndUpdate({ _id: user._id }, user, { new: true }, (err) => {
+        this.User.findOneAndUpdate({ _id: user.id }, user, { new: true }, (err) => {
             if (err) {
                 console.log(err);
             }
