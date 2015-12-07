@@ -12,6 +12,7 @@ exports.player2 = {
     "email": "player2@literki.org",
     "defaultLanguage": "en"
 };
+exports.allPlayersFold = 'allPlayersFold';
 exports.player1StartGame = 'player1StartGame';
 exports.player1EndGame = 'player1EndGame';
 exports.player2Move = 'player2Move';

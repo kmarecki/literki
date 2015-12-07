@@ -16,6 +16,7 @@ export var player2 = {
     "defaultLanguage": "en"
 }
 
+export var allPlayersFold = 'allPlayersFold'
 export var player1StartGame = 'player1StartGame';
 export var player1EndGame = 'player1EndGame';
 export var player2Move = 'player2Move';

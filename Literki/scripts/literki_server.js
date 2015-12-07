@@ -67,11 +67,13 @@ var GameRun_Server = (function (_super) {
                 this.endGame();
                 return false;
             }
+            return true;
         }
-        return true;
+        return false;
     };
     GameRun_Server.prototype.noMoreActivePlayers = function () {
-        return _.all(this.state.players, function (p) { return p.remainingTime < 0; });
+        return (_.all(this.state.players, function (p) { return p.remainingTime < 0; }) ||
+            _.all(this.state.players, function (p) { return p.moves[p.moves.length - 1].moveType == literki.MoveType.Fold; }));
     };
     GameRun_Server.prototype.endGame = function () {
         this.state.runState = literki.GameRunState.Finished;
@@ -256,8 +258,10 @@ var GameRun_Server = (function (_super) {
         moveHistory.moveType = moveType;
         this.getNewWords().forEach(function (p) { return moveHistory.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)); });
         this.getCurrentPlayer().moves.push(moveHistory);
-        this.nextPlayer();
-        this.checkCurrentPlayer();
+        if (this.checkGame()) {
+            this.nextPlayer();
+            this.checkCurrentPlayer();
+        }
     };
     GameRun_Server.prototype.nextPlayer = function () {
         this.pickLetters(this.state.currentPlayerIndex);

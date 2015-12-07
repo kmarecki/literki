@@ -66,12 +66,14 @@ export class GameRun_Server extends literki.GameRun {
                 this.endGame();
                 return false;
             }
+            return true
         }
-        return true;
+        return false;
     }
 
     private noMoreActivePlayers(): boolean {
-        return _.all(this.state.players, p => p.remainingTime < 0);
+        return (_.all(this.state.players, p => p.remainingTime < 0) ||
+                _.all(this.state.players, p => p.moves[p.moves.length - 1].moveType == literki.MoveType.Fold));
     }
 
     private endGame(): void {
@@ -267,8 +269,10 @@ export class GameRun_Server extends literki.GameRun {
         moveHistory.moveType = moveType;
         this.getNewWords().forEach(p => moveHistory.words.push(new literki.GameWord(p.word, p.x, p.y, p.direction, p.points)));
         this.getCurrentPlayer().moves.push(moveHistory);
-        this.nextPlayer();
-        this.checkCurrentPlayer();
+        if (this.checkGame()) {
+            this.nextPlayer();
+            this.checkCurrentPlayer();
+        }
     }
 
     private nextPlayer(): void {
