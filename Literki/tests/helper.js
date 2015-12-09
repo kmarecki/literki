@@ -87,6 +87,9 @@ function processGETbody(body, skipErrorChecking) {
     if (!skipErrorChecking) {
         assert.equal(result.errorMessage, undefined);
     }
+    else {
+        assert.notEqual(result.errorMessage, undefined);
+    }
     var state = literki.GameState.fromJSON(result.state);
     var game = new literki.GameRun(result.userId);
     game.runState(state);
@@ -99,6 +102,9 @@ function processPOSTbody(body, skipErrorChecking) {
     var result = body;
     if (!skipErrorChecking) {
         assert.equal(result.errorMessage, undefined);
+    }
+    else {
+        assert.notEqual(result.errorMessage, undefined);
     }
     var state = literki.GameState.fromJSON(result.state);
     var game = new literki.GameRun(result.userId);

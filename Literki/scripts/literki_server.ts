@@ -173,7 +173,7 @@ export class GameRun_Server extends literki.GameRun {
     start(): GameMethodResult {
         if (this.isGameOwner()) {
 
-            if (this.state.players.length < 2) {
+            if (this.getJoinedPlayersCount() < this.state.players.length) {
                 return new GameMethodResult("Za mało graczy do rozpoczęcia gry");
             }
             if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
@@ -185,6 +185,10 @@ export class GameRun_Server extends literki.GameRun {
             return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
+    }
+
+    private getJoinedPlayersCount(): number {
+        return _.filter(this.state.players, player => player.userId != this.PLACEHOLDER_PLAYER_ID).length;
     }
 
     pause(): GameMethodResult {

@@ -37,7 +37,7 @@ describe('Player2 no remaining letter move Suite', () => {
         };
 
         helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, (error, response, body) => {
-            var game = helper.processPOSTbody(body, true);
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);

@@ -92,6 +92,8 @@ export function processGETbody(body: any, skipErrorChecking: boolean = false): l
     var result = JSON.parse(body);
     if (!skipErrorChecking) {
         assert.equal(result.errorMessage, undefined);
+    } else {
+        assert.notEqual(result.errorMessage, undefined);
     }
 
     var state = literki.GameState.fromJSON(result.state);
@@ -105,6 +107,8 @@ export function processPOSTbody(body: any, skipErrorChecking: boolean = false): 
     var result = body;
     if (!skipErrorChecking) {
         assert.equal(result.errorMessage, undefined);
+    } else {
+        assert.notEqual(result.errorMessage, undefined);
     }
 
     var state = literki.GameState.fromJSON(result.state);

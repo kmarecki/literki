@@ -117,7 +117,7 @@ app.post('/game/new', auth, function (req, res) {
             game.newGame(user.id, user.userName, request.playerCount, request.timeLimit);
             var state = game.state;
             repo.newState(state, function (err, gameId) {
-                var errorMessages = '';
+                var errorMessages;
                 if (err != null) {
                     errorMessages = util.formatError(err);
                 }

@@ -27,7 +27,7 @@ describe('Player1 endGame Suite', function () {
     it('/game/get Player1', function (done) {
         var data = helper.createRequestData(initState);
         helper.callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/game/get', data, function (error, response, body) {
-            var game = helper.processGETbody(body, true);
+            var game = helper.processGETbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.state.runState, literki.GameRunState.Finished);
             assert.equal(game.state.playState, literki.GamePlayState.None);
@@ -51,7 +51,7 @@ describe('Player1 endGame Suite', function () {
     it('/game/get Player2', function (done) {
         var data = helper.createRequestData(initState);
         helper.callGETMethod(gamestates.player1.userName, gamestates.player2.id, '/game/get', data, function (error, response, body) {
-            var game = helper.processGETbody(body, true);
+            var game = helper.processGETbody(body);
             assert.equal(game.isNextPlayer(), true);
             assert.equal(game.state.runState, literki.GameRunState.Finished);
             assert.equal(game.state.playState, literki.GamePlayState.None);

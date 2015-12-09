@@ -163,7 +163,7 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.start = function () {
         if (this.isGameOwner()) {
-            if (this.state.players.length < 2) {
+            if (this.getJoinedPlayersCount() < this.state.players.length) {
                 return new GameMethodResult("Za mało graczy do rozpoczęcia gry");
             }
             if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
@@ -176,6 +176,10 @@ var GameRun_Server = (function (_super) {
             return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
+    };
+    GameRun_Server.prototype.getJoinedPlayersCount = function () {
+        var _this = this;
+        return _.filter(this.state.players, function (player) { return player.userId != _this.PLACEHOLDER_PLAYER_ID; }).length;
     };
     GameRun_Server.prototype.pause = function () {
         if (this.isGameOwner()) {

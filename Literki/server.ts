@@ -147,7 +147,7 @@ app.post('/game/new', auth, (req, res) => {
             var state: literki.IGameState = game.state;
 
             repo.newState(state, (err, gameId) => {
-                var errorMessages = '';
+                var errorMessages;
                 if (err != null) {
                     errorMessages = util.formatError(err);
                 }

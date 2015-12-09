@@ -11,6 +11,7 @@ var helper = require('./helper');
 describe('Player1 new game Suite', function () {
     //cloning to not mess with test data
     var player = JSON.parse(JSON.stringify(gamestates.player1));
+    var initState;
     before(function (done) { return helper.beforeProfileTestSuite(function (err, id) {
         player.id = id;
         done(err);
@@ -22,13 +23,24 @@ describe('Player1 new game Suite', function () {
             timeLimit: 20
         };
         helper.callPOSTMethod(player.userName, player.id, '/game/new', data, function (error, response, body) {
-            var game = helper.processPOSTbody(body, true);
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS);
             assert.equal(game.getCurrentUser().remainingTime, data.timeLimit * 60);
             assert.equal(game.state.runState, literki.GameRunState.Created);
             assert.equal(game.state.playState, literki.GamePlayState.None);
             assert.equal(game.state.players.length, 2);
+            initState = game.state;
+            done();
+        });
+    });
+    it('/game/start Player1', function (done) {
+        var data = helper.createRequestData(initState);
+        helper.callGETMethod(player.userName, player.id, '/game/start', data, function (error, response, body) {
+            var game = helper.processGETbody(body, true);
+            assert.equal(game.isCurrentPlayer(), true);
+            assert.equal(game.state.runState, literki.GameRunState.Created);
+            assert.equal(game.state.playState, literki.GamePlayState.None);
             done();
         });
     });

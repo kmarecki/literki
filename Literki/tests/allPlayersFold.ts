@@ -60,7 +60,7 @@ describe('All players fold Suite', () => {
     it('/game/get Player1', (done) => {
         var data = helper.createRequestData(initState);
         helper.callGETMethod(gamestates.player1.userName, gamestates.player1.id, '/game/get', data, (error, response, body) => {
-            var game = helper.processGETbody(body, true);
+            var game = helper.processGETbody(body);
             assert.equal(game.isCurrentPlayer(), false);
             assert.equal(game.state.runState, literki.GameRunState.Finished);
             assert.equal(game.state.playState, literki.GamePlayState.None);
@@ -73,7 +73,7 @@ describe('All players fold Suite', () => {
     it('/game/get Player2', (done) => {
         var data = helper.createRequestData(initState);
         helper.callGETMethod(gamestates.player1.userName, gamestates.player2.id, '/game/get', data, (error, response, body) => {
-            var game = helper.processGETbody(body, true);
+            var game = helper.processGETbody(body);
             assert.equal(game.isNextPlayer(), false);
             assert.equal(game.state.runState, literki.GameRunState.Finished);
             assert.equal(game.state.playState, literki.GamePlayState.None);

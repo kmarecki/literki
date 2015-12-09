@@ -36,7 +36,7 @@ describe('Player2 left edge move Suite', function () {
                 }]
         };
         helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, function (error, response, body) {
-            var game = helper.processPOSTbody(body, true);
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
@@ -94,7 +94,7 @@ describe('Player2 edge move Suite', function () {
                 }]
         };
         helper.callPOSTMethod(gamestates.player2.userName, gamestates.player2.id, '/game/move', data, function (error, response, body) {
-            var game = helper.processPOSTbody(body, true);
+            var game = helper.processPOSTbody(body);
             assert.equal(game.isCurrentPlayer(), true);
             assert.equal(game.getCurrentUser().freeLetters.length, literki.MAX_LETTERS - data.freeLetters.length);
             assert.equal(game.state.playState, literki.GamePlayState.MoveApproval);
