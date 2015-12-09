@@ -393,6 +393,7 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             this.allPlayers = ko.observableArray();
             this.playerCount = ko.observable(0);
             this.historyMoves = ko.observableArray();
+            this.allPlayersList = new Array(this.playerCount());
         }
         BoardModel.prototype.setNewWords = function (newWords) {
             var _this = this;
@@ -410,7 +411,12 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             this.changeLetters("");
         };
         BoardModel.prototype.getPlayers = function (start, end) {
+            return this.allPlayers().slice(start, end);
+        };
+        BoardModel.prototype.getAllPlayers = function () {
             var _this = this;
+            var start = 0;
+            var end = game.getPlayers().length;
             var players = new Array();
             game.getPlayers().slice(start, end).forEach(function (p) {
                 var playerModel = new PlayerModel(_this);
@@ -419,9 +425,6 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             });
             this.allPlayers(players);
             return this.allPlayers();
-        };
-        BoardModel.prototype.getAllPlayers = function () {
-            return this.getPlayers(0, game.getPlayers().length);
         };
         BoardModel.prototype.getPlayersRow = function () {
             return game.getPlayers().length > 2 ? [0, 1] : [0];

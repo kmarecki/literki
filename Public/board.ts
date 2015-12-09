@@ -476,7 +476,15 @@ class BoardModel extends master.MasterModel {
         this.changeLetters("");
     }
 
+    private allPlayersList = new Array<PlayerModel>(this.playerCount());
+
     getPlayers(start: number, end: number): PlayerModel[] {
+        return this.allPlayers().slice(start, end);
+    }
+
+    private getAllPlayers(): PlayerModel[] {
+        var start = 0;
+        var end = game.getPlayers().length;
         var players = new Array<PlayerModel>();
 
         game.getPlayers().slice(start, end).forEach(p => {
@@ -487,10 +495,6 @@ class BoardModel extends master.MasterModel {
 
         this.allPlayers(players);
         return this.allPlayers();
-    }
-
-    private getAllPlayers(): PlayerModel[] {
-        return this.getPlayers(0, game.getPlayers().length);
     }
 
     getPlayersRow(): Number[] {
