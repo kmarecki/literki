@@ -162,6 +162,18 @@ app.post('/game/new', auth, (req, res) => {
     });
 });
 
+app.get('/game/join', auth, (req, res) => {
+    repo.loadUser(req.user.id, (err, user) => {
+        if (err != null) {
+            var errorMessages = util.formatError(err);
+            res.json({ errorMessage: errorMessages });
+        } else {
+            simpleGameMethodCall(req, res, (game, req, call) => call(game.join(user.userName)));
+        }
+    });
+});
+
+
 app.get('/game/list', auth, (req, res) => {
     repo.allGames((err, games) => {
         var errorMessages = '';
@@ -185,7 +197,6 @@ app.get('/game/get', auth, (req, res) => {
     });
 });
 
-app.get('/game/join', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.join())));
 app.get('/game/start', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.start())));
 app.get('/game/pause', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.pause())));
 app.get('/game/fold', auth, (req, res) => simpleGameMethodCall(req, res, (game, req, call) => call(game.fold())));
@@ -283,16 +294,19 @@ function simpleGameMethodCall(req: express.Request, res: express.Response, call:
 var server: http.Server;
 
 export function start() {
-    var port = process.env.port || 1337;
-    console.log('Literki start');
-    console.log('Literki port: ' + port);
-    server = app.listen(port, '0.0.0.0');
+    if (!server) {
+        var port = process.env.port || 1337;
+        console.log('Literki start');
+        console.log('Literki port: ' + port);
+        server = app.listen(port, '0.0.0.0');
+    }
 }
 
 export function stop() {
     if (server) {
         console.log('Literki shutdown');
         server.close();
+        server = null;
     }
 }
 

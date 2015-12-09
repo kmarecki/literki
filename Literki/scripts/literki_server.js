@@ -87,7 +87,7 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.noMoreActivePlayers = function () {
         return (_.all(this.state.players, function (p) { return p.remainingTime < 0; }) ||
-            _.all(this.state.players, function (p) { return p.moves[p.moves.length - 1].moveType == literki.MoveType.Fold; }));
+            _.all(this.state.players, function (p) { return p.moves.length > 0 && p.moves[p.moves.length - 1].moveType == literki.MoveType.Fold; }));
     };
     GameRun_Server.prototype.endGame = function () {
         this.state.runState = literki.GameRunState.Finished;
@@ -140,22 +140,27 @@ var GameRun_Server = (function (_super) {
         if (this.state.runState == literki.GameRunState.Created) {
             var res = _.find(this.state.players, function (p) { return p.userId == player.userId; });
             if (res == null) {
-                this.state.players.push(player);
-                this.pickLetters(this.state.players.length - 1);
+                var placeholderIndex = this.getFirstPlaceHolderIndex();
+                this.state.players[placeholderIndex] = player;
+                this.pickLetters(placeholderIndex);
                 return true;
             }
         }
         return false;
     };
-    GameRun_Server.prototype.join = function () {
+    GameRun_Server.prototype.getFirstPlaceHolderIndex = function () {
+        var _this = this;
+        return _.findIndex(this.state.players, function (player) { return player.userId == _this.PLACEHOLDER_PLAYER_ID; });
+    };
+    GameRun_Server.prototype.join = function (playerName) {
         var _this = this;
         if (this.state.runState == literki.GameRunState.Created) {
             var res = _.find(this.state.players, function (p) { return p.userId == _this.currentUserId; });
             if (res == null) {
                 var newPlayer = new literki.GamePlayer();
                 newPlayer.userId = this.currentUserId;
-                newPlayer.playerName = "Krzyś";
-                newPlayer.remainingTime = 15 * 60;
+                newPlayer.playerName = playerName;
+                newPlayer.remainingTime = this.state.players[0].remainingTime;
                 this.addPlayer(newPlayer);
             }
         }

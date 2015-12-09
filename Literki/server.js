@@ -131,6 +131,17 @@ app.post('/game/new', auth, function (req, res) {
         }
     });
 });
+app.get('/game/join', auth, function (req, res) {
+    repo.loadUser(req.user.id, function (err, user) {
+        if (err != null) {
+            var errorMessages = util.formatError(err);
+            res.json({ errorMessage: errorMessages });
+        }
+        else {
+            simpleGameMethodCall(req, res, function (game, req, call) { return call(game.join(user.userName)); });
+        }
+    });
+});
 app.get('/game/list', auth, function (req, res) {
     repo.allGames(function (err, games) {
         var errorMessages = '';
@@ -150,7 +161,6 @@ app.get('/game/get', auth, function (req, res) {
         res.json({ state: state, userId: req.user.id, errorMessage: errorMessages });
     });
 });
-app.get('/game/join', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.join()); }); });
 app.get('/game/start', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.start()); }); });
 app.get('/game/pause', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.pause()); }); });
 app.get('/game/fold', auth, function (req, res) { return simpleGameMethodCall(req, res, function (game, req, call) { return call(game.fold()); }); });
@@ -242,16 +252,19 @@ function simpleGameMethodCall(req, res, call, gameId) {
 }
 var server;
 function start() {
-    var port = process.env.port || 1337;
-    console.log('Literki start');
-    console.log('Literki port: ' + port);
-    server = app.listen(port, '0.0.0.0');
+    if (!server) {
+        var port = process.env.port || 1337;
+        console.log('Literki start');
+        console.log('Literki port: ' + port);
+        server = app.listen(port, '0.0.0.0');
+    }
 }
 exports.start = start;
 function stop() {
     if (server) {
         console.log('Literki shutdown');
         server.close();
+        server = null;
     }
 }
 exports.stop = stop;

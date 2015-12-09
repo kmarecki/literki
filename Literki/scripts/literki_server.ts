@@ -91,7 +91,7 @@ export class GameRun_Server extends literki.GameRun {
 
     private noMoreActivePlayers(): boolean {
         return (_.all(this.state.players, p => p.remainingTime < 0) ||
-                _.all(this.state.players, p => p.moves[p.moves.length - 1].moveType == literki.MoveType.Fold));
+                _.all(this.state.players, p => p.moves.length > 0 && p.moves[p.moves.length - 1].moveType == literki.MoveType.Fold));
     }
 
     private endGame(): void {
@@ -148,22 +148,27 @@ export class GameRun_Server extends literki.GameRun {
         if (this.state.runState == literki.GameRunState.Created) {
             var res = _.find(this.state.players, p => p.userId == player.userId);
             if (res == null) {
-                this.state.players.push(player);
-                this.pickLetters(this.state.players.length - 1);
+                var placeholderIndex = this.getFirstPlaceHolderIndex();
+                this.state.players[placeholderIndex] = player;
+                this.pickLetters(placeholderIndex);
                 return true;
             }
         }
         return false;
     }
 
-    join(): GameMethodResult {
+    private getFirstPlaceHolderIndex(): number {
+        return _.findIndex(this.state.players, player => player.userId == this.PLACEHOLDER_PLAYER_ID);
+    }
+
+    join(playerName: string): GameMethodResult {
         if (this.state.runState == literki.GameRunState.Created) {
             var res = _.find(this.state.players, p => p.userId == this.currentUserId);
             if (res == null) {
                 var newPlayer = new literki.GamePlayer();
                 newPlayer.userId = this.currentUserId;
-                newPlayer.playerName = "Krzyś";
-                newPlayer.remainingTime = 15 * 60;
+                newPlayer.playerName = playerName;
+                newPlayer.remainingTime = this.state.players[0].remainingTime;
                 this.addPlayer(newPlayer);
             }
         }
