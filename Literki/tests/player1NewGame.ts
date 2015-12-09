@@ -38,6 +38,7 @@ describe('Player1 new game Suite', () => {
             assert.equal(game.getCurrentUser().remainingTime, data.timeLimit * 60);
             assert.equal(game.state.runState, literki.GameRunState.Created);
             assert.equal(game.state.playState, literki.GamePlayState.None);
+            assert.equal(game.state.players.length, 2);
             done();
         });
     });

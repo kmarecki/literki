@@ -23,13 +23,31 @@ export class GameMethodResult {
 export class GameRun_Server extends literki.GameRun {
 
     private UNATHORIZED_ACCESS = new GameMethodResult("Gracz jest nieuprawniony do wykonania operacji");
+    private PLACEHOLDER_PLAYER_ID = "51bb793aca2ab77a3200000d";
 
-    newGame(players: Array<literki.GamePlayer>): void {
+    newGame(userId: string, playerName: string, playersCount: number, timeLimit: number): void {
+
+        var player = new literki.GamePlayer();
+        player.userId = userId;
+        player.playerName = playerName;
+        player.remainingTime = timeLimit * 60;
+
+        var players = new Array<literki.GamePlayer>();
+        players.push(player);
+      
         this.state = new literki.GameState();
         this.state.gameId = 1;
-        this.state.players = players.slice();
+        this.state.players = players;
         this.state.remainingLetters = this.allLetters();
         this.state.players.forEach(p => this.pickLetters(this.state.players.indexOf(p)));
+
+        while (--playersCount > 0) {
+            var placeholderPlayer = new literki.GamePlayer();
+            placeholderPlayer.userId = this.PLACEHOLDER_PLAYER_ID;
+            placeholderPlayer.playerName = "?";
+            placeholderPlayer.remainingTime = 60;
+            players.push(placeholderPlayer);
+        } 
     }
 
     alive(): GameMethodResult {

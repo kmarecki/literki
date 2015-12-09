@@ -142,16 +142,8 @@ app.post('/game/new', auth, (req, res) => {
             res.json({ errorMessage: errorMessages });
         } else {
             var request = <entities.NewGameRequest>req.body;
-            var player = new literki.GamePlayer();
-            player.userId = user.id;
-            player.playerName = user.userName
-            player.remainingTime = request.timeLimit * 60;
-
-            var players = new Array<literki.GamePlayer>();
-            players.push(player);
-
             var game = new literki_server.GameRun_Server(req.user.profileId);
-            game.newGame(players);
+            game.newGame(user.id, user.userName, request.playerCount, request.timeLimit);
             var state: literki.IGameState = game.state;
 
             repo.newState(state, (err, gameId) => {

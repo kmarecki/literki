@@ -113,14 +113,8 @@ app.post('/game/new', auth, function (req, res) {
         }
         else {
             var request = req.body;
-            var player = new literki.GamePlayer();
-            player.userId = user.id;
-            player.playerName = user.userName;
-            player.remainingTime = request.timeLimit * 60;
-            var players = new Array();
-            players.push(player);
             var game = new literki_server.GameRun_Server(req.user.profileId);
-            game.newGame(players);
+            game.newGame(user.id, user.userName, request.playerCount, request.timeLimit);
             var state = game.state;
             repo.newState(state, function (err, gameId) {
                 var errorMessages = '';

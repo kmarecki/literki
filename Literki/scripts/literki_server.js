@@ -25,14 +25,28 @@ var GameRun_Server = (function (_super) {
     function GameRun_Server() {
         _super.apply(this, arguments);
         this.UNATHORIZED_ACCESS = new GameMethodResult("Gracz jest nieuprawniony do wykonania operacji");
+        this.PLACEHOLDER_PLAYER_ID = "51bb793aca2ab77a3200000d";
     }
-    GameRun_Server.prototype.newGame = function (players) {
+    GameRun_Server.prototype.newGame = function (userId, playerName, playersCount, timeLimit) {
         var _this = this;
+        var player = new literki.GamePlayer();
+        player.userId = userId;
+        player.playerName = playerName;
+        player.remainingTime = timeLimit * 60;
+        var players = new Array();
+        players.push(player);
         this.state = new literki.GameState();
         this.state.gameId = 1;
-        this.state.players = players.slice();
+        this.state.players = players;
         this.state.remainingLetters = this.allLetters();
         this.state.players.forEach(function (p) { return _this.pickLetters(_this.state.players.indexOf(p)); });
+        while (--playersCount > 0) {
+            var placeholderPlayer = new literki.GamePlayer();
+            placeholderPlayer.userId = this.PLACEHOLDER_PLAYER_ID;
+            placeholderPlayer.playerName = "?";
+            placeholderPlayer.remainingTime = 60;
+            players.push(placeholderPlayer);
+        }
     };
     GameRun_Server.prototype.alive = function () {
         if (this.getCurrentUser()) {
