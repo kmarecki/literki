@@ -45,6 +45,10 @@ class MainController extends master.MasterControler<MainModel> {
             this.model.games.push(gameModel);
         });
     }
+
+    protected newGameClick(): void {
+        window.location.href = "newgame.html";
+    }
 }
 
 var controller = new MainController();

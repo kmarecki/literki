@@ -20,18 +20,17 @@ block info
           th Gra
           th Data utworzenia
           th 
-      tbody()
+      tbody
         // ko foreach: model.games
         tr
           td
             a(data-bind="attr: { href: 'board.html?gameId=' + gameId }, text: gameId")
           td
-            label(data-bind='text: creationDate')
+            label.center(data-bind='text: creationDate')
           td
             a.button(data-bind="attr: { href: 'board.html?gameId=' + gameId + '&join=1'}, text: joinAction()")
         // /ko
-        tr
-          td
-          td
-          td
-            a.button(href='newgame.html') Nowa gra
+        
+
+block buttons
+  button.commandButton.acceptSize(data-bind='click: newGameClick') Nowa gra

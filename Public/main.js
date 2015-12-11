@@ -50,6 +50,9 @@ define(["require", "exports", './master', './scripts/literki', 'knockout', 'jque
                 _this.model.games.push(gameModel);
             });
         };
+        MainController.prototype.newGameClick = function () {
+            window.location.href = "newgame.html";
+        };
         return MainController;
     })(master.MasterControler);
     var controller = new MainController();

@@ -47,7 +47,7 @@ img {
 	background-image: linear-gradient(to bottom, #2CDB69, #184526);
 	border-radius: 28px;
 	font-family: Arial;
-	color: #FFC;
+	color: #FFF;
 	font-size: 20px;
 	padding: 10px 20px 10px 20px;
 	text-decoration: none;
@@ -56,7 +56,7 @@ img {
 .commandButton:hover {
 	background: #32C965;
 	background-image: linear-gradient(to bottom, #32C965, #142B1B);
-	color: #FFF;
+	color: #FFC;
 	text-decoration: none;
 }
 
@@ -86,19 +86,19 @@ img {
 	color: #FFF;
 	font-weight: bold;
 	text-align: right;
-	margin: 0;
 	width: 100%;
 	height: 33px;
 }
 
 #navigationbox a {
-	color: #FFC;
+	color: #FFF;
 	font-weight: bold;
 	text-decoration: none;
+	padding: 2px;
 }
 
 #navigationbox a:hover {
-	color: #FFF;
+	color: #FFC;
 }
 
 #dialogoverlay {
@@ -140,7 +140,7 @@ img {
 	background: #2EB459;
 	background-image: linear-gradient(to bottom, #184526, #2CDB69);
 	padding: 20px;
-	color: #FFC;
+	color: #FFF;
 }
 
 #dialogbox > div > #dialogboxfoot {
@@ -177,11 +177,25 @@ tabs-nohdr .ui-tabs-panel {
 	padding: 5%;
 }
 
+.formLayout table {
+	height: 100%;
+	width: 100%;
+}
+
+.formLayout thead th {
+	text-align: center;
+}
+
+.formLayout table tbody label {
+	text-align: center;
+	width: 100%;
+}
+
 .formLayout input {
 	display: block;
 	width: 180px;
 	float: left;
-	margin-bottom: 10px;
+	margin: 8px;
 	background-color: #FFC;
 }
 
@@ -190,18 +204,20 @@ tabs-nohdr .ui-tabs-panel {
 }
 
 .formLayout label {
-	color: #FFC;
-	text-align: left;
+	color: #FFF;
+	text-align: right;
 	padding-right: 20px;
 	display: block;
 	width: 180px;
 	float: left;
-	margin-bottom: 10px;
 	font-weight: bold;
+	margin: 8px;
 }
 
 .formLayout select {
 	background-color: #FFC;
+	text-align: left;
+	margin: 8px;
 }
 
 .formLayout br {
@@ -209,11 +225,14 @@ tabs-nohdr .ui-tabs-panel {
 }
 
 .formLayout a {
-	color: #FFC;
+	color: #FFF;
 	font-weight: bold;
 	text-decoration: none;
+	text-align: right;
+	display: block;
 }
 
 .formLayout a:hover {
-	color: #FFF;
+	color: #FFC;
+	margin-bottom: 0;
 }
