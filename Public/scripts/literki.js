@@ -223,6 +223,7 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
             if (json.lastSeen) {
                 player.lastSeen = new Date(json.lastSeen.toString());
             }
+            player.isPlaceholder = json.isPlaceholder;
             return player;
         };
         GamePlayer.prototype.toJSON = function () {
@@ -232,7 +233,8 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
                 userId: this.userId,
                 playerName: this.playerName,
                 remainingTime: this.remainingTime,
-                lastSeen: this.lastSeen
+                lastSeen: this.lastSeen,
+                isPlaceholder: this.isPlaceholder
             };
             return json;
         };
@@ -357,6 +359,9 @@ define(["require", "exports", 'underscore'], function (require, exports, _) {
         }
         GameRun.prototype.getPlayers = function () {
             return this.state.players;
+        };
+        GameRun.prototype.getPlayersInGame = function () {
+            return this.state.players.filter(function (player) { return !player.isPlaceholder; });
         };
         GameRun.prototype.getCurrentPlayer = function () {
             return this.state.players[this.state.currentPlayerIndex];

@@ -37,6 +37,7 @@ repo.open(uri);
 var strategy = config.Passport.strategy;
 switch (strategy) {
     case 'Google': {
+        console.log("GoogleAuthorization.callbackURL: " + config.GoogleAuthorization.callbackURL);
         var GoogleStrategy = require('passport-google-openidconnect').Strategy;
         passport.use(new GoogleStrategy({
             clientID: config.GoogleAuthorization.clientID,

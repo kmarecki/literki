@@ -45,6 +45,7 @@ var GameRun_Server = (function (_super) {
             placeholderPlayer.userId = this.PLACEHOLDER_PLAYER_ID;
             placeholderPlayer.playerName = "?";
             placeholderPlayer.remainingTime = 60;
+            placeholderPlayer.isPlaceholder = true;
             players.push(placeholderPlayer);
         }
     };
@@ -149,8 +150,7 @@ var GameRun_Server = (function (_super) {
         return false;
     };
     GameRun_Server.prototype.getFirstPlaceHolderIndex = function () {
-        var _this = this;
-        return _.findIndex(this.state.players, function (player) { return player.userId == _this.PLACEHOLDER_PLAYER_ID; });
+        return _.findIndex(this.state.players, function (player) { return player.isPlaceholder; });
     };
     GameRun_Server.prototype.join = function (playerName) {
         var _this = this;
@@ -168,7 +168,7 @@ var GameRun_Server = (function (_super) {
     };
     GameRun_Server.prototype.start = function () {
         if (this.isGameOwner()) {
-            if (this.getJoinedPlayersCount() < this.state.players.length) {
+            if (this.getPlayersInGame().length < this.state.players.length) {
                 return new GameMethodResult("Za mało graczy do rozpoczęcia gry");
             }
             if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
@@ -181,10 +181,6 @@ var GameRun_Server = (function (_super) {
             return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
-    };
-    GameRun_Server.prototype.getJoinedPlayersCount = function () {
-        var _this = this;
-        return _.filter(this.state.players, function (player) { return player.userId != _this.PLACEHOLDER_PLAYER_ID; }).length;
     };
     GameRun_Server.prototype.pause = function () {
         if (this.isGameOwner()) {

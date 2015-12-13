@@ -195,7 +195,8 @@ var GameRepository = (function () {
                                     points: Number
                                 }],
                             moveType: Number
-                        }]
+                        }],
+                    isPlaceholder: Boolean
                 }],
             remainingLetters: [String],
             currentMove: {

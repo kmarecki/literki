@@ -215,7 +215,8 @@ export class GameRepository {
                         points: Number
                     }],
                     moveType: Number
-                }]
+                }],
+                isPlaceholder: Boolean
             }],
             remainingLetters: [String],
             currentMove: {

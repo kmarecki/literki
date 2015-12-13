@@ -238,6 +238,7 @@ export interface IGamePlayer {
     remainingTime: number;
     lastSeen: Date;
     moves: Array<IGameMoveHistory>;
+    isPlaceholder: boolean;
 }
 
 export class GamePlayer implements IGamePlayer {
@@ -247,6 +248,7 @@ export class GamePlayer implements IGamePlayer {
     remainingTime: number;
     lastSeen: Date;
     moves: Array<IGameMoveHistory> = [];
+    isPlaceholder: boolean;
 
     getPoints(): number {
         var points = 0;
@@ -269,6 +271,7 @@ export class GamePlayer implements IGamePlayer {
         if (json.lastSeen) {
             player.lastSeen = new Date(json.lastSeen.toString());
         }
+        player.isPlaceholder = json.isPlaceholder;
         return player;
     }
 
@@ -279,7 +282,8 @@ export class GamePlayer implements IGamePlayer {
             userId: this.userId,
             playerName: this.playerName,
             remainingTime: this.remainingTime,
-            lastSeen : this.lastSeen
+            lastSeen: this.lastSeen,
+            isPlaceholder: this.isPlaceholder
         }
         return json;
     }
@@ -436,6 +440,10 @@ export class GameRun {
 
     getPlayers(): Array<IGamePlayer> {
         return this.state.players;
+    }
+
+    getPlayersInGame(): Array<IGamePlayer> {
+        return this.state.players.filter(player => !player.isPlaceholder);
     }
 
     getCurrentPlayer(): IGamePlayer {

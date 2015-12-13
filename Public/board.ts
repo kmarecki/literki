@@ -413,6 +413,7 @@ class PlayerModel {
     points = ko.observable(0);
     remainingTime = ko.observable("");
     playerCss = ko.observable("");
+    isPlaceholder: boolean;
     parentModel: BoardModel;
 
     constructor(parent: BoardModel) {
@@ -434,6 +435,7 @@ class PlayerModel {
         this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
         this.isCurrentUser(player.userId == game.currentUserId);
         this.playerCss((this.isCurrentUser() ? "currentUser" : "player") + (!player.isAlive() ? " inactivePlayer" : ""));
+        this.isPlaceholder = player.isPlaceholder;
     }
 
 }
@@ -476,30 +478,21 @@ class BoardModel extends master.MasterModel {
         this.changeLetters("");
     }
 
-    private allPlayersList = new Array<PlayerModel>(this.playerCount());
-
-    getPlayers(start: number, end: number): PlayerModel[] {
-        return this.allPlayers().slice(start, end);
-    }
-
-    private getAllPlayers(): PlayerModel[] {
-        var start = 0;
-        var end = game.getPlayers().length;
+    refreshAllPlayers(): void {
         var players = new Array<PlayerModel>();
 
-        game.getPlayers().slice(start, end).forEach(p => {
+        game.getPlayers().forEach(p => {
             var playerModel = new PlayerModel(this);
             playerModel.refresh(<literki.GamePlayer>p, game.getCurrentPlayer());
             players.push(playerModel);
         });
 
         this.allPlayers(players);
-        return this.allPlayers();
     }
 
-    getPlayersRow(): Number[] {
-        return game.getPlayers().length > 2 ? [0, 1] : [0];
-    }
+    private allPlayersInGame(): PlayerModel[] {
+       return this.allPlayers().filter(player => player.isPlaceholder);
+   }
 
     refreshBoard(): void {
         this.board.clearBoard();
@@ -514,13 +507,13 @@ class BoardModel extends master.MasterModel {
         this.setChangeLetters(changeLetters);
     }
 
-   refreshPlayerModels(): void {
-        if (this.allPlayers().length == game.getPlayers().length) {
+    refreshPlayerModels(): void {
+        if (this.allPlayersInGame.length == game.getPlayersInGame().length) {
             this.allPlayers().forEach(p => p.findAndRefresh(<literki.GamePlayer[]>game.getPlayers(), game.getCurrentPlayer()));
         } else {
             this.allPlayers.removeAll();
-            this.playerCount(game.getPlayers().length);
-            this.getAllPlayers();
+            this.playerCount(game.getPlayersInGame().length);
+            this.refreshAllPlayers();
         }
     }
 

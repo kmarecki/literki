@@ -372,6 +372,7 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             this.isCurrentPlayer(player.userId == game.getCurrentPlayer().userId);
             this.isCurrentUser(player.userId == game.currentUserId);
             this.playerCss((this.isCurrentUser() ? "currentUser" : "player") + (!player.isAlive() ? " inactivePlayer" : ""));
+            this.isPlaceholder = player.isPlaceholder;
         };
         return PlayerModel;
     })();
@@ -393,7 +394,6 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             this.allPlayers = ko.observableArray();
             this.playerCount = ko.observable(0);
             this.historyMoves = ko.observableArray();
-            this.allPlayersList = new Array(this.playerCount());
         }
         BoardModel.prototype.setNewWords = function (newWords) {
             var _this = this;
@@ -410,24 +410,18 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
         BoardModel.prototype.cleanChangeLetters = function () {
             this.changeLetters("");
         };
-        BoardModel.prototype.getPlayers = function (start, end) {
-            return this.allPlayers().slice(start, end);
-        };
-        BoardModel.prototype.getAllPlayers = function () {
+        BoardModel.prototype.refreshAllPlayers = function () {
             var _this = this;
-            var start = 0;
-            var end = game.getPlayers().length;
             var players = new Array();
-            game.getPlayers().slice(start, end).forEach(function (p) {
+            game.getPlayers().forEach(function (p) {
                 var playerModel = new PlayerModel(_this);
                 playerModel.refresh(p, game.getCurrentPlayer());
                 players.push(playerModel);
             });
             this.allPlayers(players);
-            return this.allPlayers();
         };
-        BoardModel.prototype.getPlayersRow = function () {
-            return game.getPlayers().length > 2 ? [0, 1] : [0];
+        BoardModel.prototype.allPlayersInGame = function () {
+            return this.allPlayers().filter(function (player) { return player.isPlaceholder; });
         };
         BoardModel.prototype.refreshBoard = function () {
             this.board.clearBoard();
@@ -440,13 +434,13 @@ define(["require", "exports", './master', './scripts/literki', './scripts/system
             this.setChangeLetters(changeLetters);
         };
         BoardModel.prototype.refreshPlayerModels = function () {
-            if (this.allPlayers().length == game.getPlayers().length) {
+            if (this.allPlayersInGame.length == game.getPlayersInGame().length) {
                 this.allPlayers().forEach(function (p) { return p.findAndRefresh(game.getPlayers(), game.getCurrentPlayer()); });
             }
             else {
                 this.allPlayers.removeAll();
-                this.playerCount(game.getPlayers().length);
-                this.getAllPlayers();
+                this.playerCount(game.getPlayersInGame().length);
+                this.refreshAllPlayers();
             }
         };
         BoardModel.prototype.refreshHistoryMoves = function () {

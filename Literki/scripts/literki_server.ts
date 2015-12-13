@@ -46,6 +46,7 @@ export class GameRun_Server extends literki.GameRun {
             placeholderPlayer.userId = this.PLACEHOLDER_PLAYER_ID;
             placeholderPlayer.playerName = "?";
             placeholderPlayer.remainingTime = 60;
+            placeholderPlayer.isPlaceholder = true;
             players.push(placeholderPlayer);
         } 
     }
@@ -158,7 +159,7 @@ export class GameRun_Server extends literki.GameRun {
     }
 
     private getFirstPlaceHolderIndex(): number {
-        return _.findIndex(this.state.players, player => player.userId == this.PLACEHOLDER_PLAYER_ID);
+        return _.findIndex(this.state.players, player => player.isPlaceholder);
     }
 
     join(playerName: string): GameMethodResult {
@@ -178,7 +179,7 @@ export class GameRun_Server extends literki.GameRun {
     start(): GameMethodResult {
         if (this.isGameOwner()) {
 
-            if (this.getJoinedPlayersCount() < this.state.players.length) {
+            if (this.getPlayersInGame().length < this.state.players.length) {
                 return new GameMethodResult("Za mało graczy do rozpoczęcia gry");
             }
             if (this.state.runState == literki.GameRunState.Created || literki.GameRunState.Paused) {
@@ -190,10 +191,6 @@ export class GameRun_Server extends literki.GameRun {
             return GameMethodResult.Undefined;
         }
         return this.UNATHORIZED_ACCESS;
-    }
-
-    private getJoinedPlayersCount(): number {
-        return _.filter(this.state.players, player => player.userId != this.PLACEHOLDER_PLAYER_ID).length;
     }
 
     pause(): GameMethodResult {

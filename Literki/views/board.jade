@@ -35,9 +35,8 @@ block info
         td
           label(data-bind='text: model.changeLetters')
   table
-    tbody(data-bind='foreach: model.getPlayersRow()')
-      tr
-        // ko foreach: $parent.model.getPlayers($data * 2, ($data + 1) * 2)
+    tbody
+      tr(data-bind='foreach: model.allPlayers')
         td
           div(data-bind="css: playerCss")
             table
@@ -49,7 +48,6 @@ block info
               tr
                 td(colspan='2')
                   label.center(data-bind='text: points')
-        // /ko
   #tabsDiv
     ul
       li

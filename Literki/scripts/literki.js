@@ -224,6 +224,7 @@ var GamePlayer = (function () {
         if (json.lastSeen) {
             player.lastSeen = new Date(json.lastSeen.toString());
         }
+        player.isPlaceholder = json.isPlaceholder;
         return player;
     };
     GamePlayer.prototype.toJSON = function () {
@@ -233,7 +234,8 @@ var GamePlayer = (function () {
             userId: this.userId,
             playerName: this.playerName,
             remainingTime: this.remainingTime,
-            lastSeen: this.lastSeen
+            lastSeen: this.lastSeen,
+            isPlaceholder: this.isPlaceholder
         };
         return json;
     };
@@ -358,6 +360,9 @@ var GameRun = (function () {
     }
     GameRun.prototype.getPlayers = function () {
         return this.state.players;
+    };
+    GameRun.prototype.getPlayersInGame = function () {
+        return this.state.players.filter(function (player) { return !player.isPlaceholder; });
     };
     GameRun.prototype.getCurrentPlayer = function () {
         return this.state.players[this.state.currentPlayerIndex];
