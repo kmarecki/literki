@@ -1,1 +1,92 @@
-.borderBox{background:#194d2a;border-style:solid;border-color:#000;border-radius:8px;padding:10px}.contentBox{background:#ffc;margin:10px;position:absolute;left:0;right:0;top:0;bottom:0}#boardDiv{white-space:normal;width:48%;height:95%;margin:5px;float:left}#infoDiv{white-space:normal;position:relative;width:47%;height:95%;margin:5px;float:left}div.player{border:1px solid black;white-space:normal;font-weight:bold;font-size:x-large;width:200px}div.currentUser{border:2px solid green;white-space:normal;font-weight:bold;font-size:x-large;width:200px}div.inactivePlayer{border-color:#a0a0a0;color:#a0a0a0}#messageDiv{vertical-align:bottom}#historyDiv{background-color:#2eb459;overflow-y:scroll;position:absolute;top:2.7em;left:.6em;right:.6em;bottom:0}#buttonsDiv{position:absolute;bottom:0;right:0;margin:5px}#tabsDiv{background-color:;display:block;position:absolute;left:0;right:0;bottom:7%;top:40%}
+.borderBox {
+	background: #194D2A;
+	border-style: solid;
+	border-color: #000;
+	border-radius: 8px;
+	padding: 10px;
+}
+
+.contentBox {
+	background: #FFC;
+	margin: 10px;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+#boardDiv {
+	white-space: normal;
+	width: 48%;
+	height: 95%;
+	margin: 5px;
+	float: left;
+}
+
+#infoDiv {
+	white-space: normal;
+	position: relative;
+	width: 47%;
+	height: 95%;
+	margin: 5px;
+	float: left;
+}
+
+div.player {
+	border: 1px solid black;
+	border-radius: 0.3em;
+	border-width: 0.1em;
+	white-space: normal;
+	font-weight: bold;
+	font-size: x-large;
+	width: 7.5em;
+	height: 4.5em;
+}
+
+div.currentUser {
+	border: 2px solid green;
+	border-radius: 0.3em;
+	border-width: 0.2em;
+	white-space: normal;
+	font-weight: bold;
+	font-size: x-large;
+	width: 7.5em;
+	height: 4.5em;
+}
+
+div.inactivePlayer {
+	border-color: #A0A0A0;
+	color: #A0A0A0;
+}
+
+#messageDiv {
+	vertical-align: bottom;
+}
+
+#historyDiv {
+	background-color: #2EB459;
+	overflow-y: scroll;
+	position: absolute;
+	top: 2.7em;
+	left: 0.6em;
+	right: 0.6em;
+	bottom: 0;
+}
+
+#buttonsDiv {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 5px;
+}
+
+#tabsDiv {
+	background-color: ;
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 7%;
+	top: 40%;
+}
