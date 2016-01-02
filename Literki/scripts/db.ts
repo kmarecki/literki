@@ -1,7 +1,7 @@
 ﻿/// <reference path="..\typings\mongoose\mongoose.d.ts"/>
-/// <reference path=".\literki.ts"/>
 
 import mongoose = require('mongoose');
+import mongo = require('./lib/mongo');
 import entities = require('./entities');
 import literki = require('./literki');
 
@@ -9,34 +9,15 @@ interface GameStateModel extends literki.IGameState, mongoose.Document { }
 interface UserProfileModel extends entities.UserProfile, mongoose.Document { }
 interface DictionaryWordModel extends entities.DictionaryWord, mongoose.Document { }
 
-export class GameRepository {
-    
-    private connected = false; 
-    private uri: string;
+export class GameRepository extends mongo.Repository {
 
     GameState: mongoose.Model<GameStateModel>;
     User: mongoose.Model<UserProfileModel>;
     DictionaryWord: mongoose.Model<DictionaryWordModel>;
 
     open(uri: string): void {
-        this.uri = uri;
-        mongoose.connection.on('connected', () => {
-            console.log('Mongoose default connection open to ' + this.uri);
-            this.connected = true;
-        });
-        mongoose.connection.on('error', (err) => {
-            console.log('Mongoose default connection error: ' + err);
-        });
-        mongoose.connection.on('disconnected', function () {
-            console.log('Mongoose default connection disconnected');
-            this.connected = false;
-        });
-        process.on('SIGINT', function () {
-            mongoose.connection.close(function () {
-                console.log('Mongoose default connection disconnected through app termination');
-                process.exit(0);
-            });
-        }); 
+        super.open(uri);
+
         this.addGameStateSchema();
         this.addUserProfileSchema();
         this.addWordsDictionarySchema();
@@ -179,14 +160,6 @@ export class GameRepository {
             }
             callback(err, result.length == words.length ? true : false);
         });
-    }
-
-    private connect(): void {
-        if (this.connected) {
-            return;
-        }
-
-        mongoose.connect(this.uri);
     }
 
     private addGameStateSchema(): void {

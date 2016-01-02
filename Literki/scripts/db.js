@@ -1,31 +1,19 @@
 /// <reference path="..\typings\mongoose\mongoose.d.ts"/>
-/// <reference path=".\literki.ts"/>
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var mongoose = require('mongoose');
+var mongo = require('./lib/mongo');
 var literki = require('./literki');
-var GameRepository = (function () {
+var GameRepository = (function (_super) {
+    __extends(GameRepository, _super);
     function GameRepository() {
-        this.connected = false;
+        _super.apply(this, arguments);
     }
     GameRepository.prototype.open = function (uri) {
-        var _this = this;
-        this.uri = uri;
-        mongoose.connection.on('connected', function () {
-            console.log('Mongoose default connection open to ' + _this.uri);
-            _this.connected = true;
-        });
-        mongoose.connection.on('error', function (err) {
-            console.log('Mongoose default connection error: ' + err);
-        });
-        mongoose.connection.on('disconnected', function () {
-            console.log('Mongoose default connection disconnected');
-            this.connected = false;
-        });
-        process.on('SIGINT', function () {
-            mongoose.connection.close(function () {
-                console.log('Mongoose default connection disconnected through app termination');
-                process.exit(0);
-            });
-        });
+        _super.prototype.open.call(this, uri);
         this.addGameStateSchema();
         this.addUserProfileSchema();
         this.addWordsDictionarySchema();
@@ -163,12 +151,6 @@ var GameRepository = (function () {
             callback(err, result.length == words.length ? true : false);
         });
     };
-    GameRepository.prototype.connect = function () {
-        if (this.connected) {
-            return;
-        }
-        mongoose.connect(this.uri);
-    };
     GameRepository.prototype.addGameStateSchema = function () {
         var schema = new mongoose.Schema({
             gameId: {
@@ -239,6 +221,6 @@ var GameRepository = (function () {
         });
     };
     return GameRepository;
-})();
+})(mongo.Repository);
 exports.GameRepository = GameRepository;
 //# sourceMappingURL=db.js.map

@@ -55,6 +55,7 @@
     <Content Include="views\newgame.jade" />
     <Content Include="views\profile.jade" />
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="scripts\lib\mongo.ts" />
     <TypeScriptCompile Include="tests\player1NewGame.ts">
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>
@@ -120,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="config\" />
+    <Folder Include="scripts\lib\" />
     <Folder Include="tests\" />
     <Folder Include="styles\" />
     <Folder Include="tests\states\" />
