@@ -33,8 +33,8 @@ span {
 }
 
 .center {
-	display: block;
 	text-align: center;
+	display: table-cell;
 }
 
 img {
@@ -86,8 +86,8 @@ img {
 	color: #FFF;
 	font-weight: bold;
 	text-align: right;
-	width: 100%;
 	height: 33px;
+	display: table-header-group;
 }
 
 #navigationbox a {
@@ -175,7 +175,7 @@ tabs-nohdr .ui-tabs-panel {
 
 .ui-tabs-panel .tableBorders {
 	border-color: #194D2A;
-	border-width: 0px;
+	border-width: 0;
 }
 
 .ui-tabs-panel td label {
@@ -190,8 +190,12 @@ tabs-nohdr .ui-tabs-panel {
 	padding: 5%;
 }
 
+.formLayout.scroll {
+	overflow-y: scroll;
+	height: 74%;
+}
+
 .formLayout table {
-	height: 100%;
 	width: 100%;
 }
 
