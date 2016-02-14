@@ -80,7 +80,7 @@ img {
 	border-collapse: collapse;
 }
 
-#navigationbox {
+#navigationDiv {
 	background: #2CDB69;
 	background-image: linear-gradient(to bottom, #2CDB69, #184526);
 	color: #FFF;
@@ -90,14 +90,14 @@ img {
 	display: table-header-group;
 }
 
-#navigationbox a {
+#navigationDiv a {
 	color: #FFF;
 	font-weight: bold;
 	text-decoration: none;
 	padding: 2px;
 }
 
-#navigationbox a:hover {
+#navigationDiv a:hover {
 	color: #FFC;
 }
 
@@ -191,21 +191,36 @@ tabs-nohdr .ui-tabs-panel {
 }
 
 .formLayout.scroll {
-	overflow-y: scroll;
-	height: 74%;
 }
 
 .formLayout table {
 	width: 100%;
 }
 
-.formLayout thead th {
-	text-align: center;
+.formLayout thead,
+tbody {
+	display: block;
+	border: 0px solid black;
 }
 
-.formLayout table tbody label {
+.formLayout thead th {
 	text-align: center;
-	width: 100%;
+	height: 40px;
+}
+
+.formLayout tbody {
+	height: 39.5em;
+	overflow-y: scroll;
+}
+
+.formLayout tbody td,
+thead th {
+	border: 0px solid red;
+	min-width: 13.5em;
+}
+
+.formLayout tbody label {
+	text-align: center;
 }
 
 .formLayout input {
@@ -245,7 +260,7 @@ tabs-nohdr .ui-tabs-panel {
 	color: #FFF;
 	font-weight: bold;
 	text-decoration: none;
-	text-align: right;
+	text-align: center;
 	display: block;
 }
 
