@@ -51,7 +51,7 @@ img {
 	font-size: 20px;
 	padding: 10px 20px 10px 20px;
 	text-decoration: none;
-	margin: 0px;
+	margin: 0;
 }
 
 .commandButton:hover {
@@ -87,7 +87,6 @@ img {
 	color: #FFF;
 	font-weight: bold;
 	text-align: right;
-	display: table-header-group;
 }
 
 #navigationDiv a {
@@ -191,9 +190,11 @@ tabs-nohdr .ui-tabs-panel {
 	margin: 2%;
 	padding: 5%;
 	max-height: 72%;
-}
-
-.formLayout.scroll {
+	position: absolute;
+	top: 21%;
+	bottom: 5%;
+	right: 0;
+	left: 0;
 }
 
 .formLayout table {
@@ -203,7 +204,7 @@ tabs-nohdr .ui-tabs-panel {
 .formLayout thead,
 tbody {
 	display: block;
-	border: 0px solid black;
+	border: 0 solid black;
 }
 
 .formLayout thead th {
@@ -212,13 +213,15 @@ tbody {
 }
 
 .formLayout tbody {
-	max-height: 70%;
 	overflow-y: scroll;
+	position: absolute;
+	top: 14%;
+	bottom: 5%;
 }
 
 .formLayout tbody td,
 thead th {
-	border: 0px solid red;
+	border: 0 solid red;
 	min-width: 11em;
 }
 
