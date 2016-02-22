@@ -132,6 +132,16 @@ app.get('/login.html', (req, res) => {
     res.render('login', { title: 'login' });
 });
 
+//app.get('/main.html', auth, (req, res) => {
+//    repo.allGames((err, games) => {
+//        var errorMessages = '';
+//        if (err != null) {
+//            errorMessages = util.formatError(err);
+//        }
+//        res.render('main', { title: 'main', games: games });
+//    });
+//});
+
 app.get('/:pageName.html', auth, (req, res) => {
     res.render(req.params.pageName, { title: req.params.pageName });
 });

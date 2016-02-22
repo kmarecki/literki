@@ -21,6 +21,15 @@ block info
           th Data utworzenia
           th 
       tbody
+        //each game in games
+        // tr
+        //  td
+        //    a(href='board.html?gameId=' + game.gameId)= game.gameId
+        //    td
+        //     label.center()= game.creationDate.toString().slice(0, 16)
+        //    td
+        //     a.button(href='board.html?gameId=' + game.gameId + '&join=1') 'Dołącz'
+       
         // ko foreach: model.games
         tr
           td
@@ -30,6 +39,7 @@ block info
           td
             a.button(data-bind="attr: { href: 'board.html?gameId=' + gameId + '&join=1'}, text: joinAction()")
         // /ko
+        
         
 
 block buttons

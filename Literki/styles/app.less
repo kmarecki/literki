@@ -51,6 +51,7 @@ img {
 	font-size: 20px;
 	padding: 10px 20px 10px 20px;
 	text-decoration: none;
+	margin: 0px;
 }
 
 .commandButton:hover {
@@ -86,7 +87,6 @@ img {
 	color: #FFF;
 	font-weight: bold;
 	text-align: right;
-	height: 33px;
 	display: table-header-group;
 }
 
@@ -95,6 +95,8 @@ img {
 	font-weight: bold;
 	text-decoration: none;
 	padding: 2px;
+	display: inline-block;
+	height: 33px;
 }
 
 #navigationDiv a:hover {
@@ -188,6 +190,7 @@ tabs-nohdr .ui-tabs-panel {
 	border-radius: 10px;
 	margin: 2%;
 	padding: 5%;
+	max-height: 72%;
 }
 
 .formLayout.scroll {
@@ -209,14 +212,14 @@ tbody {
 }
 
 .formLayout tbody {
-	height: 39.5em;
+	max-height: 70%;
 	overflow-y: scroll;
 }
 
 .formLayout tbody td,
 thead th {
 	border: 0px solid red;
-	min-width: 13.5em;
+	min-width: 11em;
 }
 
 .formLayout tbody label {
