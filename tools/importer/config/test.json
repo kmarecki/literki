@@ -1,5 +1,0 @@
-﻿{
-  "MongoDb": {
-    "uri":  "mongodb://localhost/literki-test"
-  }
-}

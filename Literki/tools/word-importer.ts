@@ -1,11 +1,13 @@
 ﻿/// <reference path="../../Literki/typings/async/async.d.ts"/> 
+process.env['NODE_CONFIG_DIR'] = '../config';
+
 var config = require('config');
 
 import async = require('async');
 import fs = require('fs');
 import stream = require('stream');
-import db = require('../../Literki/scripts/db');
-import util = require('../../Literki/scripts/util');
+import db = require('../scripts/db');
+import util = require('../scripts/util');
 
 var fileName = process.argv[2];
 var lang = process.argv[3];
