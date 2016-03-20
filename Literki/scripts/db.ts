@@ -1,9 +1,9 @@
-﻿/// <reference path="..\typings\mongoose\mongoose.d.ts"/>
+﻿/// <reference path="../typings/mongoose/mongoose.d.ts"/>
 
 import mongoose = require('mongoose');
 import mongo = require('./lib/mongo');
-import entities = require('./entities');
-import literki = require('./literki');
+import entities = require('../public/scripts/entities');
+import literki = require('../public/scripts/literki');
 
 interface GameStateModel extends literki.IGameState, mongoose.Document { }
 interface UserProfileModel extends entities.UserProfile, mongoose.Document { }

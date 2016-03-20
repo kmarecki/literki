@@ -3,6 +3,7 @@
 ///<reference path="typings\passport\passport.d.ts"/>
 ///<reference path="typings\body-parser\body-parser.d.ts"/>
 ///<reference path="typings\cookie-parser\cookie-parser.d.ts"/>
+"use strict";
 var config = require('config');
 var _ = require('underscore');
 var express = require('express');
@@ -11,7 +12,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var lessMiddleware = require('less-middleware');
 var passport = require('passport');
-var literki = require('./scripts/literki');
+var literki = require('./public/scripts/literki');
 var literki_server = require('./scripts/literki_server');
 var db = require('./scripts/db');
 var util = require('./scripts/util');
@@ -22,9 +23,9 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(lessMiddleware(__dirname, {
-    dest: __dirname + '/../Public'
+    dest: __dirname + '/./public'
 }));
-app.use(express.static(__dirname + '/../Public'));
+app.use(express.static(__dirname + '/./public'));
 app.use(function (err, req, res, next) {
     console.error(err);
     res.status(500).send('Something broke!');

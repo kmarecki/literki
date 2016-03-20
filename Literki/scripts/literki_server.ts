@@ -1,7 +1,7 @@
-﻿///<reference path="..\typings\underscore\underscore.d.ts"/>
+﻿///<reference path="../typings/underscore/underscore.d.ts"/>
 
 import _ = require('underscore');
-import literki = require('./literki');
+import literki = require('../public/scripts/literki');
 
 enum PlayerActionType {
     Move,

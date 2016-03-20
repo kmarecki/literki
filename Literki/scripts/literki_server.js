@@ -1,11 +1,12 @@
-///<reference path="..\typings\underscore\underscore.d.ts"/>
+///<reference path="../typings/underscore/underscore.d.ts"/>
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var _ = require('underscore');
-var literki = require('./literki');
+var literki = require('../public/scripts/literki');
 var PlayerActionType;
 (function (PlayerActionType) {
     PlayerActionType[PlayerActionType["Move"] = 0] = "Move";
@@ -18,7 +19,7 @@ var GameMethodResult = (function () {
     }
     GameMethodResult.Undefined = new GameMethodResult();
     return GameMethodResult;
-})();
+}());
 exports.GameMethodResult = GameMethodResult;
 var GameRun_Server = (function (_super) {
     __extends(GameRun_Server, _super);
@@ -287,6 +288,6 @@ var GameRun_Server = (function (_super) {
         this.state.currentPlayerIndex = this.getNextPlayerIndex();
     };
     return GameRun_Server;
-})(literki.GameRun);
+}(literki.GameRun));
 exports.GameRun_Server = GameRun_Server;
 //# sourceMappingURL=literki_server.js.map

@@ -1,3 +1,4 @@
+"use strict";
 var stream = require("stream");
 function formatError(err) {
     return err.name + ": " + err.message;

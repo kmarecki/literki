@@ -1,5 +1,6 @@
 /// <reference path='../typings/mocha/mocha.d.ts' />
 /// <reference path='../typings/request/request.d.ts' />
+"use strict";
 var assert = require('assert');
 var requestModule = require('request');
 var request = requestModule.defaults({

@@ -9,8 +9,8 @@ var request = requestModule.defaults({
     jar: true
 });
 
-import literki = require('../scripts/literki');
-import entities = require('../scripts/entities');
+import literki = require('../public/scripts/literki');
+import entities = require('../public/scripts/entities');
 import gamestates = require('./gamestates');
 import helper = require('./helper');
 

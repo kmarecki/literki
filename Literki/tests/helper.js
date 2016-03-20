@@ -1,10 +1,11 @@
+"use strict";
 process.env['NODE_ENV'] = 'test';
 process.env['NODE_CONFIG_DIR'] = '../config';
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var server = require('../server');
-var literki = require('../scripts/literki');
+var literki = require('../public/scripts/literki');
 var requestModule = require('request');
 var request = requestModule.defaults({
     jar: true

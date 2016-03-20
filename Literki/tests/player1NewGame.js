@@ -1,12 +1,13 @@
 /// <reference path='../typings/mocha/mocha.d.ts' />
 /// <reference path='../typings/request/request.d.ts' />
+"use strict";
 var assert = require('assert');
 var async = require('async');
 var requestModule = require('request');
 var request = requestModule.defaults({
     jar: true
 });
-var literki = require('../scripts/literki');
+var literki = require('../public/scripts/literki');
 var gamestates = require('./gamestates');
 var helper = require('./helper');
 describe('Player1 new game Suite', function () {

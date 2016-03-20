@@ -1,4 +1,5 @@
-/// <reference path="..\typings\mongoose\mongoose.d.ts"/>
+/// <reference path="../typings/mongoose/mongoose.d.ts"/>
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var mongoose = require('mongoose');
 var mongo = require('./lib/mongo');
-var literki = require('./literki');
+var literki = require('../public/scripts/literki');
 var GameRepository = (function (_super) {
     __extends(GameRepository, _super);
     function GameRepository() {
@@ -221,6 +222,6 @@ var GameRepository = (function (_super) {
         });
     };
     return GameRepository;
-})(mongo.Repository);
+}(mongo.Repository));
 exports.GameRepository = GameRepository;
 //# sourceMappingURL=db.js.map

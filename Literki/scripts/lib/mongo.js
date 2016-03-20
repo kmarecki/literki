@@ -1,4 +1,5 @@
-/// <reference path="..\..\typings\mongoose\mongoose.d.ts"/>
+/// <reference path="../../typings/mongoose/mongoose.d.ts"/>
+"use strict";
 var mongoose = require('mongoose');
 var Repository = (function () {
     function Repository() {
@@ -32,6 +33,6 @@ var Repository = (function () {
         mongoose.connect(this.uri);
     };
     return Repository;
-})();
+}());
 exports.Repository = Repository;
 //# sourceMappingURL=mongo.js.map

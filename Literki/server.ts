@@ -16,9 +16,9 @@ var lessMiddleware = require('less-middleware');
 
 import passport = require('passport');
 
-import literki = require('./scripts/literki');
+import entities = require('./public/scripts/entities');
+import literki = require('./public/scripts/literki');
 import literki_server = require('./scripts/literki_server');
-import entities = require('./scripts/entities');
 import db = require('./scripts/db');
 import util = require('./scripts/util');
 
@@ -29,9 +29,9 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(lessMiddleware(__dirname, {
-    dest: __dirname + '/../Public'
+    dest: __dirname + '/./public'
 }));
-app.use(express.static(__dirname + '/../Public'));
+app.use(express.static(__dirname + '/./public'));
 app.use((err: Error, req, res, next) => {
     console.error(err);
     res.status(500).send('Something broke!');

@@ -10,3 +10,4 @@ export function formatSeconds(seconds: number, format: string): string {
     var rest = seconds % 60;
     return moment({ minutes: minutes, second: rest }).format(format);
 }
+

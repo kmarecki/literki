@@ -64,5 +64,6 @@ define(["require", "exports", './master', './scripts/literki', 'knockout', 'jque
         controller.init();
     }
     exports.init = init;
+    window.onload = init;
 });
 //# sourceMappingURL=main.js.map

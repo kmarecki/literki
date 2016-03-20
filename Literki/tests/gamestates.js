@@ -1,3 +1,4 @@
+"use strict";
 exports.player1 = {
     "id": "55aaca395dd86414102b50df",
     "authId": "106423093215393185264",

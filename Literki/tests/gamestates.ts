@@ -1,4 +1,4 @@
-﻿import literki = require('../scripts/literki');
+﻿import literki = require('../public/scripts/literki');
 
 export var player1 = {
     "id": "55aaca395dd86414102b50df",

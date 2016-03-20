@@ -6,7 +6,7 @@ import db = require('../scripts/db');
 import fs = require('fs');
 import path = require('path');
 
-import literki = require('../scripts/literki');
+import literki = require('../public/scripts/literki');
 import literki_server = require('../scripts/literki_server');
 import gamestates = require('../tests/gamestates');
 

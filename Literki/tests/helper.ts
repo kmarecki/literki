@@ -6,8 +6,8 @@ import fs = require('fs');
 import http = require('http');
 import path = require('path');
 import server = require('../server');
-import literki = require('../scripts/literki');
-import entities = require('../scripts/entities');
+import literki = require('../public/scripts/literki');
+import entities = require('../public/scripts/entities');
 import gamestates = require('./gamestates');
 
 import requestModule = require('request');
