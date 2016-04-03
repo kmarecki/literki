@@ -24,4 +24,3 @@ repo.loadState(gameId, function (err, state) {
     fs.writeFileSync(testFilePath, testFileTemplate);
     process.exit(0);
 });
-//# sourceMappingURL=test-cases.js.map

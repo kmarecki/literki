@@ -12,7 +12,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var lessMiddleware = require('less-middleware');
 var passport = require('passport');
-var literki = require('./public/scripts/literki');
+var literki = require('./scripts/shared/literki');
 var literki_server = require('./scripts/literki_server');
 var db = require('./scripts/db');
 var util = require('./scripts/util');
@@ -264,7 +264,7 @@ function simpleGameMethodCall(req, res, call, gameId) {
 var server;
 function start() {
     if (!server) {
-        var port = process.env.port || 1337;
+        var port = process.env.port || config.Server.port;
         console.log('Literki start');
         console.log('Literki port: ' + port);
         server = app.listen(port, '0.0.0.0');
@@ -283,4 +283,3 @@ function getGameRepository() {
     return repo;
 }
 exports.getGameRepository = getGameRepository;
-//# sourceMappingURL=server.js.map

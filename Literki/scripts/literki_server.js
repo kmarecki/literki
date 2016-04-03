@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var _ = require('underscore');
-var literki = require('../public/scripts/literki');
+var literki = require('./shared/literki');
 var PlayerActionType;
 (function (PlayerActionType) {
     PlayerActionType[PlayerActionType["Move"] = 0] = "Move";
@@ -290,4 +290,3 @@ var GameRun_Server = (function (_super) {
     return GameRun_Server;
 }(literki.GameRun));
 exports.GameRun_Server = GameRun_Server;
-//# sourceMappingURL=literki_server.js.map

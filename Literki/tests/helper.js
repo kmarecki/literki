@@ -5,7 +5,8 @@ var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var server = require('../server');
-var literki = require('../public/scripts/literki');
+var literki = require('../scripts/shared/literki');
+var config = require('config');
 var requestModule = require('request');
 var request = requestModule.defaults({
     jar: true
@@ -65,19 +66,19 @@ function createAliveRequestData(state, currentPlayerIndex) {
 }
 exports.createAliveRequestData = createAliveRequestData;
 function callGETMethod(userName, id, path, data, call) {
-    var authPath = "http://" + userName + ":" + id + "@localhost:1337/auth/http";
+    var authPath = "http://" + userName + ":" + id + "@localhost:" + config.Server.port + "/auth/http";
     request.get(authPath, function (error, response, body) {
         assert.equal(body, 'Authentifaction successfull');
-        var methodPath = "http://localhost:1337" + path;
+        var methodPath = "http://localhost:" + (config.Server.port + path);
         request.get(methodPath, { qs: data }, function (error, response, body) { return call(error, response, body); });
     });
 }
 exports.callGETMethod = callGETMethod;
 function callPOSTMethod(userName, id, path, data, call) {
-    var authPath = "http://" + userName + ":" + id + "@localhost:1337/auth/http";
+    var authPath = "http://" + userName + ":" + id + "@localhost:" + config.Server.port + "/auth/http";
     request.get(authPath, function (error, response, body) {
         assert.equal(body, 'Authentifaction successfull');
-        var methodPath = "http://localhost:1337" + path;
+        var methodPath = "http://localhost:" + (config.Server.port + path);
         request.post(methodPath, { json: data }, function (error, response, body) { return call(error, response, body); });
     });
 }
@@ -113,4 +114,3 @@ function processPOSTbody(body, skipErrorChecking) {
     return game;
 }
 exports.processPOSTbody = processPOSTbody;
-//# sourceMappingURL=helper.js.map

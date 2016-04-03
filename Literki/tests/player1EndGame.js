@@ -6,7 +6,7 @@ var requestModule = require('request');
 var request = requestModule.defaults({
     jar: true
 });
-var literki = require('../public/scripts/literki');
+var literki = require('../scripts/shared/literki');
 var gamestates = require('./gamestates');
 var helper = require('./helper');
 describe('Player1 endGame Suite', function () {
@@ -62,4 +62,3 @@ describe('Player1 endGame Suite', function () {
         });
     });
 });
-//# sourceMappingURL=player1EndGame.js.map

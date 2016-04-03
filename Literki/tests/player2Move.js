@@ -6,7 +6,7 @@ var requestModule = require('request');
 var request = requestModule.defaults({
     jar: true
 });
-var literki = require('../public/scripts/literki');
+var literki = require('../scripts/shared/literki');
 var gamestates = require('./gamestates');
 var helper = require('./helper');
 describe('Player2 move Suite', function () {
@@ -341,4 +341,3 @@ describe('Player2 change letters Suite', function () {
         });
     });
 });
-//# sourceMappingURL=player2Move.js.map

@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var mongoose = require('mongoose');
 var mongo = require('./lib/mongo');
-var literki = require('../public/scripts/literki');
+var literki = require('./shared/literki');
 var GameRepository = (function (_super) {
     __extends(GameRepository, _super);
     function GameRepository() {
@@ -224,4 +224,3 @@ var GameRepository = (function (_super) {
     return GameRepository;
 }(mongo.Repository));
 exports.GameRepository = GameRepository;
-//# sourceMappingURL=db.js.map

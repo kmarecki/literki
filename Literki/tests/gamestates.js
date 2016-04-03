@@ -21,4 +21,3 @@ exports.player2EdgeMove = 'player2EdgeMove';
 exports.player2LeftEdgeMove = 'player2LeftEdgeMove';
 exports.player2NoRemainingLettersMove = 'player2NoRemainingLettersMove';
 exports.player2NoTimeLeft = 'player2NoTimeLeft';
-//# sourceMappingURL=gamestates.js.map

@@ -6,7 +6,7 @@ var requestModule = require('request');
 var request = requestModule.defaults({
     jar: true
 });
-var literki = require('../public/scripts/literki');
+var literki = require('../scripts/shared/literki');
 var gamestates = require('./gamestates');
 var helper = require('./helper');
 describe('All players fold Suite', function () {
@@ -73,4 +73,3 @@ describe('All players fold Suite', function () {
         });
     });
 });
-//# sourceMappingURL=allPlayersFold.js.map

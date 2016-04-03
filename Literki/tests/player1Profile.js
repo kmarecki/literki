@@ -89,4 +89,3 @@ function processPOSTBody(body, skipErrorChecking) {
     return profile;
 }
 exports.processPOSTBody = processPOSTBody;
-//# sourceMappingURL=player1Profile.js.map
