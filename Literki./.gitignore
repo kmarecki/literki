@@ -1,4 +1,6 @@
 *.js
 *.js.map
+!/public/scripts/lib/*.js
+!/public/scripts/**/*conf.js
 node_modules
 *.html

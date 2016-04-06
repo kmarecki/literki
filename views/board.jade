@@ -1,0 +1,86 @@
+﻿extends ./master.jade
+
+block stylesheets
+  link(rel='stylesheet', href='styles/jquery-ui.css', type='text/css')
+  link(rel='stylesheet', href='styles/app.css', type='text/css')
+  link(rel='stylesheet', href='styles/board.css', type='text/css')
+
+block scripts
+   script(src='scripts/lib/require.js', data-main='scripts/board-conf')
+
+block navigation
+   a(href='profile.html') Profil
+   a(href='main.html') Odejdź 
+   a(href="/auth/google/signout") Wyloguj
+
+block info
+  label#debugLabel
+  table
+    thead
+      tr
+        th Słowo
+        th Punkty
+    tbody(data-bind='foreach: model.newWords')
+      tr
+        td
+          label(data-bind='text: word')
+        td
+          label(data-bind='text: points')
+  table
+    thead
+      tr
+        th Literki do wymiany
+    tbody
+      tr
+        td
+          label(data-bind='text: model.changeLetters')
+  table
+    tbody
+      tr(data-bind='foreach: model.allPlayers')
+        td
+          div(data-bind="css: playerCss")
+            table
+              tr
+                td
+                  label(data-bind="css: isCurrentPlayer() ? 'left underline' : 'left', text: playerName")
+                td
+                  label(data-bind="css: isCurrentPlayer() ? 'left underline' : 'left', text: remainingTime")
+              tr
+                td(colspan='2')
+                  label.center(data-bind='text: points')
+  #tabsDiv
+    ul
+      li
+        li
+          a(href='#historyDiv') Historia
+        li
+          a(href='#logDiv') Log
+        li
+          a(href='#chatDiv') Czat
+    #logDiv
+      label Log
+    #historyDiv
+      table.tableBorders
+        thead
+          tr(data-bind='foreach: model.allPlayers')
+            th.tableBorders
+              label(data-bind='text: playerName')
+        tbody
+          // ko foreach: model.historyMoves
+          tr(data-bind='foreach: playerMoves')
+            td.tableBorders
+              label(data-bind='text: $data')
+          // /ko
+    #chatDiv
+      label Czat
+     
+  #messageDiv
+    p(data-bind='text: model.errorMessage') Test
+
+block buttons
+  button.commandButton(data-bind='click: refreshClick') Odśwież
+  button.commandButton(data-bind='click: startClick') Start
+  button.commandButton(data-bind='click: pauseClick') Pauza
+  button.commandButton(data-bind='click: foldClick') Pas
+  button.commandButton(data-bind='click: exchangeClick') Wymień literki
+  button.commandButton.acceptSize(data-bind='click: moveClick') Połóż literki
