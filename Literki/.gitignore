@@ -2,3 +2,4 @@
 *.js.map
 node_modules
 *.html
+.ntvs_analysis.dat
