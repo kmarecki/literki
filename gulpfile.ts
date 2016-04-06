@@ -1,6 +1,7 @@
 ///<reference path="typings/tsd.d.ts"/>
 
 import gulp = require('gulp');
+var bower = require('gulp-bower');
 import tsc = require('gulp-typescript');
 
 gulp.task('tsc-server', () => {
@@ -27,4 +28,8 @@ gulp.task('tsc-browser', () => {
         .pipe(gulp.dest('./public/scripts/'));
 });
 
-gulp.task('default', ['tsc-server', 'tsc-browser-shared','tsc-browser']);
+gulp.task('bower', () => {
+    bower();
+});
+
+gulp.task('default', ['tsc-server', 'tsc-browser-shared','tsc-browser', 'bower']);

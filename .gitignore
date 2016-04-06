@@ -1,5 +1,7 @@
 *.js
 *.js.map
 node_modules
+public/components
 *.html
 .ntvs_analysis.dat
+npm-debug.log
