@@ -4,6 +4,7 @@ import gulp = require('gulp');
 var bower = require('gulp-bower');
 import tsc = require('gulp-typescript');
 var typings = require('gulp-typings');
+import runSequence = require('run-sequence');
 
 gulp.task('typings', () => {
     gulp.src('./typings.json')
@@ -38,10 +39,10 @@ gulp.task('bower', () => {
     bower();
 });
 
-gulp.task('default', [
+gulp.task('default', () => runSequence(
     'typings',
     'tsc-server', 
-    'tsc-browser-shared',
+    'tsc-browser-shared', 
     'tsc-browser', 
     'bower'
-]);
+));

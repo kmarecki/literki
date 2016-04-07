@@ -1,5 +1,4 @@
 ﻿/// <reference path="../../typings/main.d.ts"/>
-/// <amd-dependency path="./scripts/jquery-ui" />
 
 import master = require('./master');
 import literki = require('../../scripts/shared/literki');

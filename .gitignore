@@ -1,5 +1,6 @@
 *.js
 *.js.map
+!*-conf.js
 node_modules
 public/components
 typings

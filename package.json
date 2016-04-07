@@ -35,6 +35,7 @@
     "passport-google-openidconnect": "0.0.4",
     "passport-http": "^0.3.0",
     "request": "^2.61.0",
+    "run-sequence": "^1.1.5",
     "tough-cookie": "^2.0.0",
     "typescript": "^1.8.9",
     "typings": "^0.7.12",
