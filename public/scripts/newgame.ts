@@ -1,4 +1,4 @@
-﻿/// <reference path="../../typings/tsd.d.ts"/>
+﻿/// <reference path="../../typings/main.d.ts"/>
 /// <amd-dependency path="./scripts/jquery-ui" />
 
 import master = require('./master');

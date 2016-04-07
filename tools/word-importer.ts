@@ -1,4 +1,4 @@
-﻿/// <reference path="../../Literki/typings/async/async.d.ts"/> 
+﻿/// <reference path="../typings/main.d.ts"/> 
 process.env['NODE_CONFIG_DIR'] = '../config';
 
 var config = require('config');

@@ -1,11 +1,11 @@
-﻿/// <reference path="../../typings/tsd.d.ts"/>
-/// <amd-dependency path="/scripts/lib/jquery-ui.js" />
+﻿/// <reference path="../../typings/main.d.ts"/>
+/// <amd-dependency path="/components/jquery-ui/jquery-ui.js" />
 
 import master = require('./master');
 import literki = require('../../scripts/shared/literki');
 import ko = require('knockout');
 import $ = require('jquery');
-import Kinetic = require('kinetic');
+import Konva = require('konva');
 
 class BoardLetterPosition {
     x: number;
@@ -15,7 +15,7 @@ class BoardLetterPosition {
 }
 
 class Board {
-    private stage: Kinetic.IStage;
+    private stage: Konva.Stage;
     private bonusColors: { [id: number]: string; } = {};
     private container: string;
 
@@ -30,7 +30,7 @@ class Board {
     constructor(container: string) {
         this.container = container;
         
-        this.stage = new Kinetic.Stage({
+        this.stage = new Konva.Stage({
             container: container,
             width: 0,
             height: 0
@@ -73,17 +73,17 @@ class Board {
         this.setupDisplay();
 
         //For drawing star on start field
-        var letterLayer = new Kinetic.Layer();
+        var letterLayer = new Konva.Layer();
 
-        var backgroundLayer = new Kinetic.Layer();
+        var backgroundLayer = new Konva.Layer();
         this.stage.add(backgroundLayer);
 
-        var canvas = backgroundLayer.getCanvas()._canvas;
-        var context = canvas.getContext("2d");
+        var canvas = backgroundLayer.getCanvas();
+        var context = canvas.getContext();
         var backgroundColor = "#FFFFCC";
         //background
         context.beginPath(),
-        context.rect(0, 0, canvas.width, canvas.height);
+        context.rect(0, 0, canvas.getWidth(), canvas.getHeight());
         context.fillStyle = backgroundColor;
         context.fill();
 
@@ -96,7 +96,7 @@ class Board {
                 if (value == null || value.trim() != "") {
                     var bonus = game.board.getFieldBonus(x, y);
                     var fieldColor = this.bonusColors[bonus];
-                    var context = canvas.getContext('2d');
+                    var context = canvas.getContext();
                     //var centerX = xpos + this.FIELD_SIZE / 2;
                     //var centerY = ypos + this.FIELD_SIZE / 2;
                     //var radius = this.FIELD_SIZE / 2;
@@ -107,7 +107,7 @@ class Board {
                     context.fillStyle = fieldColor;
                     context.fill();
                     if (bonus == literki.BoardFieldBonus.Start) {
-                        var star = new Kinetic.Star({
+                        var star = new Konva.Star({
                             x: xpos + this.FIELD_SIZE / 2,
                             y: ypos + this.FIELD_SIZE / 2,
                             numPoints: 5,
@@ -225,7 +225,7 @@ class Board {
         var currentUser = game.getCurrentUser();
         if (currentUser != null) {
             // moving letters
-            var foregroundLayer = new Kinetic.Layer();
+            var foregroundLayer = new Konva.Layer();
 
             for (var x = 0; x < literki.MAX_LETTERS; x++) {
                 if (x < currentUser.freeLetters.length) {
@@ -243,8 +243,8 @@ class Board {
         }
     }
 
-    private getLetterGroup(x: number, y: number, letter: string, index: number, foreground: boolean, backgroundColor: string = "#FFFFCC"): Kinetic.IGroup {
-        var letterRect = new Kinetic.Rect({
+    private getLetterGroup(x: number, y: number, letter: string, index: number, foreground: boolean, backgroundColor: string = "#FFFFCC"): Konva.Group {
+        var letterRect = new Konva.Rect({
             width: this.FIELD_SIZE,
             height: this.FIELD_SIZE,
             fill: backgroundColor,
@@ -262,7 +262,7 @@ class Board {
         //    strokeWidth: this.LINE_WIDTH,
         //});
 
-        var letterText = new Kinetic.Text({
+        var letterText = new Konva.Text({
             width: this.FIELD_SIZE,
             height: this.FIELD_SIZE,
             align: "center",
@@ -274,7 +274,7 @@ class Board {
             fill: "black",
         });
 
-        var pointsText = new Kinetic.Text({
+        var pointsText = new Konva.Text({
             width: this.FIELD_SIZE,
             height: this.FIELD_SIZE,
             align: "right",
@@ -287,7 +287,7 @@ class Board {
             fill: "black",
         });
 
-        var letterGroup = new Kinetic.Group({
+        var letterGroup = new Konva.Group({
             x: x,
             y: y,
             draggable: foreground
@@ -308,7 +308,7 @@ class Board {
                     dragEnd = dragStart;
                 }
 
-                var tween = new Kinetic.Tween({
+                var tween = new Konva.Tween({
                     node: letterGroup,
                     x: dragEnd.x,
                     y: dragEnd.y,
@@ -342,7 +342,7 @@ class Board {
         return letterGroup;
     }   
 
-    private getLetterPosition(letterGroup: Kinetic.IGroup): BoardLetterPosition {
+    private getLetterPosition(letterGroup: Konva.Group): BoardLetterPosition {
 
         var x = letterGroup.x() - this.BOARD_MARGIN;
         x = this.normalizeDragEndPositionX(x);

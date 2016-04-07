@@ -1,4 +1,4 @@
-﻿///<reference path="../typings/underscore/underscore.d.ts"/>
+﻿///<reference path="../typings/main.d.ts"/>
 
 import _ = require('underscore');
 import literki = require('./shared/literki');

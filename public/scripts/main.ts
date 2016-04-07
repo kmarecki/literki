@@ -1,4 +1,6 @@
-﻿import master = require('./master');
+﻿/// <reference path="../../typings/main.d.ts"/>
+
+import master = require('./master');
 import literki = require('../../scripts/shared/literki');
 import ko = require('knockout');
 import $ = require('jquery');

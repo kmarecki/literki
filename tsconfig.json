@@ -6,7 +6,9 @@
     },
     "exclude": [
         "node_modules",
-        "thrash-bin"
+        "thrash-bin",
+        "typings/browser", 
+        "typings/browser.d.ts"
     ]
 }
    

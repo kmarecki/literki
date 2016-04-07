@@ -1,4 +1,4 @@
-﻿/// <reference path="../typings/mongoose/mongoose.d.ts"/>
+﻿/// <reference path="../typings/main.d.ts"/>
 
 import mongoose = require('mongoose');
 import mongo = require('./lib/mongo');

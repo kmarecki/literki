@@ -1,5 +1,4 @@
-﻿/// <reference path='../typings/mocha/mocha.d.ts' />
-/// <reference path='../typings/request/request.d.ts' />
+﻿/// <reference path='../typings/main.d.ts' />
 
 import assert = require('assert');
 import async = require('async');
