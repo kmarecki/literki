@@ -1,1 +1,112 @@
-.borderBox{background:#194D2A;border-style:solid;border-color:#000;border-radius:8px;padding:10px}.contentBox{background:#FFC;position:absolute;bottom:0;top:0;left:0;right:0;margin:10px;border-collapse:collapse}#boardDiv{white-space:normal;width:48%;height:95%;margin:5px;float:left}#infoDiv{white-space:normal;position:relative;width:47%;height:95%;margin:5px;float:left}div.player{border:1px solid black;border-radius:.3em;border-width:.1em;white-space:normal;font-weight:bold;font-size:x-large;width:7.5em;height:4.5em}div.currentUser{border:2px solid green;border-radius:.3em;border-width:.2em;white-space:normal;font-weight:bold;font-size:x-large;width:7.5em;height:4.5em}div.inactivePlayer{border-color:#A0A0A0;color:#A0A0A0}#messageDiv{vertical-align:bottom}#historyDiv{background-color:#2EB459;overflow-y:scroll;position:absolute;top:2.7em;left:.6em;right:.6em;bottom:0}#buttonsDiv{margin:5px;border-collapse:collapse;text-align:right;position:absolute;top:94%;right:0}#tabsDiv{background-color:;display:block;position:absolute;left:0;right:0;bottom:7%;top:40%}#formDiv{border-collapse:collapse}#headerDiv{display:table-row;width:99%;display:inline-block}#headerDiv h1{vertical-align:middle;text-align:center;padding:2px;display:block}
+.borderBox {
+	background: #194D2A;
+	border-style: solid;
+	border-color: #000;
+	border-radius: 8px;
+	padding: 10px;
+}
+
+.contentBox {
+	background: #FFC;
+	position: absolute;
+	bottom: 0;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin: 10px;
+	border-collapse: collapse;
+}
+
+#boardDiv {
+	white-space: normal;
+	width: 48%;
+	height: 95%;
+	margin: 5px;
+	float: left;
+}
+
+#infoDiv {
+	white-space: normal;
+	position: relative;
+	width: 47%;
+	height: 95%;
+	margin: 5px;
+	float: left;
+}
+
+div.player {
+	border: 1px solid black;
+	border-radius: 0.3em;
+	border-width: 0.1em;
+	white-space: normal;
+	font-weight: bold;
+	font-size: x-large;
+	width: 7.5em;
+	height: 4.5em;
+}
+
+div.currentUser {
+	border: 2px solid green;
+	border-radius: 0.3em;
+	border-width: 0.2em;
+	white-space: normal;
+	font-weight: bold;
+	font-size: x-large;
+	width: 7.5em;
+	height: 4.5em;
+}
+
+div.inactivePlayer {
+	border-color: #A0A0A0;
+	color: #A0A0A0;
+}
+
+#messageDiv {
+	vertical-align: bottom;
+}
+
+#historyDiv {
+	background-color: #2EB459;
+	overflow-y: scroll;
+	position: absolute;
+	top: 2.7em;
+	left: 0.6em;
+	right: 0.6em;
+	bottom: 0;
+}
+
+#buttonsDiv {
+	margin: 5px;
+	border-collapse: collapse;
+	text-align: right;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+#tabsDiv {
+	background-color: ;
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 7%;
+	top: 40%;
+}
+
+#formDiv {
+	border-collapse: collapse;
+}
+
+#headerDiv {
+	display: table-row;
+	width: 100%;
+	display: inline-block;
+}
+
+#headerDiv h1 {
+	vertical-align: middle;
+	text-align: center;
+	padding: 2px;
+	display: block;
+}
